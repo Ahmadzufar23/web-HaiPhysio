@@ -68,7 +68,7 @@ web-HaiPhysio/
 
 ### 1. Prasyarat
 - [Node.js](https://nodejs.org/) v18.18+ atau v20+
-- Backend Service HaiPhysio (`auth-service` di port 8000 & `booking-service` di port 8001)
+- Backend HaiPhysio (1 service: auth + booking) di port 8000
 
 ### 2. Instalasi Dependency
 ```bash
@@ -82,8 +82,7 @@ cp .env.example .env.local
 ```
 Sesuaikan konfigurasi URL backend:
 ```env
-NEXT_PUBLIC_AUTH_API_URL=http://localhost:8000/api/v1/auth
-NEXT_PUBLIC_BOOKING_API_URL=http://localhost:8001/api
+NEXT_PUBLIC_API_URL=http://localhost:8000
 ```
 
 ### 4. Menjalankan Server Development

@@ -94,7 +94,9 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
         const booking = bookingRes.data?.booking || bookingRes.booking;
         setBookingData(booking);
 
-        const focusId = booking?.therapistSpecializations?.[0]?.id;
+        // Layanan yang dipesan ada di booking.focusArea (bukan spesialisasi pertama terapis,
+        // karena terapis bisa punya lebih dari satu spesialisasi)
+        const focusId = booking?.focusArea?.id || booking?.therapistSpecializations?.[0]?.id;
 
         if (focusId) {
           const therapistsRes = await bookingService.getTherapists(focusId);
@@ -141,7 +143,8 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
                   therapistId: finalTherapistId,
                   date: dayStr,
                   time: timeStr,
-                  status: rawStatus.toLowerCase() === "tersedia" ? "tersedia" : rawStatus.toLowerCase()
+                  // BE: cellStatus "Tersedia" | "Penuh" | "Tidak Praktik" + flag isPast (jam sudah lewat -> ditolak saat booking)
+                  status: s.isPast ? "lewat" : String(rawStatus).toLowerCase().replace(/\s+/g, "_")
                 };
               });
               allSlots = [...allSlots, ...mappedSlots];
@@ -195,7 +198,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
     );
   }
 
-  const namaLayanan = bookingData?.therapistSpecializations?.[0]?.name || "Fisioterapi";
+  const namaLayanan = (bookingData?.focusArea?.name || bookingData?.therapistSpecializations?.[0]?.name) || "Fisioterapi";
 
   return (
     <div className="w-full min-h-screen pt-[120px] pb-24 px-5 md:px-[80px] bg-[#FAFAFA] flex flex-col items-center">
@@ -293,6 +296,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
 
         {/* Grid Kalender Jadwal Besar */}
         <GridKalender
+          title="Pilih Jadwal Pengganti"
           selectedTherapists={selectedTerapis}
           selectedSlot={selectedSlot}
           onSelectSlot={(slotId) => setSelectedSlot(slotId)}

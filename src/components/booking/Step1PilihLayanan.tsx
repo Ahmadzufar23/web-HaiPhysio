@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { servicesData } from "../../constants/data"; 
+import type { FocusArea } from "@/types/api.types";
 import Stepper from "./Stepper";
 import { bookingService } from "@/services/bookingService";
 
@@ -14,7 +15,7 @@ export default function Step1PilihLayanan({ onNext }: Step1Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   
   // State buat nyimpen data layanan dari API backend
-  const [apiServices, setApiServices] = useState<any[]>([]);
+  const [apiServices, setApiServices] = useState<FocusArea[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   // Tarik data UUID layanan dari backend saat halaman dimuat
@@ -55,19 +56,25 @@ export default function Step1PilihLayanan({ onNext }: Step1Props) {
             
             // Cocokin slug dari UI statis sama slug dari data API backend buat dapet UUID-nya
             const apiData = apiServices.find(api => api.slug === staticService.id);
-            const serviceUuid = apiData?.id || apiData?.uuid || staticService.id; 
-            
+            // Hanya UUID asli dari backend yang boleh dipilih — kalau layanan tidak ada di BE,
+            // kartu dinonaktifkan (tidak ada fallback ke slug statis).
+            const serviceUuid: string | null = apiData?.id ?? null;
+            const isAvailable = serviceUuid !== null;
+
             // Cek status terpilih
-            const isSelected = selectedId === serviceUuid;
+            const isSelected = isAvailable && selectedId === serviceUuid;
 
             return (
-              <div 
+              <div
                 key={staticService.id}
-                onClick={() => setSelectedId(serviceUuid)}
-                className={`flex flex-col rounded-[20px] p-8 cursor-pointer transition-all duration-300 border-2
-                  ${isSelected 
-                    ? "border-[#F5B301] bg-[#FFFBEA] shadow-[0_8px_24px_rgba(245,179,1,0.2)]" 
-                    : "border-gray-100 bg-white hover:border-[#F5B301]/50 hover:bg-[#FFFBEA] hover:shadow-[0_8px_24px_rgba(245,179,1,0.15)]"}
+                onClick={() => serviceUuid && setSelectedId(serviceUuid)}
+                aria-disabled={!isAvailable}
+                className={`flex flex-col rounded-[20px] p-8 transition-all duration-300 border-2
+                  ${!isAvailable
+                    ? "border-gray-100 bg-gray-50 opacity-50 cursor-not-allowed"
+                    : isSelected
+                    ? "border-[#F5B301] bg-[#FFFBEA] shadow-[0_8px_24px_rgba(245,179,1,0.2)] cursor-pointer"
+                    : "border-gray-100 bg-white hover:border-[#F5B301]/50 hover:bg-[#FFFBEA] hover:shadow-[0_8px_24px_rgba(245,179,1,0.15)] cursor-pointer"}
                 `}
               >
                 

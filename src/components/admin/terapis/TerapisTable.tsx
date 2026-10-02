@@ -77,7 +77,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
       onRefresh(true);
     } catch (error: any) {
       console.error("Gagal menghapus terapis:", error);
-      alert(error.response?.data?.message || "Gagal menghapus data terapis.");
+      alert(error.response?.data?.error?.message || "Gagal menghapus data terapis.");
     } finally {
       setIsDeleting(false);
     }

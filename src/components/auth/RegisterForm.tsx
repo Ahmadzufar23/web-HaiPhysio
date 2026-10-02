@@ -6,7 +6,7 @@ import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
 import AuthPolicyModal from "./AuthPolicyModal";
-import { authApi } from "../../app/utils/api";
+import { authApi, getApiErrorMessage, saveSessionToken } from "../../app/utils/api";
 
 type RegisterErrors = {
   name?: string;
@@ -109,11 +109,7 @@ export default function RegisterForm() {
       });
 
       // Simpan session token ke localStorage
-      const token = res.data?.session?.token || res.data?.token || res.data?.session_token || res.data?.accessToken || res.data?.data?.token || res.data?.data?.session?.token;
-      if (token) {
-        localStorage.setItem("session_token", token);
-        localStorage.setItem("token", token);
-      }
+      saveSessionToken(res.data?.data?.token);
 
       // Kalau sukses, user dilempar ke profil
       window.location.href = "/profil";
@@ -136,10 +132,9 @@ export default function RegisterForm() {
           systemErrors.email = duplicateMessage;
           systemErrors.phone = duplicateMessage;
         }
-      } else if (status === 429) {
-        alert("Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi.");
       } else {
-        alert("Terjadi kesalahan sistem saat mendaftar. Coba lagi nanti!");
+        // 400 (validasi Zod backend), 429 (rate limit), atau error server
+        alert(getApiErrorMessage(error, "Terjadi kesalahan sistem saat mendaftar. Coba lagi nanti!"));
       }
 
       if (Object.keys(systemErrors).length > 0) {

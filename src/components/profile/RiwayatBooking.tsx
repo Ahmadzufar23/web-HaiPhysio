@@ -99,7 +99,7 @@ export default function RiwayatBooking() {
           </div>
         ) : bookings.length > 0 ? (
           bookings.map((booking) => {
-            const namaLayanan = booking.therapistSpecializations?.[0]?.name || "Fisioterapi Umum";
+            const namaLayanan = (booking.focusArea?.name || booking.therapistSpecializations?.[0]?.name) || "Fisioterapi Umum";
             const isExpanded = expandedId === booking.id;
 
             return (

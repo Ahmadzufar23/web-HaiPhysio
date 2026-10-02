@@ -1,5 +1,4 @@
 
-import { RiwayatBooking } from "@/types/booking.types";
 
 import { 
   Bandaids, 
@@ -14,6 +13,9 @@ import {
   Heartbeat,
   HandHeart
 } from "@phosphor-icons/react";
+
+// Alamat klinik — satu sumber untuk konfirmasi booking, reschedule, & profil admin
+export const CLINIC_LOCATION = "Hai Physio – Klinik Pratama Condet Jaya, Jl. Condet Raya No. 18, Batu Ampar, Kramat Jati, Jakarta Timur 13520";
 
 // 1. Data Fokus Layanan Kami (Dipakai di Beranda & Layanan)
 export const servicesData = [
@@ -108,59 +110,5 @@ export const manfaatData = [
   { text: "Mengurangi Nyeri", icon: <HandHeart size={28} color="#1b2a4e" weight="fill" /> }
 ];
 
-// 5. Data Riwayat Booking untuk Halaman User
-
-export const dummyRiwayatBooking: RiwayatBooking[] = [
-  {
-    id: "BK-001",
-    layanan: "Fisioterapi Olahraga",
-    tanggal: "Jumat, 11 Juli 2026",
-    waktu: "11:00 - 12:00 WIB",
-    terapis: "Ftr. Sari Wijaya, S.Ft",
-    status: "Terkonfirmasi",
-    keluhan: "Paha bagian belakang terasa seperti ada yang robek dan bunyi 'pop' saat saya melakukan sprint lari kemarin. Sekarang sangat nyeri jika dipakai berjalan dan mulai muncul memar biru."
-  },
-  {
-    id: "BK-002",
-    layanan: "Fisioterapi Neuro",
-    tanggal: "Senin, 7 Juli 2026",
-    waktu: "14:00 - 15:00 WIB",
-    terapis: "Ftr. Andi Pratama, S.Ft", 
-    status: "Selesai"
-  },
-  {
-    id: "BK-003",
-    layanan: "Fisioterapi Muskuloskeletal",
-    tanggal: "Rabu, 02 Juli 2026",
-    waktu: "13:00 - 14:00 WIB",
-    terapis: "Ftr. Bintang Dito, S.Ft",
-    status: "Dibatalkan",
-    alasanBatal: "Alasan: Jadwal terapis bertabrakan"
-  }
-];
-
-// 6. Data Mock Kalender & Terapis (Shared Data untuk Buat Janji Temu & Ubah Jadwal)
-export const mockTherapists = [
-  { id: "t1", name: "Ftr. Andi Pratama", sp: "Spesialis Neuro & Olahraga", rating: 4.8, patients: "90+", photo: "/dokter-andi-pratama.png" },
-  { id: "t2", name: "Ftr. Sari Wijaya, S.Ft", sp: "Spesialis Olahraga & Muskulo", rating: 4.9, patients: "150+", photo: "/dokter-sari-wijaya.png" },
-  { id: "t3", name: "Ftr. Bintang Dito", sp: "Spesialis Olahraga", rating: 4.8, patients: "70+", photo: "/dokter-bintang-dito.png" },
-];
-
-export const calendarDays = [
-  { name: "Senin", date: "07" }, { name: "Selasa", date: "08" }, { name: "Rabu", date: "09" },
-  { name: "Kamis", date: "10" }, { name: "Jumat", date: "11" }, { name: "Sabtu", date: "12" }, { name: "Minggu", date: "13" }
-];
-
+// 5. Jam baris grid kalender jadwal (dipakai GridKalender)
 export const calendarHours = ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00"];
-
-export const mockSlots = [
-  { id: "s1", date: "07", time: "09:00", therapistId: "t1", status: "tersedia" },
-  { id: "s2", date: "07", time: "09:00", therapistId: "t2", status: "tidak_praktik" },
-  { id: "s3", date: "07", time: "10:00", therapistId: "t1", status: "penuh" },
-  { id: "s4", date: "08", time: "10:00", therapistId: "t2", status: "tersedia" },
-  { id: "s5", date: "09", time: "11:00", therapistId: "t3", status: "tersedia" },
-  { id: "s6", date: "10", time: "14:00", therapistId: "t1", status: "penuh" },
-  { id: "s7", date: "11", time: "15:00", therapistId: "t2", status: "tersedia" },
-  { id: "s8", date: "12", time: "09:00", therapistId: "t3", status: "tidak_praktik" },
-  { id: "s9", date: "13", time: "13:00", therapistId: "t2", status: "tersedia" },
-];

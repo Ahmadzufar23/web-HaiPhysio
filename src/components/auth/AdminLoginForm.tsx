@@ -4,7 +4,7 @@ import { useState } from "react";
 import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
-import { authApi } from "@/app/utils/api";
+import { authApi, getApiErrorMessage, saveSessionToken } from "@/app/utils/api";
 
 type AdminLoginErrors = {
   email?: string;
@@ -56,23 +56,8 @@ export default function AdminLoginForm() {
         password: password,
       });
 
-      console.log("Response Login Admin dari Backend:", res.data);
-
-      // 2. Ekstraksi token dari berbagai kemungkinan struktur JSON response backend
-      let token = res.data?.token || res.data?.session?.token || res.data?.sessionToken || res.data?.session_token || res.data?.accessToken || res.data?.access_token || res.data?.data?.token || res.data?.data?.session?.token;
-      
-      if (!token && typeof res.data === "string") {
-        token = res.data;
-      }
-
-      if (token) {
-        console.log("Token berhasil disimpan ke localStorage:", token);
-        localStorage.setItem("session_token", token);
-        localStorage.setItem("token", token);
-        localStorage.setItem("auth_token", token);
-      } else {
-        console.warn("PERINGATAN: Tidak ada token string yang ditemukan di response body login!", res.data);
-      }
+      // 2. Simpan token bearer dari response { success, data: { user, token } }
+      saveSessionToken(res.data?.data?.token);
 
       // 3. Sukses login admin -> Langsung lempar ke Dashboard Admin
       window.location.href = "/admin";
@@ -82,10 +67,11 @@ export default function AdminLoginForm() {
 
       if (status === 401) {
         setErrors({ password: "Email atau kata sandi admin salah. Silakan cek kembali." });
-      } else if (status === 429) {
-        setErrors({ email: "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi." });
+      } else if (status === 400 || status === 403 || status === 429) {
+        // 403 = EMAIL_NOT_REGISTERED_AS_ADMIN (akun pasien mencoba login admin)
+        setErrors({ email: getApiErrorMessage(error) });
       } else {
-        setErrors({ password: "Gagal terhubung ke server auth. Pastikan backend aktif." });
+        setErrors({ password: getApiErrorMessage(error, "Gagal terhubung ke server auth. Pastikan backend aktif.") });
       }
     } finally {
       setIsLoading(false);

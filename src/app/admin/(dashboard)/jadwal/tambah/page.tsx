@@ -29,7 +29,7 @@ export default function TambahJadwalPage() {
     const fetchTherapists = async () => {
       try {
         const res = await adminService.getTherapists();
-        const list = res.data?.therapists || res.therapists || [];
+        const list = res.data.therapists || [];
         setTherapists(list);
         if (list.length > 0) setSelectedTherapistId(list[0].id);
       } catch (error) {

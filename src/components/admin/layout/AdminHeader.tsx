@@ -19,7 +19,7 @@ export default function AdminHeader() {
   const loadAdminProfile = async () => {
     try {
       const res = await profileService.getProfile();
-      const user = res.data?.user || res.user;
+      const user = res.data.user;
       if (user?.full_name || user?.name) {
         setAdminName(user.full_name || user.name);
       }
@@ -30,7 +30,7 @@ export default function AdminHeader() {
   const loadNotifications = async () => {
     try {
       const res = await adminService.getBookings();
-      const bookings = res.data?.bookings || res.bookings || [];
+      const bookings = res.data.bookings || [];
       const readIds: number[] = JSON.parse(localStorage.getItem("admin_read_notifs") || "[]");
 
       const recent = bookings.slice(0, 4).map((b: any, index: number) => {

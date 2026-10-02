@@ -2,63 +2,89 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { CheckCircle, CaretDown } from "@phosphor-icons/react";
+import { CheckCircle } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 import { bookingService } from "@/services/bookingService";
+import FocusAreaCheckboxes from "@/components/admin/terapis/FocusAreaCheckboxes";
+import { getApiErrorMessage } from "@/app/utils/api";
+import type { FocusArea } from "@/types/api.types";
 
-export default function TabInfoDasar({ formData, setFormData, therapistId }: any) {
+export type TherapistFormData = {
+  nama: string;
+  sip: string;
+  spesialisasi: string;
+  focusIds: string[];
+  telepon: string;
+  email: string;
+  pendidikan: string;
+};
+
+type TabInfoDasarProps = {
+  formData: TherapistFormData;
+  setFormData: (data: TherapistFormData) => void;
+  therapistId: string;
+};
+
+export default function TabInfoDasar({ formData, setFormData, therapistId }: TabInfoDasarProps) {
   const [showToast, setShowToast] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [focusAreasList, setFocusAreasList] = useState<any[]>([]);
+  const [focusAreasList, setFocusAreasList] = useState<FocusArea[]>([]);
+  const [isFocusLoading, setIsFocusLoading] = useState(true);
 
   useEffect(() => {
     const loadFocusAreas = async () => {
       try {
         const res = await bookingService.getFocusAreas();
-        const list = res.data?.focus_areas || res.data?.focusAreas || res.focus_areas || res.focusAreas || res.data || [];
-        setFocusAreasList(list);
+        setFocusAreasList(res.data?.focusAreas || []);
       } catch (err) {
         console.error("Gagal memuat focus areas:", err);
+      } finally {
+        setIsFocusLoading(false);
       }
     };
     loadFocusAreas();
   }, []);
 
   const handleSaveInfo = async () => {
+    if (!therapistId) {
+      alert("ID terapis tidak valid.");
+      return;
+    }
     if (!formData.nama?.trim() || !formData.sip?.trim()) {
       alert("Nama Lengkap dan Nomor SIP wajib diisi!");
+      return;
+    }
+    // Spesialisasi dikirim persis sesuai centangan (UUID asli), minimal 1 — tanpa pencocokan nama
+    if (!formData.focusIds || formData.focusIds.length === 0) {
+      alert("Pilih minimal satu spesialisasi layanan!");
       return;
     }
 
     setIsSaving(true);
     try {
-      if (therapistId) {
-        // Cari focus_id yang cocok berdasarkan nama spesialisasi
-        const matchedFocus = focusAreasList.find((f: any) => 
-          (formData.spesialisasi || "").toLowerCase().includes((f.name || "").toLowerCase()) ||
-          (f.name || "").toLowerCase().includes((formData.spesialisasi || "").toLowerCase())
-        );
+      await adminService.updateTherapist(therapistId, {
+        full_name: formData.nama.trim(),
+        sip: formData.sip,
+        phone: formData.telepon,
+        email: formData.email,
+        education: formData.pendidikan,
+        focus_ids: formData.focusIds,
+      });
 
-        const payload: any = {
-          full_name: formData.nama,
-          sip: formData.sip,
-          phone: formData.telepon,
-          email: formData.email,
-          education: formData.pendidikan,
-        };
-
-        if (matchedFocus?.id) {
-          payload.focus_ids = [matchedFocus.id];
-        }
-
-        await adminService.updateTherapist(therapistId, payload);
-      }
+      // Sinkronkan label spesialisasi di header halaman edit
+      setFormData({
+        ...formData,
+        spesialisasi: focusAreasList
+          .filter((f) => formData.focusIds.includes(f.id))
+          .map((f) => `Fisioterapi ${f.name}`)
+          .join(", "),
+      });
 
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal update data terapis:", error);
-      const errMsg = error.response?.data?.message || "Gagal menyimpan perubahan data terapis.";
+      const errMsg = getApiErrorMessage(error, "Gagal menyimpan perubahan data terapis.");
       alert(errMsg);
     } finally {
       setIsSaving(false);
@@ -94,20 +120,13 @@ export default function TabInfoDasar({ formData, setFormData, therapistId }: any
 
       {/* Spesialisasi */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi</label>
-        <div className="relative">
-          <select 
-            name="spesialisasi" 
-            value={formData.spesialisasi} 
-            onChange={(e) => setFormData({...formData, spesialisasi: e.target.value})} 
-            className="w-full appearance-none p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e] font-semibold bg-white cursor-pointer"
-          >
-            <option value="Fisioterapi Muskuloskeletal">Fisioterapi Muskuloskeletal</option>
-            <option value="Fisioterapi Olahraga">Fisioterapi Olahraga</option>
-            <option value="Fisioterapi Neuro">Fisioterapi Neuro</option>
-          </select>
-          <CaretDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-        </div>
+        <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi <span className="text-red-500">*</span></label>
+        <FocusAreaCheckboxes
+          focusAreas={focusAreasList}
+          value={formData.focusIds || []}
+          onChange={(ids) => setFormData({ ...formData, focusIds: ids })}
+          isLoading={isFocusLoading}
+        />
       </div>
 
       {/* Nomor Telepon */}

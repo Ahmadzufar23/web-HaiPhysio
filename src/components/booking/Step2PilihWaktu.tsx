@@ -150,7 +150,8 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
                 therapistId: finalTherapistId,
                 date: dayStr,   
                 time: timeStr,  
-                status: rawStatus.toLowerCase() === "tersedia" ? "tersedia" : rawStatus.toLowerCase()
+                // BE: cellStatus "Tersedia" | "Penuh" | "Tidak Praktik" + flag isPast (jam sudah lewat -> ditolak saat booking)
+                status: s.isPast ? "lewat" : String(rawStatus).toLowerCase().replace(/\s+/g, "_")
               };
             });
             allSlots = [...allSlots, ...mappedSlots];

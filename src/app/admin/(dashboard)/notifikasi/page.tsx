@@ -13,7 +13,7 @@ export default function NotifikasiPage() {
   const fetchNotifications = async () => {
     try {
       const res = await adminService.getBookings();
-      const bookings = res.data?.bookings || res.bookings || [];
+      const bookings = res.data.bookings || [];
 
       const readIds: number[] = JSON.parse(localStorage.getItem("admin_read_notifs") || "[]");
 
@@ -38,7 +38,7 @@ export default function NotifikasiPage() {
         const status = (b.bookingStatus || b.status || "").toLowerCase();
         const pName = b.patientName || b.patient_name || "Pasien";
         const tName = b.therapistName || b.therapist_name || "Fisioterapis";
-        const sName = b.therapistSpecializations?.[0]?.name || b.serviceName || b.service_name || "Fisioterapi";
+        const sName = (b.focusArea?.name || b.therapistSpecializations?.[0]?.name) || b.serviceName || b.service_name || "Fisioterapi";
         const rawDate = b.bookingDate || b.slotDate || b.slot_date || "Terjadwal";
         const dateStr = rawDate.substring(0, 10);
         const timeStr = (b.bookingTime || b.startTime || b.start_time || "").substring(0, 5);

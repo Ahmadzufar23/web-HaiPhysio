@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
+import { CLINIC_LOCATION } from "@/constants/data";
 
 export default function EditProfileForm() {
   const [isEditing, setIsEditing] = useState(false);
@@ -219,7 +220,7 @@ export default function EditProfileForm() {
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[14px] font-medium text-[#1b2a4e]">Clinic Address</label>
             <textarea 
-              value="Jl. Condet Raya No. 45, Jakarta Timur, DKI Jakarta"
+              value={CLINIC_LOCATION}
               disabled 
               rows={2}
               className="w-full p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed text-[14px] resize-none"

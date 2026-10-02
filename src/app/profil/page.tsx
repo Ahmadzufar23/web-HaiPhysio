@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, SignOut } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
+import { getApiErrorMessage } from "@/app/utils/api";
 import ModalLogout from "@/components/profile/ModalLogout";
 import ModalGantiPassword from "@/components/profile/ModalGantiPassword";
 
@@ -45,8 +46,13 @@ export default function PengaturanProfilPage() {
           phone: user.phone || "",
           dateOfBirth: formattedDate, 
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error("Gagal narik data profil:", error);
+        // Belum login / sesi habis -> arahkan ke halaman login
+        if (error?.response?.status === 401) {
+          window.location.href = "/login";
+          return;
+        }
       } finally {
         setIsLoading(false); 
       }
@@ -66,7 +72,7 @@ export default function PengaturanProfilPage() {
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
       console.error("Gagal update profil:", error);
-      alert("Gagal menyimpan perubahan. Coba lagi!");
+      alert(getApiErrorMessage(error, "Gagal menyimpan perubahan. Coba lagi!"));
     }
   };
 
@@ -75,11 +81,11 @@ export default function PengaturanProfilPage() {
     setIsLoggingOut(true);
     try {
       await profileService.logout();
-      window.location.href = "/login";
     } catch (error) {
+      // Sesi di server bisa saja sudah habis (401); token lokal tetap dihapus oleh service
       console.error("Gagal logout:", error);
-      alert("Gagal keluar akun, coba lagi nanti!");
     } finally {
+      window.location.href = "/login";
       setIsLoggingOut(false);
     }
   };

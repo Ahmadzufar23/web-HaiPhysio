@@ -30,7 +30,7 @@ export default function AdminBookingPage() {
         date_to: date || undefined,
         search: search || undefined,
       });
-      let list = res.data?.bookings || res.bookings || [];
+      let list = res.data.bookings || [];
 
       // 1. Filter Status secara lokal
       if (status) {
@@ -44,7 +44,7 @@ export default function AdminBookingPage() {
       if (service) {
         list = list.filter((b: any) => {
           // Tangkap nama layanan dari berbagai kemungkinan properti
-          const sName = b.therapistSpecializations?.[0]?.name || b.serviceName || b.service_name || "Fisioterapi";
+          const sName = (b.focusArea?.name || b.therapistSpecializations?.[0]?.name) || b.serviceName || b.service_name || "Fisioterapi";
           return sName.toLowerCase().includes(service.toLowerCase());
         });
       }
@@ -79,7 +79,7 @@ export default function AdminBookingPage() {
       `"${b.patientName || b.patient_name || "-"}"`,
       `"${b.patientPhone || b.patient_phone || "-"}"`,
       `"${b.therapistName || b.therapist_name || "-"}"`,
-      `"${b.therapistSpecializations?.[0]?.name || b.serviceName || b.service_name || "Fisioterapi"}"`,
+      `"${(b.focusArea?.name || b.therapistSpecializations?.[0]?.name) || b.serviceName || b.service_name || "Fisioterapi"}"`,
       `" ${(b.bookingDate || b.slotDate || b.slot_date || "-").substring(0, 10)}"`,
       `" ${b.bookingTime ? `${b.bookingTime.substring(0, 5)} WIB` : "-"}"`,
       b.bookingStatus || b.status || "-",

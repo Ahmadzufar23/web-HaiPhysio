@@ -95,7 +95,11 @@ export default function ResetPasswordPageClient() {
     try {
       // Ambil token dari query params URL jika user klik link dari email
       const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token") || "dummy-token";
+      const token = urlParams.get("token");
+      if (!token) {
+        setErrors({ password: "Tautan atur ulang tidak valid. Silakan minta tautan baru." });
+        return;
+      }
       await authApi.post("/reset-password", {
         token,
         newPassword: password,

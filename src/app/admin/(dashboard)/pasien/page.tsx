@@ -20,8 +20,8 @@ export default function AdminPasienPage() {
         adminService.getBookings(),
       ]);
 
-      const pList = patientsRes.data?.patients || patientsRes.patients || [];
-      const bList = bookingsRes.data?.bookings || bookingsRes.bookings || [];
+      const pList = patientsRes.data.patients || [];
+      const bList = bookingsRes.data.bookings || [];
 
       setPatients(pList);
       setBookings(bList);

@@ -81,7 +81,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
     );
   }
 
-  const namaLayanan = bookingData?.therapistSpecializations?.[0]?.name || "Fisioterapi";
+  const namaLayanan = (bookingData?.focusArea?.name || bookingData?.therapistSpecializations?.[0]?.name) || "Fisioterapi";
 
   return (
     <div className="w-full min-h-screen pt-[120px] pb-24 px-5 md:px-[80px] bg-[#FAFAFA] flex flex-col items-center">

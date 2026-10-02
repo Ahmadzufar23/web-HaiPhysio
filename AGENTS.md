@@ -46,8 +46,8 @@ src/
 ## 🔌 3. Standar Koneksi API & Service Layer
 
 - **Auth Service:** `POST /api/v1/auth/admin/login` untuk login admin, `POST /api/v1/auth/login` untuk pasien.
-- **Booking Service:** Menggunakan `bookingApi` ke port 8001 (`/api/admin/...` dan `/api/v1/...`).
-- **Endpoint Fallback:** Selalu sediakan handling fallback di `src/services/adminService.ts` untuk memastikan kompatibilitas payload snake_case vs camelCase.
+- **Booking Service:** Menggunakan `bookingApi` (`<NEXT_PUBLIC_API_URL>/api`) — backend sekarang 1 service di port 8000.
+- **Kontrak API:** Ikuti `backend/API_REFERENCE.md`. Jangan menambah "loop fallback URL" — panggil hanya endpoint yang memang ada, dan tampilkan `error.message` dari backend (`getApiErrorMessage` di `src/app/utils/api.ts`).
 
 ---
 

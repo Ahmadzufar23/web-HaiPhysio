@@ -15,7 +15,7 @@ export default function AdminTerapisPage() {
     if (!background) setIsLoading(true);
     try {
       const res = await adminService.getTherapists();
-      const list = res.data?.therapists || res.therapists || [];
+      const list = res.data.therapists || [];
       setTherapists(list);
     } catch (error) {
       console.error("Gagal memuat data terapis:", error);

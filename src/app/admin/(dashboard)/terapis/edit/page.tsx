@@ -8,6 +8,7 @@ import TabInfoDasar from "./components/TabInfoDasar";
 import TabJadwal from "./components/TabJadwal";
 import TabRiwayat from "./components/TabRiwayat";
 import { adminService } from "@/services/adminService";
+import { getApiErrorMessage } from "@/app/utils/api";
 
 function EditTerapisContent() {
   const searchParams = useSearchParams();
@@ -17,40 +18,48 @@ function EditTerapisContent() {
   const [isActive, setIsActive] = useState(true);
   const [isAddingException, setIsAddingException] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-  const [formData, setFormData] = useState({ 
-    nama: "", 
-    sip: "", 
-    spesialisasi: "Fisioterapi Muskuloskeletal", 
-    telepon: "", 
-    email: "", 
-    pendidikan: "" 
+  const [formData, setFormData] = useState({
+    nama: "",
+    sip: "",
+    spesialisasi: "",
+    focusIds: [] as string[],
+    telepon: "",
+    email: "",
+    pendidikan: ""
   });
 
-  // Load data terapis asli berdasarkan ID
+  // Load data terapis berdasarkan ID — GET /api/admin/therapists/:id (tidak ada fallback ke terapis lain)
   useEffect(() => {
     const fetchTherapistDetail = async () => {
       try {
-        const res = await adminService.getTherapists();
-        const list = res.data?.therapists || res.therapists || [];
-        
-        const target = therapistId 
-          ? list.find((t: any) => String(t.id) === String(therapistId))
-          : list[0];
-
-        if (target) {
-          setFormData({
-            nama: target.name || target.fullName || "",
-            sip: target.sip || "",
-            spesialisasi: target.specializations?.[0]?.name ? `Fisioterapi ${target.specializations[0].name}` : target.specialization || "Fisioterapi Muskuloskeletal",
-            telepon: target.phone || "",
-            email: target.email || "",
-            pendidikan: target.education || "",
-          });
-          setIsActive(target.isActive !== false && target.is_active !== false);
+        if (!therapistId) {
+          setNotFound(true);
+          return;
         }
+        const res = await adminService.getTherapistById(therapistId);
+        const target = res.data?.therapist;
+        if (!target) {
+          setNotFound(true);
+          return;
+        }
+
+        setFormData({
+          nama: target.fullName || "",
+          sip: target.sip || "",
+          spesialisasi: (target.specializations || []).map((s) => `Fisioterapi ${s.name}`).join(", "),
+          // Semua spesialisasi dipertahankan (bukan cuma yang pertama) supaya tidak terhapus saat simpan
+          focusIds: (target.specializations || []).map((s) => s.id),
+          telepon: target.phone || "",
+          email: target.email || "",
+          pendidikan: target.education || "",
+        });
+        // BE mengirim status: "aktif" | "nonaktif"
+        setIsActive(target.status === "aktif");
       } catch (error) {
         console.error("Gagal memuat detail terapis:", error);
+        setNotFound(true);
       } finally {
         setIsLoading(false);
       }
@@ -68,6 +77,8 @@ function EditTerapisContent() {
         await adminService.updateTherapist(therapistId, { status: newStatus ? "aktif" : "nonaktif" });
       } catch (error) {
         console.error("Gagal update status aktif terapis:", error);
+        setIsActive(!newStatus); // kembalikan toggle kalau gagal tersimpan
+        alert(getApiErrorMessage(error, "Gagal mengubah status terapis."));
       }
     }
   };
@@ -76,6 +87,17 @@ function EditTerapisContent() {
     return (
       <div className="w-full py-20 flex justify-center items-center">
         <span className="text-[#1b2a4e] font-bold animate-pulse">Memuat data terapis...</span>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
+        <span className="text-[#1b2a4e] font-bold text-[18px]">Data terapis tidak ditemukan.</span>
+        <Link href="/admin/terapis" className="px-6 py-3 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101]">
+          Kembali ke Kelola Data Terapis
+        </Link>
       </div>
     );
   }

@@ -4,10 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { 
-  CaretRight, CaretDown, GraduationCap, Phone, EnvelopeSimple, Info, CheckCircle, Clock, WarningCircle 
+  CaretRight, GraduationCap, Phone, EnvelopeSimple, Info, CheckCircle, WarningCircle 
 } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 import { bookingService } from "@/services/bookingService";
+import FocusAreaCheckboxes from "@/components/admin/terapis/FocusAreaCheckboxes";
+import { getApiErrorMessage } from "@/app/utils/api";
+import type { FocusArea } from "@/types/api.types";
 
 export default function TambahTerapisPage() {
   const router = useRouter();
@@ -16,14 +19,15 @@ export default function TambahTerapisPage() {
   const [formData, setFormData] = useState({
     nama: "",
     sip: "",
-    spesialisasi: "Fisioterapi Muskuloskeletal",
-    jadwal: "Senin - Sabtu (08:00 - 16:00 WIB)",
     telepon: "",
     email: "",
     pendidikan: ""
   });
   
-  const [focusAreasList, setFocusAreasList] = useState<any[]>([]);
+  const [focusAreasList, setFocusAreasList] = useState<FocusArea[]>([]);
+  const [isFocusLoading, setIsFocusLoading] = useState(true);
+  // focus_id (UUID) yang dicentang admin — dikirim apa adanya ke BE
+  const [focusIds, setFocusIds] = useState<string[]>([]);
   const [toast, setToast] = useState<{ show: boolean; message: string; type: "success" | "warning" | "error" }>({
     show: false,
     message: "",
@@ -35,10 +39,11 @@ export default function TambahTerapisPage() {
     const loadFocusAreas = async () => {
       try {
         const res = await bookingService.getFocusAreas();
-        const list = res.data?.focus_areas || res.data?.focusAreas || res.focus_areas || res.focusAreas || res.data || [];
-        setFocusAreasList(list);
+        setFocusAreasList(res.data?.focusAreas || []);
       } catch (err) {
         console.error("Gagal memuat focus areas:", err);
+      } finally {
+        setIsFocusLoading(false);
       }
     };
     loadFocusAreas();
@@ -63,26 +68,9 @@ export default function TambahTerapisPage() {
       return;
     }
 
-    // Cari focus_id yang cocok
-    let matchedFocus = focusAreasList.find((f: any) => 
-      (formData.spesialisasi || "").toLowerCase().includes((f.name || "").toLowerCase()) ||
-      (f.name || "").toLowerCase().includes((formData.spesialisasi || "").toLowerCase())
-    );
-
-    // Fallback jika belum ter-fetch
-    const focusIds = matchedFocus?.id ? [matchedFocus.id] : focusAreasList.length > 0 ? [focusAreasList[0].id] : [];
-
+    // Spesialisasi wajib dipilih eksplisit — tidak ada fallback ke layanan pertama
     if (focusIds.length === 0) {
-      // Coba reload focus areas
-      const res = await bookingService.getFocusAreas();
-      const list = res.data?.focus_areas || res.data?.focusAreas || res.focus_areas || res.focusAreas || res.data || [];
-      if (list.length > 0) {
-        focusIds.push(list[0].id);
-      }
-    }
-
-    if (focusIds.length === 0) {
-      triggerToast("Layanan fokus belum tersedia di sistem. Hubungi administrator.", "error");
+      triggerToast("Pilih minimal satu spesialisasi layanan!", "warning");
       return;
     }
 
@@ -102,9 +90,9 @@ export default function TambahTerapisPage() {
       setTimeout(() => {
         router.push("/admin/terapis");
       }, 1500);
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal menambahkan terapis:", error);
-      const errMsg = error.response?.data?.message || "Gagal mendaftarkan terapis baru. Silakan periksa kembali data inputan.";
+      const errMsg = getApiErrorMessage(error, "Gagal mendaftarkan terapis baru. Silakan periksa kembali data inputan.");
       triggerToast(errMsg, "error");
     } finally {
       setIsSubmitting(false);
@@ -114,11 +102,11 @@ export default function TambahTerapisPage() {
   // Fallback nilai untuk Live Preview
   const previewNama = formData.nama || "Nama Fisioterapis";
   const previewSIP = formData.sip || "XX.XXX.XXX.XXXXX";
-  const previewSpesialisasi = formData.spesialisasi || "Spesialisasi";
+  const previewSpesialisasi =
+    focusAreasList.filter((f) => focusIds.includes(f.id)).map((f) => `Fisioterapi ${f.name}`).join(", ") || "Spesialisasi";
   const previewPendidikan = formData.pendidikan || "Belum diisi";
   const previewTelepon = formData.telepon || "-";
   const previewEmail = formData.email || "-";
-  const previewJadwal = formData.jadwal || "-";
 
   return (
     <div className="w-full flex flex-col gap-6 pb-12 max-w-[1100px] mx-auto">
@@ -176,33 +164,9 @@ export default function TambahTerapisPage() {
 
           {/* Spesialisasi */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi Layanan</label>
-            <div className="relative">
-              <select 
-                name="spesialisasi"
-                value={formData.spesialisasi}
-                onChange={handleChange}
-                className="w-full appearance-none bg-white border border-gray-200 text-[#1b2a4e] text-[14px] font-semibold p-4 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
-              >
-                <option value="Fisioterapi Muskuloskeletal">Fisioterapi Muskuloskeletal</option>
-                <option value="Fisioterapi Olahraga">Fisioterapi Olahraga</option>
-                <option value="Fisioterapi Neuro">Fisioterapi Neuro</option>
-              </select>
-              <CaretDown size={18} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Jadwal Praktek Rutin */}
-          <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Jadwal Praktek Standar</label>
-            <input 
-              type="text" 
-              name="jadwal" 
-              value={formData.jadwal} 
-              onChange={handleChange}
-              placeholder="Contoh: Senin - Sabtu (08:00 - 16:00 WIB)"
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
-            />
+            <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi Layanan <span className="text-red-500">*</span></label>
+            <FocusAreaCheckboxes focusAreas={focusAreasList} value={focusIds} onChange={setFocusIds} isLoading={isFocusLoading} />
+            <p className="text-[12px] text-gray-400">Jadwal praktik diatur lewat menu Kelola Slot Jadwal setelah terapis disimpan.</p>
           </div>
 
           {/* Nomor Telepon */}
@@ -305,10 +269,6 @@ export default function TambahTerapisPage() {
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pendidikan</span>
                       <span className="text-[12px] font-semibold text-[#1b2a4e]">{previewPendidikan}</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <Clock size={17} className="text-[#F5B301] shrink-0" />
-                    <span className="text-[12px] font-medium text-[#1b2a4e]">{previewJadwal}</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Phone size={17} className="text-[#F5B301] shrink-0" />

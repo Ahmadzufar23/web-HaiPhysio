@@ -130,7 +130,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                 const pPhone = row.patientPhone || row.patient_phone || "-";
                 const tName = row.therapistName || row.therapist_name || "-";
                 // therapistSpecializations[0].name sebagai nama layanan
-                const sName = row.therapistSpecializations?.[0]?.name || row.serviceName || row.service_name || "Fisioterapi";
+                const sName = (row.focusArea?.name || row.therapistSpecializations?.[0]?.name) || row.serviceName || row.service_name || "Fisioterapi";
                 // bookingDate format ISO, ambil YYYY-MM-DD
                 const rawDate = row.bookingDate || row.slotDate || row.slot_date || "-";
                 const dateStr = rawDate.substring(0, 10);

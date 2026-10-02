@@ -8,50 +8,67 @@ import {
   Barbell, CalendarBlank, CheckSquare, CheckCircle, NotePencil, Brain, Bandaids 
 } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
+import { getApiErrorMessage } from "@/app/utils/api";
+import type { AdminBooking, AdminSlot, AdminTherapist } from "@/types/api.types";
 
 function RescheduleContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const bookingId = searchParams.get("id") || "";
 
-  const [booking, setBooking] = useState<any>(null);
-  const [therapists, setTherapists] = useState<any[]>([]);
+  const [booking, setBooking] = useState<AdminBooking | null>(null);
+  const [therapists, setTherapists] = useState<AdminTherapist[]>([]);
   const [selectedTherapistId, setSelectedTherapistId] = useState<string>("");
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().substring(0, 10));
-  const [selectedSlotTime, setSelectedSlotTime] = useState<string>("09:00 - 10:00 WIB");
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    return new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().substring(0, 10);
+  });
+  // Slot ASLI dari backend untuk terapis + tanggal terpilih (bukan daftar jam statis)
+  // `key` = kombinasi terapis|tanggal yang datanya sudah dimuat → status loading diturunkan
+  // dari sini (tanpa setState sinkron di dalam effect)
+  const [loadedSlots, setLoadedSlots] = useState<{ key: string; slots: AdminSlot[] }>({ key: "", slots: [] });
+  const [selectedSlotId, setSelectedSlotId] = useState<string>("");
   const [reason, setReason] = useState("");
   const [showToast, setShowToast] = useState(false);
-  const [sendWA, setSendWA] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // 1. Load Data Booking Pasien & Terapis dari Backend API
+  // 1. Load booking (WAJIB sesuai ?id=) & terapis yang menangani layanan booking tsb
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        if (!bookingId) {
+          setBooking(null);
+          return;
+        }
+
         const [bookingsRes, therapistsRes] = await Promise.all([
           adminService.getBookings(),
           adminService.getTherapists(),
         ]);
 
-        const allBookings = bookingsRes.data?.bookings || bookingsRes.bookings || [];
-        const targetBooking = bookingId 
-          ? allBookings.find((b: any) => String(b.id) === String(bookingId))
-          : allBookings[0];
+        const allBookings = bookingsRes.data?.bookings || [];
+        // Tidak ada fallback ke booking lain: kalau ID tidak cocok, halaman menolak.
+        const targetBooking = allBookings.find((b) => String(b.id) === String(bookingId)) || null;
+        setBooking(targetBooking);
+        if (!targetBooking) return;
 
-        setBooking(targetBooking || null);
-
-        const listTherapists = therapistsRes.data?.therapists || therapistsRes.therapists || [];
+        // Hanya terapis aktif yang punya spesialisasi sesuai layanan booking (BE juga memvalidasi ini)
+        const focusId = targetBooking.focusArea?.id;
+        const listTherapists = (therapistsRes.data?.therapists || []).filter(
+          (t) => t.status === "aktif" && (!focusId || (t.specializations || []).some((s) => s.id === focusId))
+        );
         setTherapists(listTherapists);
 
-        if (targetBooking?.therapistId || targetBooking?.therapist_id) {
-          setSelectedTherapistId(targetBooking.therapistId || targetBooking.therapist_id);
+        if (listTherapists.some((t) => t.id === targetBooking.therapistId)) {
+          setSelectedTherapistId(targetBooking.therapistId);
         } else if (listTherapists.length > 0) {
           setSelectedTherapistId(listTherapists[0].id);
         }
       } catch (error) {
         console.error("Gagal memuat data booking:", error);
+        setBooking(null);
       } finally {
         setIsLoading(false);
       }
@@ -60,61 +77,70 @@ function RescheduleContent() {
     fetchData();
   }, [bookingId]);
 
+  // 2. Load slot asli dari backend setiap terapis / tanggal berubah
+  const slotsKey = selectedTherapistId && selectedDate ? `${selectedTherapistId}|${selectedDate}` : "";
+  useEffect(() => {
+    if (!slotsKey) return;
+    let cancelled = false;
+    adminService
+      .getSlots({ date_from: selectedDate, date_to: selectedDate, therapist_id: selectedTherapistId })
+      .then((res) => {
+        if (!cancelled) setLoadedSlots({ key: slotsKey, slots: res.data.slots });
+      })
+      .catch((error) => {
+        console.error("Gagal memuat slot:", error);
+        if (!cancelled) setLoadedSlots({ key: slotsKey, slots: [] });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [slotsKey, selectedTherapistId, selectedDate]);
+
+  const isSlotsLoading = slotsKey !== "" && loadedSlots.key !== slotsKey;
+  const daySlots = isSlotsLoading ? [] : loadedSlots.slots;
+
+  // Ganti terapis / tanggal → pilihan slot lama tidak berlaku lagi
+  const changeTherapist = (id: string) => {
+    setSelectedTherapistId(id);
+    setSelectedSlotId("");
+  };
+  const changeDate = (date: string) => {
+    setSelectedDate(date);
+    setSelectedSlotId("");
+  };
+
+  // Slot bisa dipilih hanya kalau aktif, masih ada kuota, bukan slot booking saat ini
+  const getSlotState = (slot: AdminSlot): "Tersedia" | "Penuh" | "Tutup" | "Jadwal Saat Ini" => {
+    if (slot.status !== "aktif") return "Tutup";
+    if ((slot.remaining ?? 0) <= 0) return "Penuh";
+    const sameAsCurrent =
+      String(slot.slotDate).substring(0, 10) === String(booking?.bookingDate).substring(0, 10) &&
+      String(slot.startTime).substring(0, 5) === String(booking?.bookingTime).substring(0, 5) &&
+      slot.therapistId === booking?.therapistId;
+    return sameAsCurrent ? "Jadwal Saat Ini" : "Tersedia";
+  };
+
   // Handle Simpan Reschedule ke Backend
   const handleSave = async () => {
+    if (!booking?.id) {
+      alert("Data booking tidak ditemukan.");
+      return;
+    }
     if (!reason.trim()) {
       alert("Alasan perubahan jadwal wajib diisi!");
       return;
     }
-    if (!selectedTherapistId) {
-      alert("Fisioterapis pengganti wajib dipilih!");
+    if (!selectedSlotId) {
+      alert("Pilih slot jadwal pengganti yang tersedia terlebih dahulu!");
       return;
     }
 
     setIsSaving(true);
     try {
-      if (booking?.id) {
-        try {
-          // 1. Ekstrak startTime dan endTime dari format "09:00 - 10:00 WIB"
-          const startTime = selectedSlotTime.split(" - ")[0];
-          const endTime = selectedSlotTime.split(" - ")[1]?.split(" ")[0] || "10:00";
-
-          // 2. Cari apakah slot tersebut sudah ada di backend
-          const slotsRes = await adminService.getSlots({ 
-            date_from: selectedDate, 
-            date_to: selectedDate, 
-            therapist_id: selectedTherapistId 
-          });
-          
-          const slotsList = slotsRes.data?.slots || slotsRes.slots || [];
-          let targetSlot = slotsList.find((s: any) => {
-            const sStart = (s.startTime || s.start_time || "").substring(0, 5);
-            return sStart === startTime;
-          });
-
-          // 3. Jika belum ada, buat slot baru
-          if (!targetSlot) {
-            const createRes = await adminService.createSlot({
-              therapistId: selectedTherapistId,
-              slotDate: selectedDate,
-              startTime: startTime,
-              endTime: endTime,
-              capacity: 1
-            });
-            targetSlot = createRes.data?.slot || createRes.slot || createRes.data;
-          }
-
-          // 4. Hit API reschedule dengan valid UUID slot
-          const slotId = targetSlot?.id;
-          if (!slotId) throw new Error("Gagal mendapatkan ID slot baru");
-
-          await adminService.rescheduleBooking(booking.id, slotId, reason);
-        } catch (apiError) {
-          console.error("Gagal reschedule:", apiError);
-          // Fallback update status jika reschedule API gagal
-          await adminService.updateBookingStatus(booking.id, "terkonfirmasi");
-        }
-      }
+      // Admin boleh pakai PATCH /api/bookings/:id/reschedule (reschedule_reason wajib untuk admin).
+      // Slot TIDAK dibuat otomatis — kalau jam yang diinginkan belum ada, admin membuatnya
+      // dulu lewat menu Kelola Slot Jadwal.
+      await adminService.rescheduleBooking(booking.id, selectedSlotId, reason.trim());
 
       setShowToast(true);
       setTimeout(() => {
@@ -122,8 +148,8 @@ function RescheduleContent() {
         router.push("/admin/booking");
       }, 1500);
     } catch (error) {
-      console.error("Gagal memproses UI reschedule:", error);
-      alert("Gagal memproses reschedule jadwal pasien.");
+      console.error("Gagal reschedule:", error);
+      alert(getApiErrorMessage(error, "Gagal memproses reschedule jadwal pasien."));
     } finally {
       setIsSaving(false);
     }
@@ -135,17 +161,6 @@ function RescheduleContent() {
     return <Bandaids size={14} weight="bold" />;
   };
 
-  // Slot jam operasional klinik
-  const availableTimeSlots = [
-    { time: "08:00 - 09:00 WIB", status: "Tersedia" },
-    { time: "09:00 - 10:00 WIB", status: "Tersedia" },
-    { time: "10:00 - 11:00 WIB", status: "Tersedia" },
-    { time: "11:00 - 12:00 WIB", status: "Penuh" },
-    { time: "13:00 - 14:00 WIB", status: "Tersedia" },
-    { time: "14:00 - 15:00 WIB", status: "Tersedia" },
-    { time: "15:00 - 16:00 WIB", status: "Tersedia" },
-  ];
-
   if (isLoading) {
     return (
       <div className="w-full py-24 text-center text-[#1b2a4e] font-bold animate-pulse">
@@ -154,10 +169,24 @@ function RescheduleContent() {
     );
   }
 
-  const patientName = booking?.patientName || booking?.patient_name || "Pasien HaiPhysio";
-  const refCode = booking?.bookingReferenceCode || booking?.reference_code || `#HP-${String(booking?.id || "9831").substring(0, 6)}`;
-  const currentSchedule = `${booking?.slotDate || booking?.slot_date || "19 Juli 2026"}, ${(booking?.startTime || booking?.start_time || "10:00").substring(0, 5)} WIB`;
-  const serviceName = booking?.serviceName || booking?.service_name || "Fisioterapi";
+  // Booking wajib ada & masih Terkonfirmasi — tidak ada data pengganti/dummy
+  if (!booking || booking.bookingStatus !== "Terkonfirmasi") {
+    return (
+      <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
+        <span className="text-[#1b2a4e] font-bold text-[18px]">
+          {!booking ? "Data booking tidak ditemukan." : `Booking ini berstatus ${booking.bookingStatus} dan tidak bisa di-reschedule.`}
+        </span>
+        <Link href="/admin/booking" className="px-6 py-3 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101]">
+          Kembali ke List Booking
+        </Link>
+      </div>
+    );
+  }
+
+  const patientName = booking.patientName || "-";
+  const refCode = booking.referenceCode || "-";
+  const currentSchedule = `${new Date(booking.bookingDate).toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })}, ${String(booking.bookingTime).substring(0, 5)} WIB`;
+  const serviceName = booking.focusArea?.name ? `Fisioterapi ${booking.focusArea.name}` : "-";
   const patientInitials = patientName.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase();
 
   return (
@@ -225,7 +254,7 @@ function RescheduleContent() {
             <input 
               type="date" 
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) => changeDate(e.target.value)}
               className="w-full p-3.5 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e] font-semibold"
             />
           </div>
@@ -245,18 +274,18 @@ function RescheduleContent() {
               return (
                 <div 
                   key={t.id}
-                  onClick={() => setSelectedTherapistId(t.id)}
+                  onClick={() => changeTherapist(t.id)}
                   className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
                     isSelected ? "border-[#1b2a4e] bg-blue-50/40 shadow-sm" : "border-gray-200 hover:border-gray-300 bg-white"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-[#1b2a4e] text-white flex items-center justify-center font-bold text-[13px] shrink-0">
-                      {(t.name || "T").substring(0, 2).toUpperCase()}
+                      {(t.fullName || "T").substring(0, 2).toUpperCase()}
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-[13px] font-bold text-[#1b2a4e]">{t.name || t.fullName}</span>
-                      <span className="text-[11px] text-gray-500">{t.specialization || "Fisioterapis"}</span>
+                      <span className="text-[13px] font-bold text-[#1b2a4e]">{t.fullName}</span>
+                      <span className="text-[11px] text-gray-500">{(t.specializations || []).map((s) => s.name).join(", ") || "Fisioterapis"}</span>
                     </div>
                   </div>
                   {isSelected && <CheckSquare size={22} weight="fill" className="text-[#1b2a4e]" />}
@@ -267,31 +296,44 @@ function RescheduleContent() {
 
           {/* Slot Waktu */}
           <div className="flex flex-col gap-2 mt-2">
-            <span className="text-[13px] font-bold text-[#1b2a4e]">Pilihan Slot Jam Tersedia</span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
-              {availableTimeSlots.map((slot, i) => {
-                const isSelected = selectedSlotTime === slot.time;
-                const isFull = slot.status === "Penuh";
+            <span className="text-[13px] font-bold text-[#1b2a4e]">Pilihan Slot Jam (dari jadwal terapis)</span>
+            {therapists.length === 0 ? (
+              <p className="text-[13px] text-gray-500">Tidak ada terapis aktif untuk layanan ini.</p>
+            ) : isSlotsLoading ? (
+              <p className="text-[13px] text-gray-500 animate-pulse">Memuat slot...</p>
+            ) : daySlots.length === 0 ? (
+              <p className="text-[13px] text-gray-500">
+                Belum ada slot untuk terapis ini di tanggal tersebut. Buat slot terlebih dahulu di menu{" "}
+                <Link href="/admin/jadwal" className="font-bold text-[#D69A00] hover:underline">Kelola Slot Jadwal</Link>.
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+                {daySlots.map((slot) => {
+                  const state = getSlotState(slot);
+                  const isSelected = selectedSlotId === slot.id;
+                  const isDisabled = state !== "Tersedia";
 
-                return (
-                  <button
-                    key={i}
-                    type="button"
-                    disabled={isFull}
-                    onClick={() => setSelectedSlotTime(slot.time)}
-                    className={`py-3 px-2 rounded-xl text-[12px] font-bold border transition-all text-center ${
-                      isSelected
-                        ? "bg-[#1b2a4e] text-white border-[#1b2a4e] shadow-sm"
-                        : isFull
-                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                        : "bg-white border-gray-200 text-[#1b2a4e] hover:border-[#F5B301]"
-                    }`}
-                  >
-                    {slot.time}
-                  </button>
-                );
-              })}
-            </div>
+                  return (
+                    <button
+                      key={slot.id}
+                      type="button"
+                      disabled={isDisabled}
+                      onClick={() => setSelectedSlotId(slot.id)}
+                      className={`py-3 px-2 rounded-xl text-[12px] font-bold border transition-all text-center flex flex-col items-center gap-0.5 ${
+                        isSelected
+                          ? "bg-[#1b2a4e] text-white border-[#1b2a4e] shadow-sm"
+                          : isDisabled
+                          ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                          : "bg-white border-gray-200 text-[#1b2a4e] hover:border-[#F5B301]"
+                      }`}
+                    >
+                      <span>{String(slot.startTime).substring(0, 5)} - {String(slot.endTime).substring(0, 5)} WIB</span>
+                      <span className="text-[10px] font-semibold opacity-80">{state}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
@@ -311,16 +353,6 @@ function RescheduleContent() {
             placeholder="Contoh: Pasien meminta pengunduran jadwal karena urusan pekerjaan mendadak."
             className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] resize-none text-[#1b2a4e]"
           ></textarea>
-          
-          <label className="flex items-center gap-3 cursor-pointer mt-1 w-max">
-            <input 
-              type="checkbox" 
-              checked={sendWA} 
-              onChange={() => setSendWA(!sendWA)} 
-              className="w-4 h-4 rounded text-[#F5B301] focus:ring-[#F5B301]" 
-            />
-            <span className="text-[13px] text-gray-500 font-medium">Kirim konfirmasi notifikasi WhatsApp ke nomor pasien mengenai perubahan jadwal ini.</span>
-          </label>
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full">
@@ -333,7 +365,7 @@ function RescheduleContent() {
           </Link>
           <button 
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isSaving || !selectedSlotId || !reason.trim()}
             className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101] disabled:opacity-50 transition-colors shadow-sm"
           >
             {isSaving ? "Memproses..." : "Simpan Perubahan"}

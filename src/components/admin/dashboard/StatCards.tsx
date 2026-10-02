@@ -21,47 +21,18 @@ export default function StatCards() {
   const fetchDashboardStats = async (showRefreshing = false) => {
     if (showRefreshing) setIsRefreshing(true);
     try {
-      const res = await adminService.getBookings();
-      const bookings = res.data?.bookings || res.bookings || [];
+      // GET /api/admin/bookings/stats — dihitung di BE pakai kalender WIB,
+      // totalToday/totalThisWeek tidak menghitung booking Dibatalkan.
+      const res = await adminService.getBookingStats();
+      const s = res.data?.stats;
 
-      const now = new Date();
-      const formatLocal = (d: Date) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
-      };
-
-      const todayStr = formatLocal(now);
-
-      // Hitung range minggu ini (Senin–Minggu)
-      const dayOfWeek = now.getDay();
-      const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
-      const monday = new Date(now);
-      monday.setDate(diffToMonday);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      const mondayStr = formatLocal(monday);
-      const sundayStr = formatLocal(sunday);
-
-      let today = 0, week = 0, confirmed = 0, done = 0, cancelled = 0;
-
-      bookings.forEach((b: any) => {
-        // Backend mengembalikan bookingDate dalam format ISO: "2026-08-31T00:00:00.000Z"
-        // Ambil hanya bagian YYYY-MM-DD-nya
-        const rawDate = b.bookingDate || b.slotDate || b.slot_date || "";
-        const slotDate = rawDate.substring(0, 10); // "2026-08-31"
-        // Backend mengembalikan bookingStatus dengan kapital: "Terkonfirmasi"
-        const status = (b.bookingStatus || b.status || "").toLowerCase();
-
-        if (slotDate === todayStr) today++;
-        if (slotDate >= mondayStr && slotDate <= sundayStr) week++;
-        if (status === "terkonfirmasi") confirmed++;
-        else if (status === "selesai") done++;
-        else if (status === "dibatalkan") cancelled++;
+      setStats({
+        todayCount: s?.totalToday ?? 0,
+        weekCount: s?.totalThisWeek ?? 0,
+        confirmedCount: s?.byStatus?.Terkonfirmasi ?? 0,
+        doneCount: s?.byStatus?.Selesai ?? 0,
+        cancelledCount: s?.byStatus?.Dibatalkan ?? 0,
       });
-
-      setStats({ todayCount: today, weekCount: week, confirmedCount: confirmed, doneCount: done, cancelledCount: cancelled });
       setLastUpdated(new Date());
     } catch (error) {
       console.error("Gagal memuat statistik dashboard admin:", error);

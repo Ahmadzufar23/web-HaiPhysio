@@ -5,7 +5,7 @@ import { useState } from "react";
 import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
-import { authApi } from "../../app/utils/api";
+import { authApi, getApiErrorMessage, saveSessionToken } from "../../app/utils/api";
 
 type LoginErrors = {
   email?: string;
@@ -60,11 +60,7 @@ export default function LoginForm() {
       });
 
       // Simpan session token ke localStorage
-      const token = res.data?.session?.token || res.data?.token || res.data?.session_token || res.data?.accessToken || res.data?.data?.token || res.data?.data?.session?.token;
-      if (token) {
-        localStorage.setItem("session_token", token);
-        localStorage.setItem("token", token);
-      }
+      saveSessionToken(res.data?.data?.token);
 
       // Kalau sukses dapet cookie/token dari backend, langsung lempar ke halaman profil
       window.location.href = "/";
@@ -79,10 +75,10 @@ export default function LoginForm() {
         setErrors({ password: "Email atau kata sandi salah. Silakan cek kembali." });
       } else if (status === 403) {
         setErrors({ email: "Akun ini terdaftar sebagai admin. Silakan masuk lewat halaman admin." });
-      } else if (status === 429) {
-        setErrors({ email: "Terlalu banyak percobaan. Tunggu sebentar lalu coba lagi." });
+      } else if (status === 400 || status === 429) {
+        setErrors({ email: getApiErrorMessage(error) });
       } else {
-        setErrors({ password: "Terjadi kesalahan sistem. Coba lagi nanti!" });
+        setErrors({ password: getApiErrorMessage(error, "Terjadi kesalahan sistem. Coba lagi nanti!") });
       }
     } finally {
       // Matiin loading kalau proses udah kelar (baik sukses maupun gagal)

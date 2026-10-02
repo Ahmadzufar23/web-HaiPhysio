@@ -18,7 +18,7 @@ export default function ScheduleTable() {
       const todayStr = `${y}-${m}-${d}`;
 
       const res = await adminService.getBookings();
-      const allBookings = res.data?.bookings || res.bookings || [];
+      const allBookings = res.data.bookings || [];
 
       const filteredToday = allBookings.filter((b: any) => {
         // bookingDate format ISO: "2026-08-31T00:00:00.000Z", ambil substring YYYY-MM-DD

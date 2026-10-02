@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Copy, FileText, CheckCircle } from "@phosphor-icons/react";
 import { bookingService } from "@/services/bookingService";
+import { CLINIC_LOCATION } from "@/constants/data";
 
 export default function SuksesUbahJadwalPage() {
   const params = useParams();
@@ -62,7 +63,7 @@ export default function SuksesUbahJadwalPage() {
     );
   }
 
-  const namaLayanan = booking.therapistSpecializations?.[0]?.name || "Fisioterapi Umum";
+  const namaLayanan = (booking.focusArea?.name || booking.therapistSpecializations?.[0]?.name) || "Fisioterapi Umum";
 
   return (
     <div className="w-full min-h-screen pt-[120px] pb-24 px-5 bg-[#FAFAFA] flex justify-center">
@@ -127,7 +128,7 @@ export default function SuksesUbahJadwalPage() {
             </div>
             <div className="flex flex-col sm:flex-row py-2">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Lokasi Klinik</span>
-              <span className="font-bold text-[#1b2a4e]">Hai Physio Pusat (Ruko Kebon Jeruk No. 12, Jakarta Barat)</span>
+              <span className="font-bold text-[#1b2a4e]">{CLINIC_LOCATION}</span>
             </div>
           </div>
         </div>

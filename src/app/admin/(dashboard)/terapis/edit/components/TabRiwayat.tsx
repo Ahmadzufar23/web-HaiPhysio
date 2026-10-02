@@ -25,7 +25,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
       setIsLoading(true);
       try {
         const res = await adminService.getBookings();
-        const allBookings = res.data?.bookings || res.bookings || [];
+        const allBookings = res.data.bookings || [];
 
         // Filter sesi milik terapis ini secara akurat
         const filtered = allBookings.filter((b: any) => {
@@ -66,7 +66,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
     const matchSearch = pName.includes(search.toLowerCase()) || refCode.includes(search.toLowerCase());
     
     // Cari nama layanan dari therapistSpecializations atau serviceName
-    const rawServiceName = s.therapistSpecializations?.[0]?.name || s.serviceName || s.service_name || s.specialization || "";
+    const rawServiceName = (s.focusArea?.name || s.therapistSpecializations?.[0]?.name) || s.serviceName || s.service_name || s.specialization || "";
     const sName = rawServiceName.toLowerCase();
     const matchService = serviceFilter ? sName.includes(serviceFilter.toLowerCase()) : true;
 
@@ -124,7 +124,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
 
     const headers = ["No", "Kode Reservasi", "Tanggal", "Waktu", "Nama Pasien", "Layanan", "Status"];
     const rows = filteredData.map((s, i) => {
-      const sName = s.therapistSpecializations?.[0]?.name ? `Fisioterapi ${s.therapistSpecializations[0].name}` : s.serviceName || s.service_name || "Fisioterapi";
+      const sName = (s.focusArea?.name || s.therapistSpecializations?.[0]?.name) ? `Fisioterapi ${s.focusArea?.name || s.therapistSpecializations[0].name}` : s.serviceName || s.service_name || "Fisioterapi";
       const dateStr = s.bookingDate || s.slotDate || s.slot_date || "-";
       const timeStr = s.bookingTime ? `${s.bookingTime.substring(0, 5)} WIB` : s.startTime ? `${s.startTime.substring(0, 5)} - ${(s.endTime || "").substring(0, 5)} WIB` : "-";
       const refCode = s.referenceCode || s.bookingReferenceCode || s.code || `#HP-${String(s.id).substring(0, 6)}`;
@@ -242,7 +242,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
               <tbody>
                 {paginatedData.map((row: any) => {
                   const pName = row.patientName || row.patient_name || "Pasien";
-                  const rawServiceName = row.therapistSpecializations?.[0]?.name ? `Fisioterapi ${row.therapistSpecializations[0].name}` : row.serviceName || row.service_name || row.specialization || "Fisioterapi";
+                  const rawServiceName = (row.focusArea?.name || row.therapistSpecializations?.[0]?.name) ? `Fisioterapi ${row.focusArea?.name || row.therapistSpecializations[0].name}` : row.serviceName || row.service_name || row.specialization || "Fisioterapi";
                   const dateStr = (row.bookingDate || row.slotDate || row.slot_date || "-").substring(0, 10);
                   const timeStr = row.bookingTime ? `${row.bookingTime.substring(0, 5)} WIB` : row.startTime ? `${row.startTime.substring(0, 5)} - ${(row.endTime || "").substring(0, 5)} WIB` : "-";
                   const refCode = row.referenceCode || row.bookingReferenceCode || row.code || `#HP-${String(row.id).substring(0, 6)}`;

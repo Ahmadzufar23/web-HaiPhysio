@@ -9,6 +9,7 @@ interface GridKalenderProps {
   slots: any[];       
   therapists: any[];
   weekDays: { name: string; date: string; fullDate: string }[];
+  title?: string;
 }
 
 export default function GridKalender({ 
@@ -17,7 +18,8 @@ export default function GridKalender({
   onSelectSlot,
   slots,
   therapists,
-  weekDays
+  weekDays,
+  title = "Pilih Jadwal"
 }: GridKalenderProps) {
 
   // Fungsi penentu warna kotak berdasarkan statusnya
@@ -26,6 +28,7 @@ export default function GridKalender({
   if (status === "tersedia") return "bg-[#BFDBFE] text-[#1e3a8a] border-[#93C5FD] cursor-pointer hover:bg-[#93C5FD] transition-colors"; 
   if (status === "penuh") return "bg-[#F3F4F6] text-gray-400 border-gray-200 cursor-not-allowed";  
   if (status === "tidak_praktik") return "bg-[#FEF2F2] text-[#EF4444] border-red-200 cursor-not-allowed";  
+  if (status === "lewat") return "bg-[#F3F4F6] text-gray-400 border-gray-200 cursor-not-allowed line-through";
   return "bg-gray-50 border-gray-100";
 };
 
@@ -44,7 +47,7 @@ export default function GridKalender({
   return (
     <div className="w-full mt-6">
       {/* Header minggu (Bisa dibikin dinamis nanti di parent) */}
-      <h3 className="text-[18px] font-bold text-[#1b2a4e] mb-4">Pilih Jadwal Pengganti</h3>  
+      <h3 className="text-[18px] font-bold text-[#1b2a4e] mb-4">{title}</h3>  
 
       {/* Grid scroll horizontal */}
       <div className="w-full overflow-x-auto pb-4 hide-scrollbar">
@@ -123,7 +126,7 @@ export default function GridKalender({
                             {therapist?.fullName || therapist?.name || "Terapis"}
                           </span>   
                           <span className="text-[9px] uppercase font-bold px-2 py-0.5 rounded-[4px] bg-white/50 mix-blend-multiply tracking-wide">
-                            {slot.status}
+                            {String(slot.status).replace(/_/g, " ")}
                           </span>        
                         </div>
                       );

@@ -5,6 +5,19 @@ import { useRouter } from "next/navigation";
 import { FileText, UserCircle, Copy, WarningCircle, CheckCircle } from "@phosphor-icons/react";
 import Stepper from "./Stepper";
 import { bookingService } from "@/services/bookingService";
+import { CLINIC_LOCATION } from "@/constants/data";
+import { getApiErrorMessage } from "@/app/utils/api";
+import type { CreatedBooking } from "@/types/api.types";
+
+// Body POST /api/bookings (createBookingSchema di BE — strict, field lain ditolak)
+type CreateBookingPayload = {
+    slot_id: string;
+    focus_id: string;
+    complaint_notes?: string;
+    patient_name?: string;
+    patient_phone?: string;
+    patient_email?: string;
+};
 
 interface Step4Props {
     onBack: () => void;
@@ -15,7 +28,7 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
-    const [createdBooking, setCreatedBooking] = useState<any>(null);
+    const [createdBooking, setCreatedBooking] = useState<CreatedBooking | null>(null);
     const [copied, setCopied] = useState(false);
     const router = useRouter();
 
@@ -47,8 +60,10 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
         try {
             // Siapkan payload sesuai kontrak Zod Backend di API Reference
-            const payload: any = {
+            // focus_id WAJIB (uuid) — tanpa ini BE balas 400 "focus_id wajib diisi!"
+            const payload: CreateBookingPayload = {
                 slot_id: bookingData.slotId || bookingData.scheduleId,
+                focus_id: bookingData.serviceId,
             };
 
             if (bookingData.patientData?.complaint?.trim()) {
@@ -66,7 +81,11 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
             // Panggil API Booking
             const res = await bookingService.createBooking(payload);
-            const bookingResult = res.data?.booking || res.booking || res.data;
+            const bookingResult = res.data?.booking;
+            // Sukses hanya kalau BE benar-benar mengembalikan booking dengan kode reservasi
+            if (!bookingResult?.bookingReferenceCode) {
+                throw new Error("Respons server tidak berisi data booking. Cek Riwayat Booking sebelum mencoba lagi.");
+            }
 
             setCreatedBooking(bookingResult);
             setIsConfirmed(true);
@@ -89,7 +108,8 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
     // --- TAMPILAN 2: HALAMAN SUKSES SETELAH DISUBMIT KE BACKEND ---
     if (isConfirmed) {
-        const referenceCode = createdBooking?.bookingReferenceCode || createdBooking?.referenceCode || "RESV-SUCCESS";
+        // Kode reservasi asli dari BE (tidak ada kode pengganti/dummy)
+        const referenceCode: string = createdBooking?.bookingReferenceCode || "";
 
         return (
             <div className="w-full flex flex-col items-center">
@@ -155,7 +175,7 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
                             </div>
                             <div className="flex border border-gray-100 rounded-lg p-3">
                                 <span className="w-[150px] font-bold text-[#1b2a4e]">Lokasi Klinik</span>
-                                <span className="text-gray-600 flex-1">Hai Physio Pusat (Ruko Kebon Jeruk No. 12, Jakarta Barat)</span>
+                                <span className="text-gray-600 flex-1">{CLINIC_LOCATION}</span>
                             </div>
                         </div>
                     </div>
@@ -222,7 +242,7 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
                         <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Lokasi Klinik</span>
-                        <span className="text-gray-600 text-[14px]">Hai Physio Pusat (Ruko Kebon Jeruk No. 12, Jakarta Barat)</span>
+                        <span className="text-gray-600 text-[14px]">{CLINIC_LOCATION}</span>
                     </div>
                 </div>
             </div>

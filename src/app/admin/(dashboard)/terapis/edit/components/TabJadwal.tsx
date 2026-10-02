@@ -60,7 +60,7 @@ export default function TabJadwal({ isAddingException, setIsAddingException, the
     try {
       // 2. Cek apakah ada booking aktif pasien di tanggal/rentang tersebut
       const bookingsRes = await adminService.getBookings();
-      const allBookings = bookingsRes.data?.bookings || bookingsRes.bookings || [];
+      const allBookings = bookingsRes.data.bookings || [];
 
       // Cari booking terkonfirmasi untuk terapis ini di rentang tanggal cuti
       const clashingBookings = allBookings.filter((b: any) => {

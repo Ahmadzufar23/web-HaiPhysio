@@ -1,4 +1,4 @@
-import { authApi } from "@/app/utils/api";
+import { authApi, clearSessionToken } from "@/app/utils/api";
 
 // Bikin satu object yang isinya fungsi-fungsi buat nembak API Profil
 export const profileService = {
@@ -27,19 +27,9 @@ export const profileService = {
   logout: async () => {
     try {
       const response = await authApi.post("/logout");
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("session_token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("auth_token");
-      }
       return response.data;
-    } catch (error) {
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("session_token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("auth_token");
-      }
-      throw error;
+    } finally {
+      clearSessionToken();
     }
   }
 };

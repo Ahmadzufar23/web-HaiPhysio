@@ -7,6 +7,7 @@ import ScheduleStats from "@/components/admin/jadwal/ScheduleStats";
 import ScheduleFilter from "@/components/admin/jadwal/ScheduleFilter";
 import ScheduleGrid from "@/components/admin/jadwal/ScheduleGrid";
 import { adminService } from "@/services/adminService";
+import { getApiErrorMessage } from "@/app/utils/api";
 
 // Jam standar klinik — tampil sebagai checklist di modal generate
 const ALL_HOURS = [
@@ -62,7 +63,7 @@ export default function AdminJadwalPage() {
     const fetchTherapists = async () => {
       try {
         const res = await adminService.getTherapists();
-        const list = res.data?.therapists || res.therapists || [];
+        const list = res.data.therapists || [];
         setTherapists(list);
       } catch (error) {
         console.error("Gagal memuat terapis:", error);
@@ -80,7 +81,7 @@ export default function AdminJadwalPage() {
         date_to: filterDateTo,
         therapist_id: selectedTherapistId || undefined,
       });
-      const list = res.data?.slots || res.slots || [];
+      const list = res.data.slots || [];
       setSlots(list);
     } catch (error) {
       console.error("Gagal memuat slot jadwal:", error);
@@ -143,9 +144,16 @@ export default function AdminJadwalPage() {
     let skippedCount = 0;
 
     try {
-      const therapistsToGenerate = genTherapistId
+      // Hanya terapis aktif (BE menolak slot untuk terapis nonaktif)
+      const therapistsToGenerate = (genTherapistId
         ? therapists.filter((t) => t.id === genTherapistId)
-        : therapists;
+        : therapists
+      ).filter((t) => t.status === "aktif");
+
+      if (therapistsToGenerate.length === 0) {
+        showNotification("Tidak ada terapis aktif yang dipilih.", "warning");
+        return;
+      }
 
       for (let cur = new Date(genStartDate); cur <= new Date(genEndDate); cur.setDate(cur.getDate() + 1)) {
         const dateStr = cur.toISOString().split("T")[0];
@@ -160,8 +168,14 @@ export default function AdminJadwalPage() {
                 capacity: 1,
               });
               createdCount++;
-            } catch {
-              skippedCount++; // slot sudah ada, lewati
+            } catch (err: any) {
+              // HANYA bentrok jadwal (409 SLOT_DATE_TIME_CONFLICT) yang boleh dilewati.
+              // Error lain (validasi, sesi habis, server) menghentikan proses & ditampilkan.
+              if (err?.response?.status === 409) {
+                skippedCount++;
+                continue;
+              }
+              throw err;
             }
           }
         }
@@ -176,7 +190,11 @@ export default function AdminJadwalPage() {
       loadSlots();
     } catch (error: any) {
       console.error("Gagal generate slot:", error);
-      showNotification("Gagal generate slot. Silakan coba lagi.", "error");
+      if (createdCount > 0) loadSlots();
+      showNotification(
+        `${getApiErrorMessage(error, "Gagal generate slot.")} (${createdCount} slot sempat dibuat sebelum berhenti)`,
+        "error"
+      );
     } finally {
       setIsGenerating(false);
     }
