@@ -84,7 +84,7 @@ function DetailPasienContent() {
 
   if (isLoading) {
     return (
-      <div className="w-full py-24 text-center text-[#1b2a4e] font-bold animate-pulse">
+      <div className="w-full py-24 text-center text-brand-900 font-bold animate-pulse">
         Memuat detail riwayat pasien...
       </div>
     );
@@ -93,8 +93,8 @@ function DetailPasienContent() {
   if (!patient) {
     return (
       <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
-        <span className="text-[#1b2a4e] font-bold text-[18px]">Data pasien tidak ditemukan.</span>
-        <Link href="/admin/pasien" className="px-6 py-3 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101]">
+        <span className="text-brand-900 font-bold text-[18px]">Data pasien tidak ditemukan.</span>
+        <Link href="/admin/pasien" className="px-6 py-3 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700">
           Kembali ke Kelola Data Pasien
         </Link>
       </div>
@@ -116,20 +116,20 @@ function DetailPasienContent() {
 
       {/* --- BREADCRUMB --- */}
       <div className="flex items-center gap-2 text-[13px] text-gray-500 font-medium">
-        <Link href="/admin/pasien" className="hover:text-[#F5B301] transition-colors">Kelola Data Pasien</Link>
+        <Link href="/admin/pasien" className="hover:text-gold-700 transition-colors">Kelola Data Pasien</Link>
         <span>›</span>
-        <span className="text-[#1b2a4e] font-bold">Lihat Detail</span>
+        <span className="text-brand-900 font-bold">Lihat Detail</span>
       </div>
 
       {/* --- HEADER PROFIL --- */}
       <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-[#1b2a4e] text-white font-bold flex items-center justify-center text-[26px] shrink-0 border-4 border-white shadow-sm">
+          <div className="w-20 h-20 rounded-full bg-brand-900 text-white font-bold flex items-center justify-center text-[26px] shrink-0 border-4 border-white shadow-sm">
             {initials}
           </div>
           <div className="flex flex-col gap-1">
-            <h2 className="text-[28px] font-bold text-[#1b2a4e] leading-tight">{patientName}</h2>
-            <p className="text-[14px] text-gray-500">ID Pasien: <span className="font-bold text-[#1b2a4e]">{patient.patientCode}</span></p>
+            <h2 className="text-[28px] font-bold text-brand-900 leading-tight">{patientName}</h2>
+            <p className="text-[14px] text-gray-500">ID Pasien: <span className="font-bold text-brand-900">{patient.patientCode}</span></p>
           </div>
         </div>
 
@@ -144,36 +144,36 @@ function DetailPasienContent() {
 
         {/* Kartu 1: Data Pasien */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div className="flex items-center gap-2 font-bold text-[#1b2a4e]">
+          <div className="flex items-center gap-2 font-bold text-brand-900">
             <User size={20} weight="bold" />
             <span className="text-[16px]">Data Kontak Pasien</span>
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">No Telepon</span>
-              <span className="text-[14px] font-bold text-[#1b2a4e]">{patient.phone || "-"}</span>
+              <span className="text-[14px] font-bold text-brand-900">{patient.phone || "-"}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Email</span>
-              <span className="text-[14px] font-bold text-[#1b2a4e] truncate">{patient.email || "-"}</span>
+              <span className="text-[14px] font-bold text-brand-900 truncate">{patient.email || "-"}</span>
             </div>
             <div className="flex flex-col gap-1">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tanggal Lahir</span>
-              <span className="text-[14px] font-bold text-[#1b2a4e]">{formatTanggal(patient.dateOfBirth)}</span>
+              <span className="text-[14px] font-bold text-brand-900">{formatTanggal(patient.dateOfBirth)}</span>
             </div>
           </div>
         </div>
 
         {/* Kartu 2: Ringkasan Terapi */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div className="flex items-center gap-2 font-bold text-[#1b2a4e]">
+          <div className="flex items-center gap-2 font-bold text-brand-900">
             <ClipboardText size={20} weight="bold" />
             <span className="text-[16px]">Ringkasan Terapi</span>
           </div>
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Layanan Terakhir</span>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40 w-max">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40 w-max">
                 {renderLayananIcon(mainService)}
                 <span className="text-[12px] font-bold">{mainService}</span>
               </div>
@@ -181,40 +181,40 @@ function DetailPasienContent() {
             <div className="flex flex-col gap-2 mt-1">
               <div className="flex justify-between items-end">
                 <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Progress Terapi</span>
-                <span className="text-[14px] font-bold text-[#1b2a4e]">{completedCount}/{activeBookings.length} Sesi Selesai</span>
+                <span className="text-[14px] font-bold text-brand-900">{completedCount}/{activeBookings.length} Sesi Selesai</span>
               </div>
               <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#F5B301] rounded-full transition-all duration-500"
+                  className="h-full bg-brand-600 rounded-full transition-all duration-500"
                   style={{ width: `${progressPercent}%` }}
                 ></div>
               </div>
             </div>
             <div className="flex flex-col gap-1 mt-1">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Riwayat Booking</span>
-              <span className="text-[14px] font-bold text-[#1b2a4e]">{patientBookings.length} Booking Tercatat</span>
+              <span className="text-[14px] font-bold text-brand-900">{patientBookings.length} Booking Tercatat</span>
             </div>
           </div>
         </div>
 
         {/* Kartu 3: Sesi Mendatang */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 font-bold text-[#1b2a4e] mb-4">
+          <div className="flex items-center gap-2 font-bold text-brand-900 mb-4">
             <CalendarBlank size={20} weight="bold" />
             <span className="text-[16px]">Sesi Mendatang</span>
           </div>
 
           {upcomingSession ? (
             <div className="flex flex-col justify-between flex-1">
-              <div className="border border-[#F5B301] bg-[#FFFBEA] rounded-xl p-4 flex gap-4 items-center">
+              <div className="border border-brand-600 bg-brand-50 rounded-xl p-4 flex gap-4 items-center">
                 <div className="bg-white border border-gray-200 rounded-lg flex flex-col items-center justify-center w-14 h-14 shrink-0 shadow-sm">
                   <span className="text-[10px] font-bold text-gray-400 uppercase">Tgl</span>
-                  <span className="text-[16px] font-bold text-[#1b2a4e] leading-none mt-0.5">
+                  <span className="text-[16px] font-bold text-brand-900 leading-none mt-0.5">
                     {String(upcomingSession.bookingDate).substring(8, 10)}
                   </span>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-[14px] font-bold text-[#1b2a4e]">{serviceLabel(upcomingSession)}</span>
+                  <span className="text-[14px] font-bold text-brand-900">{serviceLabel(upcomingSession)}</span>
                   <span className="text-[12px] text-gray-500">
                     {formatTanggal(upcomingSession.bookingDate)}, {String(upcomingSession.bookingTime).substring(0, 5)} WIB
                   </span>
@@ -226,7 +226,7 @@ function DetailPasienContent() {
 
               <Link
                 href={`/admin/booking/reschedule?id=${upcomingSession.id}`}
-                className="text-[#F5B301] font-bold text-[14px] hover:text-[#dda101] transition-colors mx-auto mt-4 flex items-center gap-1"
+                className="text-gold-700 font-bold text-[14px] hover:text-gold-800 transition-colors mx-auto mt-4 flex items-center gap-1"
               >
                 <ClockCounterClockwise size={16} weight="bold" />
                 Ubah Jadwal Pasien <CaretRight size={14} weight="bold" />
@@ -243,7 +243,7 @@ function DetailPasienContent() {
       {/* --- RIWAYAT SESI TABEL --- */}
       <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-6 mt-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-[20px] font-bold text-[#1b2a4e]">Riwayat Konsultasi & Terapi</h3>
+          <h3 className="text-[20px] font-bold text-brand-900">Riwayat Konsultasi & Terapi</h3>
           <span className="text-[13px] text-gray-500 font-medium">Total {patientBookings.length} Booking</span>
         </div>
 
@@ -272,17 +272,17 @@ function DetailPasienContent() {
                     <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50/50 bg-white transition-colors">
                       <td className="py-5 px-4">
                         <div className="flex flex-col">
-                          <span className="font-bold text-[#1b2a4e] text-[14px]">{formatTanggal(row.bookingDate)}</span>
+                          <span className="font-bold text-brand-900 text-[14px]">{formatTanggal(row.bookingDate)}</span>
                           <span className="text-[12px] text-gray-500">{timeStr}</span>
                         </div>
                       </td>
                       <td className="py-5 px-4">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
                           {renderLayananIcon(sName)}
                           <span className="text-[11px] font-bold">{sName}</span>
                         </div>
                       </td>
-                      <td className="py-5 px-4 text-[14px] font-bold text-[#1b2a4e]">{row.therapistName}</td>
+                      <td className="py-5 px-4 text-[14px] font-bold text-brand-900">{row.therapistName}</td>
                       <td className="py-5 px-4 text-[13px] font-bold text-gray-500">{row.referenceCode}</td>
                       <td className="py-5 px-4 text-right">
                         {renderStatus(row.bookingStatus)}
@@ -302,7 +302,7 @@ function DetailPasienContent() {
 
 export default function DetailPasienPage() {
   return (
-    <Suspense fallback={<div className="py-24 text-center text-[#1b2a4e] font-bold">Memuat detail pasien...</div>}>
+    <Suspense fallback={<div className="py-24 text-center text-brand-900 font-bold">Memuat detail pasien...</div>}>
       <DetailPasienContent />
     </Suspense>
   );

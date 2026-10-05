@@ -126,16 +126,16 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <h2 className="text-[28px] md:text-[32px] font-bold text-[#1b2a4e]">Janji Temu Anda Berhasil Dipesan!</h2>
+                        <h2 className="text-[28px] md:text-[32px] font-bold text-brand-900">Janji Temu Anda Berhasil Dipesan!</h2>
                         <p className="text-[#585858] text-[15px]">Silakan tunjukkan nomor reservasi Anda saat tiba di klinik.</p>
                     </div>
 
                     {/* Kotak Nomor Reservasi Nyata dari BE */}
-                    <div className="flex items-center justify-between border-2 border-dashed border-[#8b9dc3] bg-[#f4f7fe] rounded-[16px] px-8 py-4 w-full max-w-[500px]">
-                        <span className="text-[24px] md:text-[28px] font-bold text-[#1b2a4e] tracking-wider">{referenceCode}</span>
+                    <div className="flex items-center justify-between border-2 border-dashed border-brand-300 bg-[#f4f7fe] rounded-[16px] px-8 py-4 w-full max-w-[500px]">
+                        <span className="text-[24px] md:text-[28px] font-bold text-brand-900 tracking-wider">{referenceCode}</span>
                         <div
                             onClick={() => handleCopyResi(referenceCode)}
-                            className="flex flex-col items-center justify-center cursor-pointer text-gray-500 hover:text-[#1b2a4e] transition-colors"
+                            className="flex flex-col items-center justify-center cursor-pointer text-gray-500 hover:text-brand-900 transition-colors"
                         >
                             {copied ? (
                                 <>
@@ -153,28 +153,28 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
                     {/* Ringkasan Singkat Sesi */}
                     <div className="w-full border border-gray-200 rounded-[16px] p-6 text-left mt-4 bg-white">
-                        <h3 className="flex items-center gap-2 text-[18px] font-bold text-[#1b2a4e] mb-4">
-                            <FileText size={24} weight="fill" className="text-[#1b2a4e]" /> Detail Sesi Terapi
+                        <h3 className="flex items-center gap-2 text-[18px] font-bold text-brand-900 mb-4">
+                            <FileText size={24} weight="fill" className="text-brand-900" /> Detail Sesi Terapi
                         </h3>
                         <div className="flex flex-col gap-3 text-[14px]">
                             <div className="flex border border-gray-100 rounded-lg p-3">
-                                <span className="w-[150px] font-bold text-[#1b2a4e]">Jenis Layanan</span>
+                                <span className="w-[150px] font-bold text-brand-900">Jenis Layanan</span>
                                 <span className="text-gray-600 flex-1">{serviceName}</span>
                             </div>
                             <div className="flex border border-gray-100 rounded-lg p-3">
-                                <span className="w-[150px] font-bold text-[#1b2a4e]">Fisioterapis</span>
+                                <span className="w-[150px] font-bold text-brand-900">Fisioterapis</span>
                                 <span className="text-gray-600 flex-1">{therapistName}</span>
                             </div>
                             <div className="flex border border-gray-100 rounded-lg p-3">
-                                <span className="w-[150px] font-bold text-[#1b2a4e]">Hari & Tanggal</span>
+                                <span className="w-[150px] font-bold text-brand-900">Hari & Tanggal</span>
                                 <span className="text-gray-600 flex-1">{scheduleInfo.date}</span>
                             </div>
                             <div className="flex border border-gray-100 rounded-lg p-3">
-                                <span className="w-[150px] font-bold text-[#1b2a4e]">Waktu / Jam</span>
+                                <span className="w-[150px] font-bold text-brand-900">Waktu / Jam</span>
                                 <span className="text-gray-600 flex-1">{scheduleInfo.time}</span>
                             </div>
                             <div className="flex border border-gray-100 rounded-lg p-3">
-                                <span className="w-[150px] font-bold text-[#1b2a4e]">Lokasi Klinik</span>
+                                <span className="w-[150px] font-bold text-brand-900">Lokasi Klinik</span>
                                 <span className="text-gray-600 flex-1">{CLINIC_LOCATION}</span>
                             </div>
                         </div>
@@ -184,13 +184,13 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
                     <div className="flex flex-col gap-3 w-full mt-4">
                         <button
                             onClick={() => router.push("/riwayat-booking")}
-                            className="w-full bg-[#F5B301] hover:bg-[#dda101] text-white py-4 rounded-[12px] font-bold transition-colors shadow-md"
+                            className="w-full bg-brand-600 hover:bg-brand-700 text-brand-950 py-4 rounded-[12px] font-bold transition-colors shadow-md"
                         >
                             Lihat Detail Riwayat
                         </button>
                         <button
                             onClick={() => router.push("/")}
-                            className="w-full bg-gray-100 hover:bg-gray-200 text-[#1b2a4e] py-4 rounded-[12px] font-bold transition-colors"
+                            className="w-full bg-gray-100 hover:bg-gray-200 text-brand-900 py-4 rounded-[12px] font-bold transition-colors"
                         >
                             Kembali ke Beranda
                         </button>
@@ -204,7 +204,7 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
     return (
         <div className="w-full flex flex-col items-center">
             <div className="text-center mb-10">
-                <h2 className="text-[32px] md:text-[36px] font-bold text-[#1b2a4e] mb-3">Tinjau & Konfirmasi Reservasi Anda</h2>
+                <h2 className="text-[32px] md:text-[36px] font-bold text-brand-900 mb-3">Tinjau & Konfirmasi Reservasi Anda</h2>
                 <p className="text-[#585858] text-[15px] md:text-[16px]">Mohon periksa kembali detail jadwal, terapis, dan keluhan Anda di bawah ini agar proses terapi berjalan lancar.</p>
             </div>
 
@@ -219,29 +219,29 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
             {/* KARTU 1: DETAIL SESI TERAPI */}
             <div className="w-full bg-white border border-gray-200 rounded-[16px] p-6 md:p-8 mb-6">
-                <h3 className="flex items-center gap-3 text-[20px] font-bold text-[#1b2a4e] mb-6">
-                    <FileText size={28} weight="fill" className="text-[#1b2a4e]" /> Detail Sesi Terapi
+                <h3 className="flex items-center gap-3 text-[20px] font-bold text-brand-900 mb-6">
+                    <FileText size={28} weight="fill" className="text-brand-900" /> Detail Sesi Terapi
                 </h3>
 
                 <div className="flex flex-col gap-3">
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Jenis Layanan</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Jenis Layanan</span>
                         <span className="text-gray-600 text-[14px]">{serviceName}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Fisioterapis</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Fisioterapis</span>
                         <span className="text-gray-600 text-[14px]">{therapistName}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Hari & Tanggal</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Hari & Tanggal</span>
                         <span className="text-gray-600 text-[14px]">{scheduleInfo.date}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Waktu / Jam</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Waktu / Jam</span>
                         <span className="text-gray-600 text-[14px]">{scheduleInfo.time}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Lokasi Klinik</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Lokasi Klinik</span>
                         <span className="text-gray-600 text-[14px]">{CLINIC_LOCATION}</span>
                     </div>
                 </div>
@@ -249,26 +249,26 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
             {/* KARTU 2: DETAIL INFORMASI PASIEN */}
             <div className="w-full bg-white border border-gray-200 rounded-[16px] p-6 md:p-8 mb-10">
-                <h3 className="flex items-center gap-3 text-[20px] font-bold text-[#1b2a4e] mb-6">
-                    <UserCircle size={28} weight="fill" className="text-[#1b2a4e]" /> Detail Informasi Pasien
+                <h3 className="flex items-center gap-3 text-[20px] font-bold text-brand-900 mb-6">
+                    <UserCircle size={28} weight="fill" className="text-brand-900" /> Detail Informasi Pasien
                 </h3>
 
                 <div className="flex flex-col gap-3">
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Nama Lengkap</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Nama Lengkap</span>
                         <span className="text-gray-600 text-[14px]">{bookingData.patientData?.name || "-"}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Nomor Telepon</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Nomor Telepon</span>
                         <span className="text-gray-600 text-[14px]">{bookingData.patientData?.phone || "-"}</span>
                     </div>
                     <div className="flex flex-col md:flex-row md:items-center border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px]">Alamat Email</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px]">Alamat Email</span>
                         <span className="text-gray-600 text-[14px]">{bookingData.patientData?.email || "-"}</span>
                     </div>
 
                     <div className="flex flex-col md:flex-row md:items-start border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px] shrink-0 mt-1">Keluhan Utama</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px] shrink-0 mt-1">Keluhan Utama</span>
                         <span className="text-gray-600 text-[14px] leading-relaxed">
                             {bookingData.patientData?.complaint ? bookingData.patientData.complaint : "-"}
                         </span>
@@ -276,7 +276,7 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
 
                     {/* Foto Keluhan */}
                     <div className="flex flex-col md:flex-row md:items-start border border-gray-100 rounded-xl p-4 gap-2 md:gap-0">
-                        <span className="w-[180px] font-bold text-[#1b2a4e] text-[14px] shrink-0 mt-1">Foto Keluhan</span>
+                        <span className="w-[180px] font-bold text-brand-900 text-[14px] shrink-0 mt-1">Foto Keluhan</span>
                         {bookingData.patientData?.photoPreview ? (
                             <div className="w-full max-w-[500px] h-[200px] rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center p-2">
                                 <img src={bookingData.patientData.photoPreview} alt="Keluhan" className="w-full h-full object-contain" />
@@ -293,15 +293,15 @@ export default function Step4Konfirmasi({ onBack, bookingData }: Step4Props) {
                 <button
                     disabled={isLoading}
                     onClick={onBack}
-                    className="text-[#F5B301] font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] bg-gray-50 hover:bg-yellow-50 transition-colors"
+                    className="text-gold-700 font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] bg-gray-50 hover:bg-brand-50 transition-colors"
                 >
                     <span>←</span> Kembali
                 </button>
                 <button
                     disabled={isLoading}
                     onClick={handleConfirm}
-                    className={`px-10 py-3 rounded-[12px] font-bold flex items-center gap-2 transition-all shadow-[0_4px_12px_rgba(245,179,1,0.3)]
-                        ${isLoading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#F5B301] hover:bg-[#dda101] text-white cursor-pointer"}
+                    className={`px-10 py-3 rounded-[12px] font-bold flex items-center gap-2 transition-all shadow-[0_4px_12px_rgba(245,201,0,0.3)]
+                        ${isLoading ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-brand-600 hover:bg-brand-700 text-brand-950 cursor-pointer"}
                     `}
                 >
                     {isLoading ? "Memproses Reservasi..." : "Konfirmasi Booking →"}

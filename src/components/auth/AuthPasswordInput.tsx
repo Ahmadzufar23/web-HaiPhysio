@@ -22,7 +22,7 @@ export default function AuthPasswordInput({
 
   return (
     <label htmlFor={inputId} className="flex flex-col gap-2">
-      <span className="text-[14px] font-semibold text-[#1b2a4e]">{label}</span>
+      <span className="text-[14px] font-semibold text-brand-900">{label}</span>
       <span className="relative block">
         <input
           id={inputId}
@@ -32,7 +32,7 @@ export default function AuthPasswordInput({
           className={`h-12 w-full rounded-[8px] border bg-white px-4 pr-12 text-[15px] text-slate-800 outline-none transition placeholder:text-slate-400 ${
             error
               ? "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/15"
-              : "border-slate-200 focus:border-[#FBBF24] focus:ring-4 focus:ring-[#FBBF24]/20"
+              : "border-slate-200 focus:border-gold-600 focus:ring-4 focus:ring-brand-500/20"
           } ${className}`}
           {...props}
         />
@@ -40,7 +40,7 @@ export default function AuthPasswordInput({
           type="button"
           aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
           onClick={() => setShowPassword((current) => !current)}
-          className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-[8px] text-slate-500 transition hover:bg-slate-100 hover:text-[#1b2a4e]"
+          className="absolute right-3 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-[8px] text-slate-500 transition hover:bg-slate-100 hover:text-brand-900"
         >
           <Icon size={20} strokeWidth={2} />
         </button>

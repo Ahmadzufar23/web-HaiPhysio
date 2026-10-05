@@ -7,7 +7,7 @@ export default function AdminDashboardPage() {
       
       {/* Judul & Deskripsi Halaman */}
       <div className="flex flex-col gap-1">
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Dashboard</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Dashboard</h2>
         <p className="text-[#585858] text-[15px]">Ringkasan operasional klinik hari ini.</p>
       </div>
 

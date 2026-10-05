@@ -215,22 +215,22 @@ export default function AdminJadwalPage() {
       {/* --- HEADER HALAMAN --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-bold text-[#1b2a4e]">Manajemen Slot Jadwal Terapi</h2>
+          <h2 className="text-[28px] font-bold text-brand-900">Manajemen Slot Jadwal Terapi</h2>
           <p className="text-[#585858] text-[15px]">Atur ketersediaan waktu untuk sesi fisioterapi harian.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={openGenerateModal}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-[#1b2a4e] hover:bg-[#14203b] text-white font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
           >
-            <Sparkle size={18} weight="fill" className="text-[#F5B301]" />
+            <Sparkle size={18} weight="fill" className="text-gold-700" />
             Generate Otomatis
           </button>
 
           <Link
             href="/admin/jadwal/tambah"
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-[#F5B301] hover:bg-[#dda101] text-white font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-600 hover:bg-brand-700 text-brand-950 font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
           >
             <Plus size={18} weight="bold" />
             Tambah Slot
@@ -269,11 +269,11 @@ export default function AdminJadwalPage() {
 
             {/* Header */}
             <div className="flex items-center gap-3 px-8 pt-7 pb-5 border-b border-gray-100 shrink-0">
-              <div className="p-2.5 bg-yellow-50 text-[#F5B301] rounded-xl shrink-0">
+              <div className="p-2.5 bg-brand-50 text-gold-700 rounded-xl shrink-0">
                 <Sparkle size={22} weight="fill" />
               </div>
               <div>
-                <h3 className="text-[19px] font-bold text-[#1b2a4e] leading-tight">Generate Slot Otomatis</h3>
+                <h3 className="text-[19px] font-bold text-brand-900 leading-tight">Generate Slot Otomatis</h3>
                 <p className="text-[13px] text-gray-500 mt-0.5">Atur terapis, tanggal, dan jam yang ingin digenerate</p>
               </div>
             </div>
@@ -283,14 +283,14 @@ export default function AdminJadwalPage() {
 
               {/* Pilih Fisioterapis */}
               <div className="flex flex-col gap-2">
-                <label className="text-[13px] font-bold text-[#1b2a4e] flex items-center gap-1.5">
+                <label className="text-[13px] font-bold text-brand-900 flex items-center gap-1.5">
                   <Users size={15} weight="bold" />
                   Fisioterapis
                 </label>
                 <select
                   value={genTherapistId}
                   onChange={(e) => setGenTherapistId(e.target.value)}
-                  className="w-full bg-white border border-gray-200 text-[#1b2a4e] text-[14px] font-semibold py-3 px-4 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer appearance-none"
+                  className="w-full bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer appearance-none"
                 >
                   <option value="">Semua Fisioterapis ({therapists.length} terapis)</option>
                   {therapists.map((t) => (
@@ -303,7 +303,7 @@ export default function AdminJadwalPage() {
 
               {/* Rentang Tanggal */}
               <div className="flex flex-col gap-2">
-                <label className="text-[13px] font-bold text-[#1b2a4e] flex items-center gap-1.5">
+                <label className="text-[13px] font-bold text-brand-900 flex items-center gap-1.5">
                   <CalendarBlank size={15} weight="bold" />
                   Rentang Tanggal
                 </label>
@@ -312,7 +312,7 @@ export default function AdminJadwalPage() {
                     <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">Dari</span>
                     <input type="date" value={genStartDate}
                       onChange={(e) => setGenStartDate(e.target.value)}
-                      className="w-full bg-white border border-gray-200 text-[#1b2a4e] text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+                      className="w-full bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
                     />
                   </div>
                   <div className="mt-5 text-gray-400 font-bold text-[14px] shrink-0">—</div>
@@ -320,7 +320,7 @@ export default function AdminJadwalPage() {
                     <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">Sampai</span>
                     <input type="date" value={genEndDate} min={genStartDate}
                       onChange={(e) => setGenEndDate(e.target.value)}
-                      className="w-full bg-white border border-gray-200 text-[#1b2a4e] text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+                      className="w-full bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
                     />
                   </div>
                 </div>
@@ -334,7 +334,7 @@ export default function AdminJadwalPage() {
                     { label: "2 Minggu", start: todayStr(), end: offsetStr(13) },
                   ].map((opt) => (
                     <button key={opt.label} onClick={() => { setGenStartDate(opt.start); setGenEndDate(opt.end); }}
-                      className="px-2.5 py-1 text-[11px] font-bold text-[#1b2a4e] bg-gray-100 hover:bg-yellow-50 hover:text-[#dda101] rounded-lg transition-colors"
+                      className="px-2.5 py-1 text-[11px] font-bold text-brand-900 bg-gray-100 hover:bg-brand-50 hover:text-gold-800 rounded-lg transition-colors"
                     >{opt.label}</button>
                   ))}
                 </div>
@@ -343,14 +343,14 @@ export default function AdminJadwalPage() {
               {/* Pilih Jam */}
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-[13px] font-bold text-[#1b2a4e] flex items-center gap-1.5">
+                  <label className="text-[13px] font-bold text-brand-900 flex items-center gap-1.5">
                     <Clock size={15} weight="bold" />
                     Jam Slot ({activeHoursList.length} dipilih)
                   </label>
                   <div className="flex items-center gap-2">
-                    <button onClick={resetDefaultHours} className="text-[11px] font-bold text-[#1b2a4e] hover:text-[#dda101] transition-colors">Reset</button>
+                    <button onClick={resetDefaultHours} className="text-[11px] font-bold text-brand-900 hover:text-gold-800 transition-colors">Reset</button>
                     <span className="text-gray-300">|</span>
-                    <button onClick={selectAllHours} className="text-[11px] font-bold text-[#1b2a4e] hover:text-[#dda101] transition-colors">Semua</button>
+                    <button onClick={selectAllHours} className="text-[11px] font-bold text-brand-900 hover:text-gold-800 transition-colors">Semua</button>
                     <span className="text-gray-300">|</span>
                     <button onClick={clearAllHours} className="text-[11px] font-bold text-gray-400 hover:text-red-500 transition-colors">Hapus</button>
                   </div>
@@ -365,7 +365,7 @@ export default function AdminJadwalPage() {
                         onClick={() => toggleHour(h.start)}
                         className={`py-2 px-3 rounded-xl text-[12px] font-bold border transition-all ${
                           active
-                            ? "bg-yellow-50 border-[#F5B301] text-[#dda101] ring-1 ring-[#F5B301]/40"
+                            ? "bg-brand-50 border-brand-600 text-gold-700 ring-1 ring-brand-600/40"
                             : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
                         }`}
                       >
@@ -378,8 +378,8 @@ export default function AdminJadwalPage() {
 
               {/* Preview Estimasi */}
               {genDayCount > 0 && (
-                <div className={`rounded-2xl px-4 py-3 flex items-start gap-3 border ${genDayCount > 31 ? "bg-red-50 border-red-100" : "bg-[#FFFBEA] border-[#fdeeb3]"}`}>
-                  <Sparkle size={18} weight="fill" className={`mt-0.5 shrink-0 ${genDayCount > 31 ? "text-red-500" : "text-[#F5B301]"}`} />
+                <div className={`rounded-2xl px-4 py-3 flex items-start gap-3 border ${genDayCount > 31 ? "bg-red-50 border-red-100" : "bg-brand-50 border-brand-100"}`}>
+                  <Sparkle size={18} weight="fill" className={`mt-0.5 shrink-0 ${genDayCount > 31 ? "text-red-500" : "text-gold-700"}`} />
                   <div className="text-[13px] leading-relaxed">
                     {genDayCount > 31 ? (
                       <span className="font-bold text-red-600">Rentang terlalu panjang! Maksimal 31 hari.</span>
@@ -387,7 +387,7 @@ export default function AdminJadwalPage() {
                       <span className="font-bold text-orange-600">Pilih minimal 1 slot jam terlebih dahulu.</span>
                     ) : (
                       <>
-                        <span className="font-bold text-[#1b2a4e]">Estimasi: ~{estimatedSlots} slot</span>
+                        <span className="font-bold text-brand-900">Estimasi: ~{estimatedSlots} slot</span>
                         <span className="text-gray-500"> dari {genDayCount} hari × {targetTherapists.length} terapis × {activeHoursList.length} jam</span>
                         <br />
                         <span className="text-gray-400 text-[12px]">Slot yang sudah ada akan dilewati otomatis.</span>
@@ -399,9 +399,9 @@ export default function AdminJadwalPage() {
 
               {/* Hasil Generate */}
               {generateResult && (
-                <div className={`rounded-2xl px-4 py-3 flex items-center gap-3 border ${generateResult.count > 0 ? "bg-green-50 border-green-100" : "bg-yellow-50 border-yellow-100"}`}>
-                  <CheckCircle size={20} weight="fill" className={generateResult.count > 0 ? "text-green-500" : "text-yellow-500"} />
-                  <span className="text-[13px] font-bold text-[#1b2a4e]">
+                <div className={`rounded-2xl px-4 py-3 flex items-center gap-3 border ${generateResult.count > 0 ? "bg-green-50 border-green-100" : "bg-brand-50 border-brand-100"}`}>
+                  <CheckCircle size={20} weight="fill" className={generateResult.count > 0 ? "text-green-500" : "text-gold-700"} />
+                  <span className="text-[13px] font-bold text-brand-900">
                     {generateResult.count > 0
                       ? `Selesai! ${generateResult.count} slot baru dibuat${generateResult.skipped > 0 ? `, ${generateResult.skipped} dilewati` : ""}.`
                       : `Semua slot sudah ada (${generateResult.skipped} dilewati).`
@@ -425,7 +425,7 @@ export default function AdminJadwalPage() {
                 <button
                   onClick={handleGenerateRange}
                   disabled={isGenerating || genDayCount === 0 || genDayCount > 31 || activeHoursList.length === 0}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-[#1b2a4e] hover:bg-[#14203b] transition-colors shadow-md text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-brand-900 hover:bg-brand-950 transition-colors shadow-md text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isGenerating ? (
                     <>
@@ -434,7 +434,7 @@ export default function AdminJadwalPage() {
                     </>
                   ) : (
                     <>
-                      <Sparkle size={16} weight="fill" className="text-[#F5B301]" />
+                      <Sparkle size={16} weight="fill" className="text-gold-700" />
                       Generate Sekarang
                     </>
                   )}
@@ -449,7 +449,7 @@ export default function AdminJadwalPage() {
       {toast && (
         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-[60] animate-in slide-in-from-bottom-5 duration-300 border
           ${toast.type === "success" ? "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"
-          : toast.type === "warning" ? "bg-[#fffbeb] border-[#fde68a] text-[#b45309]"
+          : toast.type === "warning" ? "bg-amber-50 border-amber-200 text-amber-700"
           : "bg-[#fef3f2] border-[#fecdca] text-[#b42318]"}`}
         >
           {toast.type === "success" && <CheckCircle size={20} weight="fill" />}

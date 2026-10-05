@@ -36,10 +36,10 @@ export default function FocusAreaCheckboxes({ focusAreas, value, onChange, isLoa
             type="button"
             onClick={() => toggle(focus.id)}
             className={`flex items-center gap-2 p-3.5 rounded-xl border text-left text-[14px] font-semibold transition-colors ${
-              checked ? "border-[#F5B301] bg-[#FFFBEA] text-[#1b2a4e]" : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
+              checked ? "border-brand-600 bg-brand-50 text-brand-900" : "border-gray-200 bg-white text-gray-500 hover:border-gray-300"
             }`}
           >
-            {checked ? <CheckSquare size={20} weight="fill" className="text-[#F5B301] shrink-0" /> : <Square size={20} className="shrink-0" />}
+            {checked ? <CheckSquare size={20} weight="fill" className="text-gold-700 shrink-0" /> : <Square size={20} className="shrink-0" />}
             Fisioterapi {focus.name}
           </button>
         );

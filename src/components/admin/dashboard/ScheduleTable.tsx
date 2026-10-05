@@ -47,7 +47,7 @@ export default function ScheduleTable() {
     if (layanan.toLowerCase().includes("olahraga")) Icon = Barbell;
 
     return (
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/50">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-brand-600 text-gold-700 bg-brand-50/50">
         <Icon size={16} weight="bold" />
         <span className="text-[13px] font-bold">{layanan}</span>
       </div>
@@ -102,7 +102,7 @@ export default function ScheduleTable() {
       <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
-            <h3 className="text-[18px] font-bold text-[#1b2a4e]">Jadwal Sesi Hari Ini</h3>
+            <h3 className="text-[18px] font-bold text-brand-900">Jadwal Sesi Hari Ini</h3>
             {/* Live indicator */}
             <span className="relative flex h-2 w-2 ml-1">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -116,7 +116,7 @@ export default function ScheduleTable() {
 
         <Link
           href="/admin/booking"
-          className="text-[13px] font-bold text-[#D69A00] hover:text-[#F5B301] flex items-center gap-1 transition-colors"
+          className="text-[13px] font-bold text-gold-700 hover:text-gold-700 flex items-center gap-1 transition-colors"
         >
           Lihat Semua Booking
           <ArrowRight size={16} weight="bold" />
@@ -133,7 +133,7 @@ export default function ScheduleTable() {
           <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 mb-3">
             <CalendarX size={32} />
           </div>
-          <h4 className="text-[16px] font-bold text-[#1b2a4e] mb-1">Belum Ada Sesi Hari Ini</h4>
+          <h4 className="text-[16px] font-bold text-brand-900 mb-1">Belum Ada Sesi Hari Ini</h4>
           <p className="text-[13px] text-gray-500 max-w-sm">
             Tidak ada pasien yang memiliki jadwal terapi untuk hari ini. Anda dapat melihat jadwal di hari lain pada menu Booking.
           </p>
@@ -156,8 +156,8 @@ export default function ScheduleTable() {
                 <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                   <td className="py-4 px-6 text-[14px] text-gray-500">{index + 1}</td>
                   <td className="py-4 px-6 text-[14px] text-gray-600 font-medium">{formatJam(row.bookingTime || row.startTime || row.start_time)}</td>
-                  <td className="py-4 px-6 text-[14px] font-bold text-[#1b2a4e]">{row.patientName || row.patient_name}</td>
-                  <td className="py-4 px-6 text-[14px] text-[#1b2a4e]">{row.therapistName || row.therapist_name}</td>
+                  <td className="py-4 px-6 text-[14px] font-bold text-brand-900">{row.patientName || row.patient_name}</td>
+                  <td className="py-4 px-6 text-[14px] text-brand-900">{row.therapistName || row.therapist_name}</td>
                   <td className="py-4 px-6 text-center">{renderLayananBadge(getLayananName(row))}</td>
                   <td className="py-4 px-6 text-center">{renderStatusBadge(row.bookingStatus || row.status)}</td>
                 </tr>

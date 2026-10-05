@@ -219,14 +219,14 @@ export default function RegisterForm() {
             type="checkbox"
             checked={agreed}
             onChange={(event) => setAgreed(event.target.checked)}
-            className="mt-1 h-4 w-4 rounded border-slate-300 text-[#FBBF24] accent-[#FBBF24]"
+            className="mt-1 h-4 w-4 rounded border-slate-300 text-gold-700 accent-brand-500"
           />
           <span>
             Saya menyetujui{" "}
             <button
               type="button"
               onClick={() => setActivePolicy("terms")}
-              className="font-semibold text-[#1b2a4e] hover:text-[#F5B301]"
+              className="font-semibold text-brand-900 hover:text-gold-700"
             >
               Syarat & Ketentuan
             </button>{" "}
@@ -234,7 +234,7 @@ export default function RegisterForm() {
             <button
               type="button"
               onClick={() => setActivePolicy("privacy")}
-              className="font-semibold text-[#1b2a4e] hover:text-[#F5B301]"
+              className="font-semibold text-brand-900 hover:text-gold-700"
             >
               Kebijakan Privasi
             </button>{" "}

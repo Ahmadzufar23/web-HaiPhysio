@@ -49,7 +49,7 @@ export default function SuksesUbahJadwalPage() {
   if (isLoading) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-[#FAFAFA]">
-        <span className="text-[#1b2a4e] font-bold animate-pulse">Memuat data...</span>
+        <span className="text-brand-900 font-bold animate-pulse">Memuat data...</span>
       </div>
     );
   }
@@ -58,7 +58,7 @@ export default function SuksesUbahJadwalPage() {
     return (
       <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#FAFAFA]">
         <p className="text-gray-500 mb-4">Data tidak ditemukan.</p>
-        <button onClick={() => router.push('/riwayat-booking')} className="px-6 py-2 bg-[#F5B301] text-white rounded-xl">Kembali</button>
+        <button onClick={() => router.push('/riwayat-booking')} className="px-6 py-2 bg-brand-600 text-brand-950 rounded-xl">Kembali</button>
       </div>
     );
   }
@@ -79,7 +79,7 @@ export default function SuksesUbahJadwalPage() {
           />
         </div>
 
-        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1b2a4e] mb-2">
+        <h1 className="text-[24px] md:text-[28px] font-bold text-brand-900 mb-2">
           Ubah Jadwal Terapis Anda Berhasil Diubah!
         </h1>
         <p className="text-[#585858] text-[14px] md:text-[15px] mb-8">
@@ -87,13 +87,13 @@ export default function SuksesUbahJadwalPage() {
         </p>
 
         {/* Kotak Kode RESV (Dashed Border) */}
-        <div className="border-2 border-dashed border-[#1b2a4e] rounded-2xl p-6 mb-10 w-full max-w-[400px] flex justify-between items-center bg-[#F8FAFC]">
-          <span className="text-[28px] font-bold text-[#1b2a4e] tracking-wide">
+        <div className="border-2 border-dashed border-brand-900 rounded-2xl p-6 mb-10 w-full max-w-[400px] flex justify-between items-center bg-[#F8FAFC]">
+          <span className="text-[28px] font-bold text-brand-900 tracking-wide">
             {booking.referenceCode}
           </span>
           <button 
             onClick={handleCopyCode}
-            className="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-[#1b2a4e] transition-colors"
+            className="flex flex-col items-center justify-center gap-1 text-gray-500 hover:text-brand-900 transition-colors"
           >
             {isCopied ? <CheckCircle size={28} weight="fill" className="text-green-500" /> : <Copy size={28} />}
             <span className="text-[10px] font-medium">{isCopied ? "Tersalin!" : "Klik untuk salin nomor"}</span>
@@ -103,32 +103,32 @@ export default function SuksesUbahJadwalPage() {
         {/* Card Detail Sesi Terapi */}
         <div className="w-full border border-gray-200 rounded-[20px] p-6 text-left mb-10">
           <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-100">
-            <FileText size={24} className="text-[#1b2a4e]" weight="fill" />
-            <h3 className="text-[18px] font-bold text-[#1b2a4e]">Detail Sesi Terapi</h3>
+            <FileText size={24} className="text-brand-900" weight="fill" />
+            <h3 className="text-[18px] font-bold text-brand-900">Detail Sesi Terapi</h3>
           </div>
 
           <div className="flex flex-col gap-4 text-[14px]">
             <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-gray-50">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Jenis Layanan</span>
-              <span className="font-bold text-[#1b2a4e]">{namaLayanan}</span>
+              <span className="font-bold text-brand-900">{namaLayanan}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-gray-50">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Fisioterapis</span>
-              <span className="font-bold text-[#1b2a4e]">{booking.therapistName}</span>
+              <span className="font-bold text-brand-900">{booking.therapistName}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-gray-50">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Hari & Tanggal</span>
-              <span className="font-bold text-[#1b2a4e]">{formatTanggal(booking.bookingDate)}</span>
+              <span className="font-bold text-brand-900">{formatTanggal(booking.bookingDate)}</span>
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center py-2 border-b border-gray-50">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Waktu / Jam</span>
-              <span className="font-bold text-[#1b2a4e]">
+              <span className="font-bold text-brand-900">
                 {booking.bookingTime?.substring(0, 5)} - {booking.bookingEndTime?.substring(0, 5)} WIB
               </span>
             </div>
             <div className="flex flex-col sm:flex-row py-2">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Lokasi Klinik</span>
-              <span className="font-bold text-[#1b2a4e]">{CLINIC_LOCATION}</span>
+              <span className="font-bold text-brand-900">{CLINIC_LOCATION}</span>
             </div>
           </div>
         </div>
@@ -137,7 +137,7 @@ export default function SuksesUbahJadwalPage() {
         <div className="w-full flex flex-col gap-3">
           <Link 
           href="/riwayat-booking"
-          className="w-full py-4 rounded-xl bg-[#F5B301] text-white font-bold text-[15px] hover:bg-[#dda101] transition-colors"
+          className="w-full py-4 rounded-xl bg-brand-600 text-brand-950 font-bold text-[15px] hover:bg-brand-700 transition-colors"
         >
           Lihat Detail Riwayat
         </Link>

@@ -69,7 +69,7 @@ export default function RiwayatBooking() {
   return (
     <div className="w-full">
       <div className="text-center mb-8">
-        <h2 className="text-[24px] font-bold text-[#1b2a4e] mb-2">Riwayat Booking</h2>
+        <h2 className="text-[24px] font-bold text-brand-900 mb-2">Riwayat Booking</h2>
         <p className="text-[#585858] text-[14px]">
           Kelola informasi pribadi akun Anda dan pantau riwayat sesi terapi fisioterapi yang pernah Anda jalani.
         </p>
@@ -82,7 +82,7 @@ export default function RiwayatBooking() {
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-6 py-2.5 rounded-full text-[14px] font-medium transition-colors ${activeTab === tab
-              ? "bg-[#F5B301] text-white shadow-md"
+              ? "bg-brand-600 text-brand-950 shadow-md"
               : "border border-gray-200 text-gray-500 hover:bg-gray-50"
               }`}
           >
@@ -95,7 +95,7 @@ export default function RiwayatBooking() {
       <div className="flex flex-col gap-4">
         {isLoading ? (
           <div className="text-center py-10 bg-gray-50 rounded-2xl border border-gray-100">
-            <p className="text-[#1b2a4e] font-bold animate-pulse">Memuat riwayat jadwal...</p>
+            <p className="text-brand-900 font-bold animate-pulse">Memuat riwayat jadwal...</p>
           </div>
         ) : bookings.length > 0 ? (
           bookings.map((booking) => {
@@ -111,12 +111,12 @@ export default function RiwayatBooking() {
                   {/* Info Kiri */}
                   <div className="flex items-start gap-4">
                     {/* Icon Layanan Dinamis */}
-                    <div className="w-[52px] h-[52px] rounded-xl bg-[#FFFBEA] text-[#F5B301] flex items-center justify-center border border-[#FDE68A] shrink-0">
+                    <div className="w-[52px] h-[52px] rounded-xl bg-brand-50 text-gold-700 flex items-center justify-center border border-brand-100 shrink-0">
                       {renderLayananIcon(namaLayanan)}
                     </div>
 
                     <div>
-                      <h4 className="text-[16px] font-bold text-[#1b2a4e]">{namaLayanan}</h4>
+                      <h4 className="text-[16px] font-bold text-brand-900">{namaLayanan}</h4>
                       <div className="flex items-center gap-1.5 text-[13px] text-gray-500 mt-1.5">
                         <CalendarBlank size={16} />
                         <span>{formatTanggal(booking.bookingDate)} | {formatWaktu(booking.bookingTime, booking.bookingEndTime)} WIB</span>
@@ -144,7 +144,7 @@ export default function RiwayatBooking() {
                     {/* Tombol Lihat Detail berubah fungsi jadi Buka/Tutup Accordion */}
                     <button
                       onClick={() => toggleExpand(booking.id)}
-                      className="text-[#F5B301] text-[13px] font-bold hover:underline flex items-center gap-1"
+                      className="text-gold-700 text-[13px] font-bold hover:underline flex items-center gap-1"
                     >
                       {isExpanded ? "Tutup Detail" : "Lihat Detail"}
                       {isExpanded ? <CaretUp size={14} weight="bold" /> : <CaretDown size={14} weight="bold" />}
@@ -160,18 +160,18 @@ export default function RiwayatBooking() {
                     <div className="flex items-center gap-2 text-[14px] bg-gray-50 p-3 rounded-lg border border-gray-200 w-fit mb-4">
                       <Receipt size={18} className="text-gray-500" />
                       <span className="text-gray-500">Kode Reservasi:</span>
-                      <span className="font-bold text-[#1b2a4e] tracking-wide">{booking.referenceCode}</span>
+                      <span className="font-bold text-brand-900 tracking-wide">{booking.referenceCode}</span>
                     </div>
 
                     {/* Keluhan */}
                     {booking.complaintNotes ? (
                       <div className="mb-4">
-                        <p className="text-[13px] font-bold text-[#1b2a4e]">Keluhan:</p>
+                        <p className="text-[13px] font-bold text-brand-900">Keluhan:</p>
                         <p className="text-[13px] text-gray-600 leading-relaxed mt-1">{booking.complaintNotes}</p>
                       </div>
                     ) : (
                       <div className="mb-4">
-                        <p className="text-[13px] font-bold text-[#1b2a4e]">Keluhan:</p>
+                        <p className="text-[13px] font-bold text-brand-900">Keluhan:</p>
                         <p className="text-[13px] text-gray-400 italic mt-1">Tidak ada catatan keluhan.</p>
                       </div>
                     )}
@@ -192,7 +192,7 @@ export default function RiwayatBooking() {
                       <div className="flex gap-4 mt-6 pt-5 border-t border-gray-100">
                         <Link
                           href={`/riwayat-booking/ubah-jadwal/${booking.id}`}
-                          className="px-6 py-2.5 rounded-full border-2 border-[#F5B301] text-[#F5B301] font-bold text-[13px] hover:bg-[#FFFBEA] transition-colors inline-block"
+                          className="px-6 py-2.5 rounded-full border-2 border-brand-600 text-gold-700 font-bold text-[13px] hover:bg-brand-50 transition-colors inline-block"
                         >
                           Ubah Jadwal
                         </Link>

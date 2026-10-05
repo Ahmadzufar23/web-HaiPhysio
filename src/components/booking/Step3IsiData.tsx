@@ -139,7 +139,7 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
     <div className="w-full flex flex-col items-center">
 
       <div className="text-center mb-10">
-        <h2 className="text-[32px] md:text-[36px] font-bold text-[#1b2a4e] mb-3">Isi Data Diri & Detail Keluhan</h2>
+        <h2 className="text-[32px] md:text-[36px] font-bold text-brand-900 mb-3">Isi Data Diri & Detail Keluhan</h2>
         <p className="text-[#585858] text-[15px] md:text-[16px]">Pastikan Nama dan Nomor Telepon Anda benar. Data ini otomatis diambil dari profil Anda.</p>
       </div>
 
@@ -151,19 +151,19 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
           <div className="flex flex-col gap-3 text-[14px]">
             <Stethoscope size={20} weight="bold" className="text-[#3B82F6]" />
             <span className="w-[120px] text-gray-500">Layanan Terpilih</span>
-            <span className="text-[#1b2a4e] font-medium">: {displayServiceName}</span>
+            <span className="text-brand-900 font-medium">: {displayServiceName}</span>
           </div>
           <div className="flex flex-col gap-3 text-[14px]">
             <CalendarBlank size={20} weight="bold" className="text-[#3B82F6]" />
             <span className="w-[120px] text-gray-500">Jadwal Terpilih</span>
-            <span className="text-[#1b2a4e] font-medium">: {displaySchedule}</span>
+            <span className="text-brand-900 font-medium">: {displaySchedule}</span>
           </div>
           <div className="flex flex-col gap-3 text-[14px]">
             <User size={20} weight="bold" className="text-[#3B82F6]" />
             <span className="w-[120px] text-gray-500">Nama Terapis</span>
-            <span className="text-[#1b2a4e] font-medium">: {displayTherapist}</span>
+            <span className="text-brand-900 font-medium">: {displayTherapist}</span>
           </div>
-          <button onClick={onBack} className="shrink-0 w-full md:w-auto text-[#F5B301] text-[14px] font-bold px-5 py-2 border border-[#F5B301] rounded-xl bg-white hover:bg-[#FFFBEA]">
+          <button onClick={onBack} className="shrink-0 w-full md:w-auto text-gold-700 text-[14px] font-bold px-5 py-2 border border-brand-600 rounded-xl bg-white hover:bg-brand-50">
             ✎ Ubah
           </button>
         </div>
@@ -171,44 +171,44 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
 
       {/* --- FORM KONTAK PASIEN --- */}
       <div className="w-full bg-white border border-gray-200 rounded-[16px] p-8 mb-6">
-        <h3 className="flex items-center gap-3 text-[20px] font-bold text-[#1b2a4e] mb-6">
-          <UserCircle size={28} weight="fill" className="text-[#1b2a4e]" />
+        <h3 className="flex items-center gap-3 text-[20px] font-bold text-brand-900 mb-6">
+          <UserCircle size={28} weight="fill" className="text-brand-900" />
           Informasi Kontak Pasien
         </h3>
 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Nama Lengkap</label>
+            <label className="text-[14px] font-bold text-brand-900">Nama Lengkap</label>
             <input
               type="text"
               name="name"
               value={formData.name}
               onChange={handleInputChange}
-              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.name ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#F5B301]"}`}
+              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.name ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-gold-600"}`}
             />
             {errors.name && <span className="text-[12px] text-red-500">{errors.name}</span>}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Nomor Telepon</label>
+            <label className="text-[14px] font-bold text-brand-900">Nomor Telepon</label>
             <input
               type="text"
               name="phone"
               value={formData.phone}
               onChange={handleInputChange}
-              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.phone ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#F5B301]"}`}
+              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.phone ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-gold-600"}`}
             />
             {errors.phone && <span className="text-[12px] text-red-500">{errors.phone}</span>}
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Email</label>
+            <label className="text-[14px] font-bold text-brand-900">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.email ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-[#F5B301]"}`}
+              className={`w-full p-4 border rounded-xl outline-none transition-colors ${errors.email ? "border-red-500 bg-red-50" : "border-gray-200 focus:border-gold-600"}`}
             />
             {errors.email && <span className="text-[12px] text-red-500">{errors.email}</span>}
           </div>
@@ -217,25 +217,25 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
 
       {/* --- FORM DETAIL KELUHAN --- */}
       <div className="w-full bg-white border border-gray-200 rounded-[16px] p-8 mb-10">
-        <h3 className="flex items-center gap-3 text-[20px] font-bold text-[#1b2a4e] mb-6">
-          <Stethoscope size={28} weight="fill" className="text-[#1b2a4e]" />
+        <h3 className="flex items-center gap-3 text-[20px] font-bold text-brand-900 mb-6">
+          <Stethoscope size={28} weight="fill" className="text-brand-900" />
           Detail Keluhan Medis
         </h3>
 
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Keluhan Utama (Opsional)</label>
+            <label className="text-[14px] font-bold text-brand-900">Keluhan Utama (Opsional)</label>
             <textarea
               name="complaint"
               value={formData.complaint}
               onChange={handleInputChange}
               placeholder="Isi Keluhan yang dirasakan"
-              className="w-full p-4 border border-gray-200 rounded-xl outline-none min-h-[120px] focus:border-[#F5B301]"
+              className="w-full p-4 border border-gray-200 rounded-xl outline-none min-h-[120px] focus:border-gold-600"
             ></textarea>
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Unggah Foto Keluhan (Opsional)</label>
+            <label className="text-[14px] font-bold text-brand-900">Unggah Foto Keluhan (Opsional)</label>
 
             <input
               type="file"
@@ -253,7 +253,7 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
                 <img src={formData.photoPreview} alt="Preview Keluhan" className="w-full h-full object-cover" />
               ) : (
                 <div className="flex flex-col items-center gap-2 text-gray-400">
-                  <UploadSimple size={32} weight="bold" className="text-[#F5B301]" />
+                  <UploadSimple size={32} weight="bold" className="text-gold-700" />
                   <span className="text-[14px] font-medium text-gray-500">Ketuk untuk unggah file</span>
                   <span className="text-[12px]">Maks. 10 MB</span>
                 </div>
@@ -265,12 +265,12 @@ export default function Step3IsiData({ onBack, onNext, bookingData }: Step3Props
 
       {/* --- TOMBOL NAVIGASI BAWAH --- */}
       <div className="w-full flex justify-between">
-        <button onClick={onBack} className="text-[#F5B301] font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] bg-gray-50 hover:bg-yellow-50 transition-colors">
+        <button onClick={onBack} className="text-gold-700 font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] bg-gray-50 hover:bg-brand-50 transition-colors">
           <span>←</span> Kembali
         </button>
         <button
           onClick={handleNextClick}
-          className="bg-[#F5B301] hover:bg-[#dda101] text-white px-10 py-3 rounded-[12px] font-bold flex items-center gap-2 transition-colors shadow-[0_4px_12px_rgba(245,179,1,0.3)]"
+          className="bg-brand-600 hover:bg-brand-700 text-brand-950 px-10 py-3 rounded-[12px] font-bold flex items-center gap-2 transition-colors shadow-[0_4px_12px_rgba(245,201,0,0.3)]"
         >
           Lanjut <span>→</span>
         </button>

@@ -1,25 +1,53 @@
 @import "tailwindcss";
+@import "../styles/motion.css";
 
 @theme {
-  /* Warna Kuning (Primary) */
-  --color-primary-light: #fef7e6;
-  --color-primary: #f5b301; /* Ini warna normal */
-  --color-primary-hover: #dda101;
-  --color-primary-dark: #b88601;
+  /* Palet Brand Hai Physio — diambil dari logo: kuning #FCDF09 + hitam teks logo.
+     Satu-satunya sumber warna brand. Lihat docs/DESIGN_SYSTEM.md.
+     50–700  = kuning (isian, tint, border). Teks di atas kuning SELALU gelap (brand-950).
+     800–950 = tinta hitam hangat (teks utama, panel gelap, sidebar admin). */
+  --color-brand-50: #fffbe6;   /* latar tint lembut */
+  --color-brand-100: #fff3bf;  /* border tint, badge */
+  --color-brand-200: #ffea85;  /* aksen di atas latar gelap / foto */
+  --color-brand-300: #ffe14d;  /* aksen di atas latar gelap */
+  --color-brand-400: #fdd92a;  /* stabilo judul */
+  --color-brand-500: #fcdf09;  /* kuning logo */
+  --color-brand-600: #f5c900;  /* PRIMARY: tombol CTA, isian aktif */
+  --color-brand-700: #e0b400;  /* hover tombol kuning */
+  --color-brand-800: #2b2820;  /* tinta sekunder */
+  --color-brand-900: #1a1814;  /* judul, teks utama, panel gelap, sidebar admin */
+  --color-brand-950: #0e0d0a;  /* teks di atas kuning, latar footer */
 
-  /* Warna Navy (Accent) */
-  --color-accent-light: #e8eaed;
-  --color-accent: #1b2a4e; /* Ini warna normal */
-  --color-accent-hover: #182646;
-  --color-accent-dark: #14203b;
-  --color-accent-darker: #090f1b;
+  /* Emas gelap — KHUSUS teks/ikon beraksen di atas latar terang
+     (kuning murni di atas putih hanya ±1,5:1, tidak terbaca) */
+  --color-gold-600: #b58a00;   /* border fokus input (≥3:1) */
+  --color-gold-700: #8a6500;   /* teks/ikon aksen (≈4,9:1 di atas putih) */
+  --color-gold-800: #6b4e00;   /* hover teks aksen */
 
-  /* Warna Abu-Abu (Neutral) */
-  --color-neutral-light: #fafafa;
+  /* Alias lama (kompatibilitas) */
+  --color-primary-light: var(--color-brand-50);
+  --color-primary: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-700);
+  --color-primary-dark: var(--color-brand-800);
+  --color-accent-light: var(--color-brand-100);
+  --color-accent: var(--color-brand-900);
+  --color-accent-hover: var(--color-brand-950);
+  --color-accent-dark: var(--color-brand-950);
+  --color-accent-darker: var(--color-brand-950);
+
+  /* Netral */
+  --color-neutral-light: #fafaf7;
   --color-neutral-dark: #585858;
 
-  /* Font Inter */
-  --font-sans: 'Inter', sans-serif;
+  /* Easing khas HaiPhysio — dipakai semua animasi supaya terasa satu sistem */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Font dimuat via next/font di layout.tsx (variabel CSS di <html>) */
+@theme inline {
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
 }
 
 /* Hapus ikon mata di password (khusus browser Edge/IE) */

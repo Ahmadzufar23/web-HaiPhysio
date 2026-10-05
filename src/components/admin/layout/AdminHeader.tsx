@@ -121,7 +121,7 @@ export default function AdminHeader() {
   };
 
   const getIcon = (type: string) => {
-    if (type === "new") return <BellRinging size={18} weight="fill" className="text-yellow-500" />;
+    if (type === "new") return <BellRinging size={18} weight="fill" className="text-gold-700" />;
     if (type === "done") return <CheckCircle size={18} weight="fill" className="text-green-500" />;
     if (type === "cancel") return <CalendarX size={18} weight="fill" className="text-red-500" />;
     return <Bell size={18} />;
@@ -132,12 +132,12 @@ export default function AdminHeader() {
       
       {/* Kiri: Judul Halaman */}
       <div className="flex items-center gap-4">
-        <button className="md:hidden text-gray-500 hover:text-[#F5B301]">
+        <button className="md:hidden text-gray-500 hover:text-gold-700">
           <List size={28} />
         </button>
         <div className="flex items-center gap-3">
-          <div className="w-4 h-6 border-l-4 border-[#1b2a4e] rounded-sm hidden md:block"></div>
-          <h1 className="text-[18px] md:text-[20px] font-bold text-[#1b2a4e]">{getTitle()}</h1>
+          <div className="w-4 h-6 border-l-4 border-brand-900 rounded-sm hidden md:block"></div>
+          <h1 className="text-[18px] md:text-[20px] font-bold text-brand-900">{getTitle()}</h1>
         </div>
       </div>
 
@@ -148,7 +148,7 @@ export default function AdminHeader() {
         <div ref={notifRef} className="relative">
           <button 
             onClick={() => setIsNotifOpen(!isNotifOpen)}
-            className={`relative p-2 rounded-full transition-colors ${isNotifOpen ? "bg-gray-100 text-[#1b2a4e]" : "text-gray-500 hover:text-[#1b2a4e]"}`}
+            className={`relative p-2 rounded-full transition-colors ${isNotifOpen ? "bg-gray-100 text-brand-900" : "text-gray-500 hover:text-brand-900"}`}
           >
             <Bell size={24} weight={isNotifOpen ? "fill" : "regular"} />
             {hasUnread && (
@@ -161,10 +161,10 @@ export default function AdminHeader() {
             <div className="absolute right-0 top-12 w-[360px] bg-white border border-gray-200 shadow-[0_10px_40px_rgba(0,0,0,0.08)] rounded-2xl overflow-hidden flex flex-col z-50 animate-in fade-in slide-in-from-top-2 duration-200">
               
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-gray-50/50">
-                <span className="font-bold text-[#1b2a4e] text-[14px]">Notifikasi</span>
+                <span className="font-bold text-brand-900 text-[14px]">Notifikasi</span>
                 <button 
                   onClick={handleMarkAllRead}
-                  className="text-[12px] font-bold text-[#F5B301] flex items-center gap-1 hover:text-[#dda101] transition-colors"
+                  className="text-[12px] font-bold text-gold-700 flex items-center gap-1 hover:text-gold-800 transition-colors"
                 >
                   <Checks size={16} weight="bold" /> Tandai sudah dibaca
                 </button>
@@ -183,12 +183,12 @@ export default function AdminHeader() {
                       onClick={() => setIsNotifOpen(false)}
                       className="flex gap-3.5 p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer transition-colors"
                     >
-                      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${notif.type === 'new' ? 'bg-yellow-50' : notif.type === 'done' ? 'bg-green-50' : 'bg-red-50'}`}>
+                      <div className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${notif.type === 'new' ? 'bg-brand-50' : notif.type === 'done' ? 'bg-green-50' : 'bg-red-50'}`}>
                         {getIcon(notif.type)}
                       </div>
                       <div className="flex flex-col gap-0.5 min-w-0">
                         <div className="flex justify-between items-start gap-2">
-                          <span className={`font-bold text-[13px] leading-tight truncate ${notif.isRead ? "text-gray-600" : "text-[#1b2a4e]"}`}>
+                          <span className={`font-bold text-[13px] leading-tight truncate ${notif.isRead ? "text-gray-600" : "text-brand-900"}`}>
                             {notif.title}
                           </span>
                           <span className="text-[11px] text-gray-400 whitespace-nowrap">{notif.time}</span>
@@ -204,7 +204,7 @@ export default function AdminHeader() {
                 <Link 
                   href="/admin/notifikasi"
                   onClick={() => setIsNotifOpen(false)}
-                  className="w-full py-2 flex items-center justify-center rounded-xl text-[13px] font-bold text-[#1b2a4e] bg-gray-100 hover:bg-gray-200 transition-colors"
+                  className="w-full py-2 flex items-center justify-center rounded-xl text-[13px] font-bold text-brand-900 bg-gray-100 hover:bg-gray-200 transition-colors"
                 >
                   Lihat semua notifikasi
                 </Link>
@@ -218,7 +218,7 @@ export default function AdminHeader() {
 
         {/* Foto Profil & Nama Admin Dinamis */}
         <Link href="/admin/profil" className="flex items-center gap-3 cursor-pointer group">
-          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 group-hover:border-[#F5B301] transition-colors bg-[#1b2a4e]">
+          <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200 group-hover:border-brand-600 transition-colors bg-brand-900">
             <img 
               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(adminName)}&background=1b2a4e&color=fff`} 
               alt="Profil Admin" 
@@ -226,7 +226,7 @@ export default function AdminHeader() {
             />
           </div>
           <div className="flex-col hidden sm:flex max-w-[140px]">
-            <span className="text-[14px] font-bold text-[#1b2a4e] leading-tight group-hover:text-[#F5B301] transition-colors truncate">
+            <span className="text-[14px] font-bold text-brand-900 leading-tight group-hover:text-gold-700 transition-colors truncate">
               {adminName}
             </span>
             <span className="text-[12px] text-gray-500">Admin</span>

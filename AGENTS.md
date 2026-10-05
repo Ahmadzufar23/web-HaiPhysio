@@ -8,10 +8,13 @@ Dokumen ini berisi panduan, konvensi koding, dan aturan arsitektur untuk AI codi
 
 - **Framework:** Next.js 15+ (App Router architecture with React 19).
 - **TypeScript:** Strict type checking aktif.
-- **Styling:** Tailwind CSS dengan palet warna brand HaiPhysio:
-  - Primary Navy: `#1b2a4e` / `#16223e`
-  - Accent Gold / Yellow: `#F5B301` / `#dda101` / `#FFFBEA`
-  - Neutral / Background: `#585858`, `#f8fafc`, `#ffffff`
+- **Styling:** Tailwind CSS v4 dengan palet brand HaiPhysio dari logo — **kuning, putih & hitam** (token di `src/app/globals.css`):
+  - Primary Yellow (isian/CTA): `brand-600` #f5c900, hover `brand-700` #e0b400 — teks di atasnya WAJIB `text-brand-950`, bukan putih
+  - Kuning logo: `brand-500` #fcdf09
+  - Ink (teks, judul, panel gelap, sidebar): `brand-900` #1a1814 / `brand-950` #0e0d0a
+  - Teks aksen di latar terang: `gold-700` #8a6500 (kuning murni tidak terbaca di atas putih)
+  - Tint: `brand-50` #fffbe6, `brand-100` #fff3bf
+  - Ciri khas: `<LogoWatermark />`, `.mark-swoosh`, `.bg-logo-pattern`. Panduan lengkap: `docs/DESIGN_SYSTEM.md`
 - **Iconography:** `@phosphor-icons/react`.
 - **State & Data Fetching:** React Hooks (`useState`, `useEffect`, `useCallback`) + Service Layer dengan Axios (`authApi`, `bookingApi`).
 - **Authentication & Sessions:** Cookie-based session auth (`withCredentials: true`).

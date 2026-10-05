@@ -38,14 +38,14 @@ export default function AdminTerapisPage() {
       {/* --- HEADER HALAMAN --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-bold text-[#1b2a4e]">Kelola Data Terapis</h2>
+          <h2 className="text-[28px] font-bold text-brand-900">Kelola Data Terapis</h2>
           <p className="text-[#585858] text-[15px]">Manajemen profil, spesialisasi, dan jadwal kerja fisioterapis.</p>
         </div>
 
         {/* Tombol Tambah Terapis */}
         <Link 
           href="/admin/terapis/tambah"
-          className="flex items-center justify-center gap-2 px-6 py-3 bg-[#F5B301] hover:bg-[#dda101] text-white font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+          className="flex items-center justify-center gap-2 px-6 py-3 bg-brand-600 hover:bg-brand-700 text-brand-950 font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
         >
           <Plus size={18} weight="bold" />
           Tambah Terapis

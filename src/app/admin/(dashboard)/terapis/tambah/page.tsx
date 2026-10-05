@@ -114,13 +114,13 @@ export default function TambahTerapisPage() {
       {/* --- BREADCRUMB & JUDUL --- */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 text-[13px] text-gray-500 font-medium">
-          <Link href="/admin/terapis" className="hover:text-[#F5B301] transition-colors">
+          <Link href="/admin/terapis" className="hover:text-gold-700 transition-colors">
             Kelola Data Terapis
           </Link>
           <CaretRight size={14} />
-          <span className="text-[#1b2a4e] font-bold">Tambah Terapis</span>
+          <span className="text-brand-900 font-bold">Tambah Terapis</span>
         </div>
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Tambah Terapis Baru</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Tambah Terapis Baru</h2>
         <p className="text-[#585858] text-[15px]">Lengkapi informasi di bawah ini untuk mendaftarkan terapis profesional baru ke dalam sistem Hai Physio.</p>
       </div>
 
@@ -132,7 +132,7 @@ export default function TambahTerapisPage() {
           
           {/* Nama Lengkap */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">
+            <label className="text-[14px] font-bold text-brand-900">
               Nama Lengkap <span className="text-red-500">*</span>
             </label>
             <input 
@@ -142,13 +142,13 @@ export default function TambahTerapisPage() {
               onChange={handleChange}
               placeholder="Contoh: Ftr. Budi Santoso, S.Ft"
               required
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
+              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900"
             />
           </div>
 
           {/* Nomor SIP */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">
+            <label className="text-[14px] font-bold text-brand-900">
               Nomor SIP (Surat Izin Praktik) <span className="text-red-500">*</span>
             </label>
             <input 
@@ -158,53 +158,53 @@ export default function TambahTerapisPage() {
               onChange={handleChange}
               placeholder="Contoh: SIP/2026/0402/PHY/99"
               required
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
+              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900"
             />
           </div>
 
           {/* Spesialisasi */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi Layanan <span className="text-red-500">*</span></label>
+            <label className="text-[14px] font-bold text-brand-900">Spesialisasi Layanan <span className="text-red-500">*</span></label>
             <FocusAreaCheckboxes focusAreas={focusAreasList} value={focusIds} onChange={setFocusIds} isLoading={isFocusLoading} />
             <p className="text-[12px] text-gray-400">Jadwal praktik diatur lewat menu Kelola Slot Jadwal setelah terapis disimpan.</p>
           </div>
 
           {/* Nomor Telepon */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Nomor Telepon / WhatsApp</label>
+            <label className="text-[14px] font-bold text-brand-900">Nomor Telepon / WhatsApp</label>
             <input 
               type="text" 
               name="telepon" 
               value={formData.telepon} 
               onChange={handleChange}
               placeholder="0812 3456 7890"
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
+              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900"
             />
           </div>
 
           {/* Email */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Email Terapis</label>
+            <label className="text-[14px] font-bold text-brand-900">Email Terapis</label>
             <input 
               type="email" 
               name="email" 
               value={formData.email} 
               onChange={handleChange}
               placeholder="nama.terapis@haiphysio.com"
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
+              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900"
             />
           </div>
 
           {/* Pendidikan */}
           <div className="flex flex-col gap-2">
-            <label className="text-[14px] font-bold text-[#1b2a4e]">Latar Belakang Pendidikan</label>
+            <label className="text-[14px] font-bold text-brand-900">Latar Belakang Pendidikan</label>
             <input 
               type="text" 
               name="pendidikan" 
               value={formData.pendidikan} 
               onChange={handleChange}
               placeholder="Contoh: S1 Fisioterapi - Universitas Indonesia"
-              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] transition-colors text-[14px] text-[#1b2a4e]"
+              className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900"
             />
           </div>
 
@@ -220,7 +220,7 @@ export default function TambahTerapisPage() {
             <button 
               type="submit"
               disabled={isSubmitting}
-              className="py-3.5 px-8 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101] transition-colors shadow-sm disabled:opacity-50"
+              className="py-3.5 px-8 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm disabled:opacity-50"
             >
               {isSubmitting ? "Menyimpan Data..." : "Simpan Data Terapis"}
             </button>
@@ -231,22 +231,22 @@ export default function TambahTerapisPage() {
         <div className="flex flex-col gap-6 sticky top-28">
           
           {/* Kartu Pratinjau */}
-          <div className="w-full bg-[#FFFBEA] border border-[#fdeeb3] rounded-2xl p-6 shadow-sm overflow-hidden flex flex-col relative">
+          <div className="w-full bg-brand-50 border border-brand-100 rounded-2xl p-6 shadow-sm overflow-hidden flex flex-col relative">
             <div className="flex items-center gap-2 mb-6">
-              <Info size={18} className="text-[#F5B301]" />
-              <span className="text-[13px] font-bold text-[#1b2a4e]">Pratinjau Kartu Terapis</span>
+              <Info size={18} className="text-gold-700" />
+              <span className="text-[13px] font-bold text-brand-900">Pratinjau Kartu Terapis</span>
             </div>
 
             {/* Konten Kartu */}
             <div className="w-full bg-white rounded-xl shadow-sm overflow-hidden flex flex-col">
               <div className="h-[100px] bg-gray-200 relative w-full overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#1b2a4e]/10 to-[#F5B301]/20"></div>
-                <div className="absolute top-3 right-3 bg-[#F5B301] text-white text-[11px] font-bold px-3 py-1 rounded-full z-10 shadow-sm">
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-900/10 to-brand-600/20"></div>
+                <div className="absolute top-3 right-3 bg-brand-600 text-brand-950 text-[11px] font-bold px-3 py-1 rounded-full z-10 shadow-sm">
                   {previewSpesialisasi}
                 </div>
               </div>
               
-              <div className="w-20 h-20 rounded-full border-4 border-white bg-[#1b2a4e] shadow-sm mx-auto -mt-10 relative z-10 overflow-hidden">
+              <div className="w-20 h-20 rounded-full border-4 border-white bg-brand-900 shadow-sm mx-auto -mt-10 relative z-10 overflow-hidden">
                 <img 
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent(previewNama.replace("Ftr. ", ""))}&background=1b2a4e&color=fff&size=150`} 
                   alt="Preview Avatar" 
@@ -256,7 +256,7 @@ export default function TambahTerapisPage() {
 
               <div className="p-5 flex flex-col gap-3.5 mt-1">
                 <div className="flex flex-col items-center text-center pb-3 border-b border-gray-100">
-                  <h3 className="text-[17px] font-bold text-[#1b2a4e]">{previewNama}</h3>
+                  <h3 className="text-[17px] font-bold text-brand-900">{previewNama}</h3>
                   <span className="text-[12px] text-gray-500 mt-0.5 flex items-center gap-1">
                     SIP: {previewSIP}
                   </span>
@@ -264,19 +264,19 @@ export default function TambahTerapisPage() {
 
                 <div className="flex flex-col gap-2.5">
                   <div className="flex items-start gap-2.5">
-                    <GraduationCap size={17} className="text-[#F5B301] shrink-0 mt-0.5" />
+                    <GraduationCap size={17} className="text-gold-700 shrink-0 mt-0.5" />
                     <div className="flex flex-col">
                       <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pendidikan</span>
-                      <span className="text-[12px] font-semibold text-[#1b2a4e]">{previewPendidikan}</span>
+                      <span className="text-[12px] font-semibold text-brand-900">{previewPendidikan}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2.5">
-                    <Phone size={17} className="text-[#F5B301] shrink-0" />
-                    <span className="text-[12px] font-medium text-[#1b2a4e]">{previewTelepon}</span>
+                    <Phone size={17} className="text-gold-700 shrink-0" />
+                    <span className="text-[12px] font-medium text-brand-900">{previewTelepon}</span>
                   </div>
                   <div className="flex items-center gap-2.5">
-                    <EnvelopeSimple size={17} className="text-[#F5B301] shrink-0" />
-                    <span className="text-[12px] font-medium text-[#1b2a4e] line-clamp-1">{previewEmail}</span>
+                    <EnvelopeSimple size={17} className="text-gold-700 shrink-0" />
+                    <span className="text-[12px] font-medium text-brand-900 line-clamp-1">{previewEmail}</span>
                   </div>
                 </div>
               </div>
@@ -284,10 +284,10 @@ export default function TambahTerapisPage() {
           </div>
 
           {/* Catatan Penting Warning Box */}
-          <div className="bg-white border-l-4 border-l-[#F5B301] border-y border-r border-gray-200 rounded-xl p-5 flex items-start gap-3 shadow-sm">
-            <Info size={24} weight="fill" className="text-[#F5B301] shrink-0 mt-0.5" />
+          <div className="bg-white border-l-4 border-l-brand-600 border-y border-r border-gray-200 rounded-xl p-5 flex items-start gap-3 shadow-sm">
+            <Info size={24} weight="fill" className="text-gold-700 shrink-0 mt-0.5" />
             <div className="flex flex-col gap-1">
-              <h4 className="text-[14px] font-bold text-[#1b2a4e]">Catatan Penting</h4>
+              <h4 className="text-[14px] font-bold text-brand-900">Catatan Penting</h4>
               <p className="text-[13px] text-[#585858] leading-relaxed">
                 Pastikan Nomor SIP yang dimasukkan valid dan aktif. Setelah disimpan, data terapis baru akan langsung tampil di sistem booking pasien dan admin.
               </p>
@@ -301,7 +301,7 @@ export default function TambahTerapisPage() {
       {toast.show && (
         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2.5 px-6 py-3.5 rounded-full shadow-xl z-50 animate-in slide-in-from-bottom-5 duration-300 border ${
           toast.type === "warning" 
-            ? "bg-[#fffbeb] border-[#fde68a] text-[#b45309]" 
+            ? "bg-amber-50 border-amber-200 text-amber-700" 
             : toast.type === "error"
             ? "bg-[#fef2f2] border-[#fecaca] text-[#b91c1c]"
             : "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"

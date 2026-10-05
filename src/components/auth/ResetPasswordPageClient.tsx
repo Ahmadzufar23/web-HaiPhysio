@@ -122,7 +122,7 @@ export default function ResetPasswordPageClient() {
       {step === "request" ? (
         <>
           <div className="mb-7 space-y-2">
-            <h2 className="text-[28px] font-bold text-[#1b2a4e]">Atur Ulang Kata Sandi</h2>
+            <h2 className="text-[28px] font-bold text-brand-900">Atur Ulang Kata Sandi</h2>
             <p className="text-[15px] leading-6 text-slate-500">
               Kami akan mengirim tautan pengaturan ulang ke email yang terdaftar.
             </p>
@@ -142,7 +142,7 @@ export default function ResetPasswordPageClient() {
             <AuthButton>Kirim Instruksi Reset</AuthButton>
             <Link
               href="/login"
-              className="block text-center text-[14px] font-semibold text-[#1b2a4e] hover:text-[#F5B301]"
+              className="block text-center text-[14px] font-semibold text-brand-900 hover:text-gold-700"
             >
               Kembali ke Login
             </Link>
@@ -163,7 +163,7 @@ export default function ResetPasswordPageClient() {
             />
           </div>
           <div className="space-y-3">
-            <h2 className="text-[26px] font-bold leading-tight text-[#D69A00]">
+            <h2 className="text-[26px] font-bold leading-tight text-gold-700">
               Permintaan Atur Ulang Sandi Terkirim
             </h2>
             <p className="text-[15px] leading-7 text-[#707070]">
@@ -177,7 +177,7 @@ export default function ResetPasswordPageClient() {
         <>
           {/* PERBAIKAN: Potongan '<div classname=' yang salah sudah dihapus dari sini */}
           <div className="mb-7 space-y-2">
-            <h2 className="text-[28px] font-bold text-[#1b2a4e]">Buat Kata Sandi Baru</h2>
+            <h2 className="text-[28px] font-bold text-brand-900">Buat Kata Sandi Baru</h2>
           </div>
 
           <form className="space-y-5" noValidate onSubmit={submitNewPassword}>
@@ -213,7 +213,7 @@ export default function ResetPasswordPageClient() {
         <div className="flex min-h-[430px] flex-col items-center justify-center space-y-6 text-center">
           <div className="h-36 w-36 rounded-[8px] bg-slate-200" aria-hidden="true" />
           <div className="space-y-3">
-            <h2 className="text-[26px] font-bold leading-tight text-[#D69A00]">
+            <h2 className="text-[26px] font-bold leading-tight text-gold-700">
               Sandi Baru Anda Berhasil Disimpan!
             </h2>
             <p className="text-[15px] leading-7 text-[#707070]">
@@ -222,7 +222,7 @@ export default function ResetPasswordPageClient() {
           </div>
           <Link
             href="/login"
-            className="flex h-12 w-full items-center justify-center rounded-[8px] bg-[#FBBF24] px-5 text-[15px] font-semibold text-white transition hover:bg-[#F5B301]"
+            className="flex h-12 w-full items-center justify-center rounded-[8px] bg-brand-500 px-5 text-[15px] font-semibold text-brand-950 transition hover:bg-brand-600"
           >
             Kembali ke Login
           </Link>

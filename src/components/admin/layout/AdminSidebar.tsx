@@ -36,7 +36,7 @@ export default function AdminSidebar() {
 
   return (
     <>
-      <aside className="w-[280px] h-screen bg-[#1b2a4e] flex flex-col fixed left-0 top-0 text-white shadow-xl z-50">
+      <aside className="w-[280px] h-screen bg-brand-900 flex flex-col fixed left-0 top-0 text-white shadow-xl z-50">
         
         {/* --- Area Logo --- */}
         <div className="flex items-center gap-3 px-8 py-8 border-b border-white/10">
@@ -59,7 +59,7 @@ export default function AdminSidebar() {
                 href={item.path}
                 className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
                   ${isActive 
-                    ? "bg-[#14203b] text-[#F5B301] font-bold border-l-4 border-[#F5B301]" 
+                    ? "bg-brand-950 text-brand-300 font-bold border-l-4 border-brand-300" 
                     : "text-gray-300 hover:bg-white/5 hover:text-white font-medium border-l-4 border-transparent"}
                 `}
               >

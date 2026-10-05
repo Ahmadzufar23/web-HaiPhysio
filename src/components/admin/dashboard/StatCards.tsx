@@ -64,14 +64,14 @@ export default function StatCards() {
       value: `${stats.todayCount} Pasien`,
       sub: "Sesi Terjadwal",
       iconEl: <CalendarBlank size={24} weight="bold" />,
-      iconBg: "bg-yellow-50 text-[#F5B301]",
+      iconBg: "bg-brand-50 text-gold-700",
     },
     {
       label: "Booking\nMinggu Ini",
       value: `${stats.weekCount} Sesi`,
       sub: "Total Pekan Ini",
       iconEl: <CalendarCheck size={24} weight="bold" />,
-      iconBg: "bg-blue-50 text-[#1b2a4e]",
+      iconBg: "bg-brand-50 text-brand-900",
     },
     {
       label: "Terkonfirmasi",
@@ -115,7 +115,7 @@ export default function StatCards() {
             className="p-1 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
             title="Refresh sekarang"
           >
-            <ArrowClockwise size={14} weight="bold" className={isRefreshing ? "animate-spin text-[#F5B301]" : "text-gray-400"} />
+            <ArrowClockwise size={14} weight="bold" className={isRefreshing ? "animate-spin text-gold-700" : "text-gray-400"} />
           </button>
         </div>
       </div>
@@ -131,7 +131,7 @@ export default function StatCards() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-[28px] font-bold text-[#1b2a4e]">
+              <span className="text-[28px] font-bold text-brand-900">
                 {isLoading ? (
                   <span className="inline-block w-20 h-7 bg-gray-100 rounded-lg animate-pulse"></span>
                 ) : card.value}

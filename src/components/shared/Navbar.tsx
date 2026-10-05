@@ -3,179 +3,230 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { List, X, UserCircle, ClockCounterClockwise } from "@phosphor-icons/react";
-import { profileService } from "@/services/profileService";
+import { useState, useEffect, useRef } from "react";
+import { List, X, UserCircle, ClockCounterClockwise, ArrowRight, CaretDown } from "@phosphor-icons/react";
+import { useAuthStatus } from "@/hooks/useAuthStatus";
+
+const navItems = [
+  { label: "Beranda", path: "/" },
+  { label: "Tentang Kami", path: "/tentang-kami" },
+  { label: "Layanan", path: "/layanan" },
+  { label: "Kontak Kami", path: "/kontak" },
+];
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userData, setUserData] = useState<{ fullName: string } | null>(null);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Cek sesi login otomatis ke API backend
+  // Cek sesi login ulang tiap pindah halaman
+  const { isLoggedIn, fullName, appointmentHref } = useAuthStatus([pathname]);
+
+  // Navbar berubah jadi "kaca" setelah halaman di-scroll sedikit
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await profileService.getProfile();
-        const user = res.data?.user || res.user;
-        setUserData({ fullName: user?.full_name || user?.name || "Pasien" });
-        setIsLoggedIn(true);
-      } catch {
-        setIsLoggedIn(false);
-        setUserData(null);
-      }
+    const onScroll = () => setIsScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Tutup menu saat pindah halaman (disesuaikan saat render, bukan lewat effect)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    setIsMobileMenuOpen(false);
+    setIsProfileDropdownOpen(false);
+  }
+
+  // Tutup dropdown profil saat klik di luar / tekan Escape
+  useEffect(() => {
+    if (!isProfileDropdownOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (!dropdownRef.current?.contains(e.target as Node)) setIsProfileDropdownOpen(false);
     };
-    checkAuth();
-  }, [pathname]);
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setIsProfileDropdownOpen(false);
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [isProfileDropdownOpen]);
 
   // Early return WAJIB di bawah semua hooks (Rules of Hooks)
   if (pathname.startsWith("/admin")) return null;
 
-  const appointmentHref = isLoggedIn ? "/booking" : "/login";
-
-  const navItems = [
-    { label: "Beranda", path: "/" },
-    { label: "Tentang Kami", path: "/tentang-kami" },
-    { label: "Layanan", path: "/layanan" },
-    { label: "Kontak Kami", path: "/kontak" },
-  ];
+  const solid = isScrolled || isMobileMenuOpen;
+  const firstName = fullName?.split(" ")[0];
 
   return (
-    <nav className="sticky top-0 z-50 w-full h-[85px] md:h-[100px] bg-white shadow-[0px_2px_10px_rgba(0,0,0,0.05)] px-5 md:px-8 lg:px-10 xl:px-[120px] flex items-center justify-between transition-all">
-      
-      {/* LOGO */}
-      <div className="w-[110px] md:w-[125px] flex items-center justify-start relative">
-        <Link href="/">
-          <Image 
-            src="/fisio_nobg.png" 
-            alt="Logo Hai Physio" 
-            width={125} 
-            height={80} 
-            priority 
-            className="object-contain object-left w-full h-auto" 
+    <header
+      className={`sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
+        solid
+          ? "bg-white/80 backdrop-blur-xl shadow-[0_1px_0_rgb(26_24_20/0.06),0_12px_32px_-18px_rgb(26_24_20/0.25)]"
+          : "bg-white"
+      }`}
+    >
+      <nav
+        aria-label="Navigasi utama"
+        className={`mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 md:px-8 lg:px-10 xl:px-[80px] transition-[height] duration-500 ${
+          isScrolled ? "h-[72px] md:h-[78px]" : "h-[84px] md:h-[96px]"
+        }`}
+      >
+        {/* LOGO */}
+        <Link href="/" aria-label="Hai Physio — Beranda" className="relative flex w-[104px] md:w-[118px] items-center transition-transform duration-500 hover:scale-[1.03]">
+          <Image
+            src="/fisio_nobg.png"
+            alt="Logo Hai Physio"
+            width={125}
+            height={80}
+            priority
+            className="h-auto w-full object-contain object-left"
           />
         </Link>
-      </div>
 
-      {/* MENU NAVIGASI DESKTOP */}
-      <div className="hidden lg:flex items-center gap-6 xl:gap-[60px]">
-        {navItems.map((item) => {
-          const isActive = pathname === item.path;
-          return (
-            <Link
-              key={item.path}
-              href={item.path}
-              className={`text-[15px] xl:text-[16px] transition-all duration-200 ${isActive ? "font-bold text-[#D69A00]" : "font-medium text-[#D69A00] hover:text-[#F5B301]"}`}
-            >
-              {item.label}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* TOMBOL CTA / PROFIL DESKTOP */}
-      <div className="hidden lg:flex items-center gap-4">
-        <Link 
-          href={appointmentHref} 
-          className="flex items-center justify-center px-6 h-[46px] bg-[#F5B301] hover:bg-[#dda101] text-white font-medium text-[15px] rounded-lg transition-colors shadow-sm"
-        >
-          Buat Janji Temu
-        </Link>
-
-        {isLoggedIn && (
-          <div className="relative">
-            <div 
-              onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-              className="flex items-center justify-center cursor-pointer p-1 hover:bg-gray-50 rounded-full transition-colors border border-transparent hover:border-gray-200"
-            >
-              <UserCircle size={40} weight="fill" color="#1b2a4e" />
-            </div>
-
-            {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-3 w-[220px] bg-white border border-gray-100 rounded-[12px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] py-2 flex flex-col z-50 animate-in fade-in slide-in-from-top-2 duration-200">
-                <Link 
-                  href="/profil" 
-                  onClick={() => setIsProfileDropdownOpen(false)}
-                  className="group flex items-center gap-3 px-4 py-3 text-[#1b2a4e] text-[14px] font-medium transition-colors hover:bg-[#FFFBEA] hover:text-[#F5B301]"
-                >
-                  <UserCircle size={20} className="text-gray-400 group-hover:text-[#F5B301]" />
-                  Pengaturan Profil
-                </Link>
-                <div className="w-full h-[1px] bg-gray-100 my-1"></div>
-                <Link 
-                  href="/riwayat-booking" 
-                  onClick={() => setIsProfileDropdownOpen(false)}
-                  className="group flex items-center gap-3 px-4 py-3 text-[#1b2a4e] text-[14px] font-medium transition-colors hover:bg-[#FFFBEA] hover:text-[#F5B301]"
-                >
-                  <ClockCounterClockwise size={20} className="text-gray-400 group-hover:text-[#F5B301]" />
-                  Riwayat Booking
-                </Link>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* HAMBURGER BUTTON (Mobile Only) */}
-      <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="block lg:hidden text-[#D69A00] p-2">
-        {isMobileMenuOpen ? <X size={28} /> : <List size={28} />}
-      </button>
-
-      {/* DROPDOWN MOBILE MENU: top-full (MENEMPEL RAPAT 0 GAP) */}
-      {isMobileMenuOpen && (
-        <div className="absolute top-full left-0 w-full bg-white shadow-2xl lg:hidden flex flex-col px-5 py-6 border-t border-gray-100 z-50 animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-85px)] overflow-y-auto">
-          
-          {/* Header Profil User di Mobile (Jika Sudah Login) */}
-          {isLoggedIn && (
-            <div className="flex items-center gap-3 mb-4 p-3.5 bg-[#FFFBEA] rounded-xl border border-[#FDE68A]">
-              <UserCircle size={40} weight="fill" color="#1b2a4e" />
-              <div className="flex flex-col min-w-0">
-                <span className="text-[#1b2a4e] text-[15px] font-bold truncate">{userData?.fullName || "Akun Saya"}</span>
-                <span className="text-[#D69A00] text-[12px] font-medium">Pasien Terdaftar</span>
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-4 mb-4">
-            {navItems.map((item) => {
-              const isActive = pathname === item.path;
-              return (
-                <Link key={item.path} href={item.path} onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-[16px] py-2 border-b border-gray-50 ${isActive ? "font-bold text-[#D69A00]" : "font-medium text-[#D69A00]"}`}
+        {/* MENU NAVIGASI DESKTOP */}
+        <ul className="hidden lg:flex items-center gap-1 rounded-full border border-brand-900/[0.07] bg-white/60 p-1.5">
+          {navItems.map((item) => {
+            const isActive = pathname === item.path;
+            return (
+              <li key={item.path}>
+                <Link
+                  href={item.path}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`relative block rounded-full px-5 py-2.5 text-[14.5px] font-medium transition-colors duration-300 ${
+                    isActive ? "bg-brand-900 text-white" : "text-brand-900/70 hover:bg-brand-50 hover:text-brand-900"
+                  }`}
                 >
                   {item.label}
                 </Link>
+              </li>
+            );
+          })}
+        </ul>
+
+        {/* TOMBOL CTA / PROFIL DESKTOP */}
+        <div className="hidden lg:flex items-center gap-3">
+          {isLoggedIn && (
+            <div className="relative" ref={dropdownRef}>
+              <button
+                type="button"
+                aria-haspopup="menu"
+                aria-expanded={isProfileDropdownOpen}
+                onClick={() => setIsProfileDropdownOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-full border border-brand-900/10 py-1 pl-1 pr-3 transition-colors hover:border-brand-900/25 hover:bg-brand-50"
+              >
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-50 text-gold-700">
+                  <UserCircle size={26} weight="fill" />
+                </span>
+                <span className="max-w-[110px] truncate text-[14px] font-semibold text-brand-900">{firstName}</span>
+                <CaretDown size={14} weight="bold" className={`text-brand-900/60 transition-transform duration-300 ${isProfileDropdownOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {isProfileDropdownOpen && (
+                <div role="menu" className="animate-menu-in absolute right-0 mt-3 w-[240px] overflow-hidden rounded-2xl border border-brand-900/[0.08] bg-white p-1.5 shadow-[0_24px_48px_-16px_rgb(26_24_20/0.3)]">
+                  <div className="px-3.5 pb-2 pt-2.5">
+                    <p className="text-[12px] text-brand-900/50">Masuk sebagai</p>
+                    <p className="truncate text-[14px] font-semibold text-brand-900">{fullName}</p>
+                  </div>
+                  <div className="my-1 h-px bg-brand-900/[0.06]" />
+                  <Link
+                    role="menuitem"
+                    href="/profil"
+                    className="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-[14px] font-medium text-brand-900 transition-colors hover:bg-brand-50"
+                  >
+                    <UserCircle size={20} className="text-brand-900/40 transition-colors group-hover:text-gold-700" />
+                    Pengaturan Profil
+                  </Link>
+                  <Link
+                    role="menuitem"
+                    href="/riwayat-booking"
+                    className="group flex items-center gap-3 rounded-xl px-3.5 py-3 text-[14px] font-medium text-brand-900 transition-colors hover:bg-brand-50"
+                  >
+                    <ClockCounterClockwise size={20} className="text-brand-900/40 transition-colors group-hover:text-gold-700" />
+                    Riwayat Booking
+                  </Link>
+                </div>
+              )}
+            </div>
+          )}
+
+          <Link href={appointmentHref} className="btn btn-primary btn-sm">
+            Buat Janji Temu
+            <ArrowRight size={16} weight="bold" className="btn-arrow" />
+          </Link>
+        </div>
+
+        {/* HAMBURGER BUTTON (Mobile Only) */}
+        <button
+          type="button"
+          onClick={() => setIsMobileMenuOpen((v) => !v)}
+          aria-expanded={isMobileMenuOpen}
+          aria-controls="mobile-menu"
+          aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
+          className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-900/10 text-brand-900 transition-colors hover:bg-brand-50 lg:hidden"
+        >
+          {isMobileMenuOpen ? <X size={22} weight="bold" /> : <List size={22} weight="bold" />}
+        </button>
+      </nav>
+
+      {/* DROPDOWN MOBILE MENU */}
+      {isMobileMenuOpen && (
+        <div
+          id="mobile-menu"
+          className="absolute left-0 top-full z-50 flex max-h-[calc(100dvh-72px)] w-full flex-col overflow-y-auto border-t border-brand-900/[0.06] bg-white px-5 pb-8 pt-4 shadow-[0_24px_48px_-16px_rgb(26_24_20/0.3)] lg:hidden"
+        >
+          {isLoggedIn && (
+            <div className="animate-menu-in mb-4 flex items-center gap-3 rounded-2xl border border-brand-100 bg-brand-50 p-3.5">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-gold-700">
+                <UserCircle size={30} weight="fill" />
+              </span>
+              <div className="flex min-w-0 flex-col">
+                <span className="truncate text-[15px] font-bold text-brand-900">{fullName || "Akun Saya"}</span>
+                <span className="text-[12px] font-medium text-gold-700">Pasien Terdaftar</span>
+              </div>
+            </div>
+          )}
+
+          <ul className="flex flex-col">
+            {navItems.map((item, i) => {
+              const isActive = pathname === item.path;
+              return (
+                <li key={item.path} className="animate-menu-in" style={{ animationDelay: `${60 + i * 50}ms` }}>
+                  <Link
+                    href={item.path}
+                    aria-current={isActive ? "page" : undefined}
+                    className="flex items-center justify-between border-b border-brand-900/[0.06] py-4"
+                  >
+                    <span className={`font-display text-[28px] leading-none ${isActive ? "italic text-gold-700" : "text-brand-900"}`}>
+                      {item.label}
+                    </span>
+                    <ArrowRight size={18} className={isActive ? "text-gold-700" : "text-brand-900/30"} />
+                  </Link>
+                </li>
               );
             })}
-          </div>
+          </ul>
 
-          {isLoggedIn ? (
-            <div className="flex flex-col mt-2 border-t border-gray-100 pt-3">
-              <Link href="/profil" onClick={() => setIsMobileMenuOpen(false)} className="text-[15px] py-3 border-b border-gray-50 font-medium text-[#1b2a4e] flex items-center gap-3">
-                <UserCircle size={20} className="text-gray-400" /> Pengaturan Profil
+          {isLoggedIn && (
+            <div className="animate-menu-in mt-4 flex flex-col" style={{ animationDelay: "280ms" }}>
+              <Link href="/profil" className="flex items-center gap-3 py-3 text-[15px] font-medium text-brand-900">
+                <UserCircle size={20} className="text-brand-900/40" /> Pengaturan Profil
               </Link>
-              <Link href="/riwayat-booking" onClick={() => setIsMobileMenuOpen(false)} className="text-[15px] py-3 border-b border-gray-50 font-medium text-[#1b2a4e] flex items-center gap-3">
-                <ClockCounterClockwise size={20} className="text-gray-400" /> Riwayat Booking
-              </Link>
-              <Link href="/booking" onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full h-[46px] flex items-center justify-center bg-[#F5B301] hover:bg-[#dda101] text-white font-medium text-[15px] rounded-lg mt-5"
-              >
-                Buat Janji Temu
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col mt-2 border-t border-gray-100 pt-4">
-              <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}
-                className="w-full h-[46px] flex items-center justify-center bg-[#F5B301] hover:bg-[#dda101] text-white font-medium text-[15px] rounded-lg shadow-sm"
-              >
-                Buat Janji Temu
+              <Link href="/riwayat-booking" className="flex items-center gap-3 py-3 text-[15px] font-medium text-brand-900">
+                <ClockCounterClockwise size={20} className="text-brand-900/40" /> Riwayat Booking
               </Link>
             </div>
           )}
+
+          <Link href={appointmentHref} className="animate-menu-in btn btn-primary mt-6 w-full" style={{ animationDelay: "320ms" }}>
+            Buat Janji Temu
+            <ArrowRight size={18} weight="bold" className="btn-arrow" />
+          </Link>
         </div>
       )}
-    </nav>
+    </header>
   );
 }

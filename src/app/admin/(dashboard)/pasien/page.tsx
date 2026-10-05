@@ -47,7 +47,7 @@ export default function AdminPasienPage() {
       {/* --- HEADER HALAMAN --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-bold text-[#1b2a4e]">Kelola Data Pasien</h2>
+          <h2 className="text-[28px] font-bold text-brand-900">Kelola Data Pasien</h2>
           <p className="text-[#585858] text-[15px]">Pantau data rekam medis, riwayat kunjungan, dan status reservasi pasien.</p>
         </div>
 
@@ -59,7 +59,7 @@ export default function AdminPasienPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari nama, ID, kontak pasien..." 
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e] bg-white shadow-sm transition-all"
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900 bg-white shadow-sm transition-all"
           />
         </div>
       </div>

@@ -62,12 +62,12 @@ export default function ScheduleFilter({
 
         {/* Filter Fisioterapis */}
         <div className="flex flex-col gap-1.5 flex-1">
-          <label className="text-[13px] font-bold text-[#1b2a4e]">Fisioterapis</label>
+          <label className="text-[13px] font-bold text-brand-900">Fisioterapis</label>
           <div className="relative">
             <select
               value={selectedTherapistId}
               onChange={(e) => onTherapistChange(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-[#1b2a4e] text-[14px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             >
               <option value="">Semua Fisioterapis</option>
               {therapists.map((t) => (
@@ -82,11 +82,11 @@ export default function ScheduleFilter({
 
         {/* Date Range */}
         <div className="flex flex-col gap-1.5 flex-1">
-          <label className="text-[13px] font-bold text-[#1b2a4e] flex items-center gap-1.5">
+          <label className="text-[13px] font-bold text-brand-900 flex items-center gap-1.5">
             <CalendarBlank size={14} weight="bold" />
             Rentang Tanggal
             {dayCount > 1 && (
-              <span className="ml-1 px-2 py-0.5 bg-yellow-50 text-[#dda101] text-[11px] font-bold rounded-full border border-[#F5B301]/30">
+              <span className="ml-1 px-2 py-0.5 bg-brand-50 text-gold-700 text-[11px] font-bold rounded-full border border-brand-600/30">
                 {dayCount} hari
               </span>
             )}
@@ -99,7 +99,7 @@ export default function ScheduleFilter({
                 onDateFromChange(e.target.value);
                 if (e.target.value > dateTo) onDateToChange(e.target.value);
               }}
-              className="flex-1 bg-white border border-gray-200 text-[#1b2a4e] text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             />
             <ArrowRight size={16} className="text-gray-400 shrink-0" />
             <input
@@ -107,7 +107,7 @@ export default function ScheduleFilter({
               value={dateTo}
               min={dateFrom}
               onChange={(e) => onDateToChange(e.target.value)}
-              className="flex-1 bg-white border border-gray-200 text-[#1b2a4e] text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             />
           </div>
         </div>
@@ -125,8 +125,8 @@ export default function ScheduleFilter({
               onClick={s.fn}
               className={`px-3 py-1.5 text-[12px] font-bold rounded-lg transition-all border ${
                 isActive
-                  ? "bg-yellow-50 text-[#dda101] border-[#F5B301]/40"
-                  : "text-[#1b2a4e] bg-gray-100 hover:bg-yellow-50 hover:text-[#dda101] border-transparent hover:border-[#F5B301]/30"
+                  ? "bg-brand-50 text-gold-700 border-brand-600/40"
+                  : "text-brand-900 bg-gray-100 hover:bg-brand-50 hover:text-gold-800 border-transparent hover:border-brand-600/30"
               }`}
             >
               {s.label}

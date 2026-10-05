@@ -136,7 +136,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama terapis atau spesialisasi..." 
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-[#1b2a4e] outline-none focus:border-[#F5B301] transition-colors bg-white shadow-sm"
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-brand-900 outline-none focus:border-gold-600 transition-colors bg-white shadow-sm"
           />
         </div>
 
@@ -146,7 +146,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
             <select 
               value={serviceFilter}
               onChange={(e) => setServiceFilter(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer shadow-sm"
+              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer shadow-sm"
             >
               <option value="">Semua Layanan</option>
               <option value="Olahraga">Fisioterapi Olahraga</option>
@@ -159,9 +159,9 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
           {/* Tombol Ekspor */}
           <button 
             onClick={handleExportCsv}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 text-[#1b2a4e] font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 text-brand-900 font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
           >
-            <DownloadSimple size={18} weight="bold" className="text-[#F5B301]" />
+            <DownloadSimple size={18} weight="bold" className="text-gold-700" />
             Ekspor CSV
           </button>
         </div>
@@ -178,7 +178,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
             <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
               <Users size={32} />
             </div>
-            <h4 className="text-[17px] font-bold text-[#1b2a4e] mb-1">Data Terapis Tidak Ditemukan</h4>
+            <h4 className="text-[17px] font-bold text-brand-900 mb-1">Data Terapis Tidak Ditemukan</h4>
             <p className="text-[13px] text-gray-500 max-w-sm">
               Tidak ada terapis yang sesuai dengan kata kunci pencarian Anda.
             </p>
@@ -211,7 +211,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
                       </td>
                       <td className="py-5 px-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-[#1b2a4e] overflow-hidden shrink-0 border border-gray-200">
+                          <div className="w-10 h-10 rounded-full bg-brand-900 overflow-hidden shrink-0 border border-gray-200">
                             <img 
                               src={`https://ui-avatars.com/api/?name=${encodeURIComponent(tName.replace("Ftr. ", ""))}&background=1b2a4e&color=fff`} 
                               alt="Avatar" 
@@ -219,13 +219,13 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
                             />
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[14px] font-bold text-[#1b2a4e]">{tName}</span>
+                            <span className="text-[14px] font-bold text-brand-900">{tName}</span>
                             <span className="text-[12px] text-gray-400">SIP: {row.sip || "-"}</span>
                           </div>
                         </div>
                       </td>
                       <td className="py-5 px-6">
-                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40">
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
                           {renderLayananIcon(sName)}
                           <span className="text-[12px] font-bold">{sName}</span>
                         </div>
@@ -247,7 +247,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
                         <div className="flex items-center justify-center gap-1.5">
                           <Link 
                             href={`/admin/terapis/edit?id=${row.id}`} 
-                            className="inline-flex items-center justify-center gap-1 text-[#F5B301] hover:text-[#dda101] transition-colors font-bold text-[13px] px-2.5 py-1.5 rounded-lg hover:bg-yellow-50"
+                            className="inline-flex items-center justify-center gap-1 text-gold-700 hover:text-gold-800 transition-colors font-bold text-[13px] px-2.5 py-1.5 rounded-lg hover:bg-brand-50"
                           >
                             <PencilSimple size={15} weight="bold" />
                             Edit
@@ -290,7 +290,7 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
                   onClick={() => setCurrentPage(i + 1)}
                   className={`w-8 h-8 rounded-lg font-bold text-[13px] transition-colors ${
                     currentPage === i + 1
-                      ? "bg-[#1b2a4e] text-white shadow-sm"
+                      ? "bg-brand-900 text-white shadow-sm"
                       : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                   }`}
                 >
@@ -326,13 +326,13 @@ export default function TerapisTable({ therapists, isLoading, onRefresh }: Terap
                 <Warning size={26} weight="fill" className="text-red-500" />
               </div>
               <div className="flex flex-col">
-                <h3 className="text-[17px] font-bold text-[#1b2a4e]">Hapus Permanen Data Terapis</h3>
+                <h3 className="text-[17px] font-bold text-brand-900">Hapus Permanen Data Terapis</h3>
                 <p className="text-[12px] text-gray-400">Data terapis akan dihapus selamanya dari database.</p>
               </div>
             </div>
 
             <p className="text-[14px] text-[#585858] leading-relaxed">
-              Apakah Anda yakin ingin menghapus data <strong className="text-[#1b2a4e]">{deleteTarget.fullName || deleteTarget.name}</strong> secara permanen?
+              Apakah Anda yakin ingin menghapus data <strong className="text-brand-900">{deleteTarget.fullName || deleteTarget.name}</strong> secara permanen?
             </p>
 
             <div className="flex justify-end items-center gap-3 pt-2">

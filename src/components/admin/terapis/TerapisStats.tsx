@@ -17,12 +17,12 @@ export default function TerapisStats({ therapists, isLoading }: TerapisStatsProp
       
       {/* Total Terapis */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex items-center gap-5">
-        <div className="w-14 h-14 rounded-full bg-yellow-50 text-[#F5B301] flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 rounded-full bg-brand-50 text-gold-700 flex items-center justify-center shrink-0">
           <UsersThree size={28} weight="fill" />
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-[#585858] text-[13px] font-medium">Total Fisioterapis</span>
-          <span className="text-[32px] font-bold text-[#1b2a4e] leading-none">
+          <span className="text-[32px] font-bold text-brand-900 leading-none">
             {isLoading ? "..." : `${total} Terapis`}
           </span>
         </div>

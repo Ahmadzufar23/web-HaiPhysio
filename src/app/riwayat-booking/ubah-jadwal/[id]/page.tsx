@@ -193,7 +193,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
   if (isLoading) {
     return (
       <div className="w-full min-h-screen pt-[120px] pb-24 flex justify-center items-center bg-[#FAFAFA]">
-        <span className="text-[#1b2a4e] font-bold animate-pulse">Menyiapkan jadwal pengganti...</span>
+        <span className="text-brand-900 font-bold animate-pulse">Menyiapkan jadwal pengganti...</span>
       </div>
     );
   }
@@ -204,7 +204,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
     <div className="w-full min-h-screen pt-[120px] pb-24 px-5 md:px-[80px] bg-[#FAFAFA] flex flex-col items-center">
       <div className="w-full max-w-[1100px] bg-white rounded-[32px] p-6 md:p-10 shadow-sm border border-gray-100 h-fit">
 
-        <h1 className="text-[24px] md:text-[28px] font-bold text-[#1b2a4e] mb-2">Ubah Jadwal Terapis</h1>
+        <h1 className="text-[24px] md:text-[28px] font-bold text-brand-900 mb-2">Ubah Jadwal Terapis</h1>
         <p className="text-gray-500 text-[14px] mb-8">Pilih tanggal dan jadwal baru untuk sesi {namaLayanan} Anda.</p>
 
         {/* --- DUA KOLOM: MINI KALENDER (KIRI) & PILIH TERAPIS (KANAN) --- */}
@@ -216,7 +216,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
               <button onClick={handlePrevMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 font-bold transition-colors">
                 <CaretLeft weight="bold" />
               </button>
-              <h4 className="font-bold text-[#1b2a4e] text-[15px] capitalize">{currentMonthLabel}</h4>
+              <h4 className="font-bold text-brand-900 text-[15px] capitalize">{currentMonthLabel}</h4>
               <button onClick={handleNextMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 font-bold transition-colors">
                 <CaretRight weight="bold" />
               </button>
@@ -232,7 +232,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
                 return (
                   <div key={i} onClick={() => handleSelectDate(day.fullDate)} className="flex flex-col items-center justify-center cursor-pointer">
                     <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[13px] transition-colors
-                      ${isSelectedWeek ? "bg-[#FFFBEA] text-[#F5B301] font-bold border border-[#FDE68A]" : day.isCurrentMonth ? "text-[#1b2a4e] hover:bg-gray-100" : "text-gray-300"}
+                      ${isSelectedWeek ? "bg-brand-50 text-gold-700 font-bold border border-brand-100" : day.isCurrentMonth ? "text-brand-900 hover:bg-gray-100" : "text-gray-300"}
                     `}>
                       {day.date}
                     </span>
@@ -247,7 +247,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
             
             {/* Box Daftar Terapis */}
             <div className="w-full bg-white border border-gray-200 rounded-[20px] p-6 shadow-sm min-h-[200px]">
-              <h3 className="text-[16px] font-bold text-[#1b2a4e] mb-1">Pilih Fisioterapis</h3>
+              <h3 className="text-[16px] font-bold text-brand-900 mb-1">Pilih Fisioterapis</h3>
               <p className="text-[#585858] text-[13px] mb-4">Terapis yang ditampilkan sesuai dengan layanan {namaLayanan} Anda</p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -258,7 +258,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
                       key={therapist.id}
                       onClick={() => handleToggleTerapis(therapist.id)}
                       className={`flex items-center gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
-                        isChecked ? "border-[#F5B301] bg-[#FFFBEA] shadow-sm" : "border-gray-100 bg-white hover:bg-gray-50"
+                        isChecked ? "border-brand-600 bg-brand-50 shadow-sm" : "border-gray-100 bg-white hover:bg-gray-50"
                       }`}
                     >
                       {therapist.photoUrl ? (
@@ -267,14 +267,14 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
                         <UserCircle size={40} className="text-gray-300" weight="fill" />
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] font-bold text-[#1b2a4e] truncate">{therapist.fullName}</p>
+                        <p className="text-[13px] font-bold text-brand-900 truncate">{therapist.fullName}</p>
                         <p className="text-[11px] text-gray-500">{therapist.totalPatientsLabel || "Fisioterapis"}</p>
                       </div>
                       <input
                         type="checkbox"
                         checked={isChecked}
                         readOnly
-                        className="w-4 h-4 accent-[#F5B301] pointer-events-none shrink-0"
+                        className="w-4 h-4 accent-brand-600 pointer-events-none shrink-0"
                       />
                     </div>
                   );
@@ -283,12 +283,12 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
             </div>
             {/* Box Informasi Layanan Terpilih */}
             <div className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-[14px] p-4 flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-lg bg-brand-50 flex items-center justify-center shrink-0">
                 <Stethoscope size={22} className="text-[#3B82F6]" weight="fill" />
               </div>
               <div className="flex flex-col">
                 <span className="text-[11px] text-gray-400 font-medium">Layanan yang Sedang Diubah:</span>
-                <span className="text-[14px] font-bold text-[#1b2a4e]">Fisioterapi {namaLayanan}</span>
+                <span className="text-[14px] font-bold text-brand-900">Fisioterapi {namaLayanan}</span>
               </div>
             </div>
           </div>
@@ -307,13 +307,13 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
 
         {/* Input Alasan Ubah Jadwal */}
         <div className="mt-8 mb-6">
-          <label className="block text-[14px] font-bold text-[#1b2a4e] mb-2">Alasan Ubah Jadwal (Opsional)</label>
+          <label className="block text-[14px] font-bold text-brand-900 mb-2">Alasan Ubah Jadwal (Opsional)</label>
           <textarea
             value={alasan}
             onChange={(e) => setAlasan(e.target.value)}
             placeholder="Contoh: Saya berhalangan hadir karena ada urusan mendadak..."
             rows={3}
-            className="w-full p-4 border border-gray-200 rounded-xl outline-none focus:border-[#F5B301] text-[14px] resize-none transition-colors"
+            className="w-full p-4 border border-gray-200 rounded-xl outline-none focus:border-gold-600 text-[14px] resize-none transition-colors"
           />
         </div>
 
@@ -323,7 +323,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
             type="checkbox"
             checked={kirimNotif}
             onChange={() => setKirimNotif(!kirimNotif)}
-            className="w-5 h-5 mt-0.5 accent-[#F5B301] rounded cursor-pointer"
+            className="w-5 h-5 mt-0.5 accent-brand-600 rounded cursor-pointer"
           />
           <span className="text-[14px] text-gray-600 leading-relaxed">
             Kirim detail perubahan jadwal ini ke WhatsApp saya secara otomatis.
@@ -343,7 +343,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
             onClick={handleLanjut}
             disabled={!selectedSlot}
             className={`flex-1 py-4 text-center rounded-xl font-bold text-[15px] transition-colors ${
-              selectedSlot ? "bg-[#F5B301] text-white hover:bg-[#dda101] shadow-md" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              selectedSlot ? "bg-brand-600 text-brand-950 hover:bg-brand-700 shadow-md" : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             Lanjut

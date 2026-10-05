@@ -210,7 +210,7 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
   return (
     <div className="w-full flex flex-col items-center">
       <div className="text-center mb-10">
-        <h2 className="text-[32px] md:text-[36px] font-bold text-[#1b2a4e] mb-3">Tentukan Waktu & Terapis</h2>
+        <h2 className="text-[32px] md:text-[36px] font-bold text-brand-900 mb-3">Tentukan Waktu & Terapis</h2>
         <p className="text-[#585858] text-[15px] md:text-[16px]">Pilih jadwal kunjungan yang paling nyaman bagi Anda.</p>
       </div>
 
@@ -231,7 +231,7 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
             <button onClick={handlePrevMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 font-bold transition-colors">
               <CaretLeft weight="bold" />
             </button>
-            <h4 className="font-bold text-[#1b2a4e] text-[15px] capitalize">{currentMonthLabel}</h4>
+            <h4 className="font-bold text-brand-900 text-[15px] capitalize">{currentMonthLabel}</h4>
             <button onClick={handleNextMonth} className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 font-bold transition-colors">
               <CaretRight weight="bold" />
             </button>
@@ -247,7 +247,7 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
               return (
                 <div key={i} onClick={() => handleSelectDate(day.fullDate)} className="flex flex-col items-center justify-center cursor-pointer">
                   <span className={`w-8 h-8 flex items-center justify-center rounded-full text-[13px] transition-colors
-                    ${isSelectedWeek ? "bg-[#FFFBEA] text-[#F5B301] font-bold border border-[#FDE68A]" : day.isCurrentMonth ? "text-[#1b2a4e] hover:bg-gray-100" : "text-gray-300"}
+                    ${isSelectedWeek ? "bg-brand-50 text-gold-700 font-bold border border-brand-100" : day.isCurrentMonth ? "text-brand-900 hover:bg-gray-100" : "text-gray-300"}
                   `}>
                     {day.date}
                   </span>
@@ -260,7 +260,7 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
         {/* --- FILTER TERAPIS --- */}
         <div className="flex-1 flex flex-col gap-4">
           <div className="w-full bg-white border border-gray-200 rounded-[16px] p-6 min-h-[220px]">
-            <h4 className="font-bold text-[#1b2a4e] text-[16px] mb-1">Pilih Fisioterapis</h4>
+            <h4 className="font-bold text-brand-900 text-[16px] mb-1">Pilih Fisioterapis</h4>
             <p className="text-[#585858] text-[13px] mb-4">Terapis yang ditampilkan hanya yang memegang layanan pilihan Anda</p>
             
             {isLoading ? (
@@ -276,7 +276,7 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
                       key={therapist.id} 
                       onClick={() => handleTherapistToggle(therapist.id)}
                       className={`flex items-center justify-between p-3 border rounded-xl cursor-pointer transition-all duration-200
-                        ${isChecked ? "border-[#F5B301] bg-[#FFFBEA] shadow-sm" : "border-gray-100 hover:bg-gray-50"}
+                        ${isChecked ? "border-brand-600 bg-brand-50 shadow-sm" : "border-gray-100 hover:bg-gray-50"}
                       `}
                     >
                       <div className="flex items-center gap-3">
@@ -284,11 +284,11 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
                           {therapist.photoUrl ? <img src={therapist.photoUrl} alt="Terapis" className="w-full h-full object-cover" /> : <UserCircle size={36} weight="fill" />}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[13px] font-bold text-[#1b2a4e]">{therapist.fullName}</span>
+                          <span className="text-[13px] font-bold text-brand-900">{therapist.fullName}</span>
                           <span className="text-[11px] text-gray-500 mt-0.5">{therapist.totalPatientsLabel || "Fisioterapis"}</span>
                         </div>
                       </div>
-                      <input type="checkbox" className="w-4 h-4 accent-[#F5B301] pointer-events-none" checked={isChecked} readOnly />
+                      <input type="checkbox" className="w-4 h-4 accent-brand-600 pointer-events-none" checked={isChecked} readOnly />
                     </div>
                   )
                 })}
@@ -303,11 +303,11 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
           <div className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-[12px] p-4 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <Stethoscope size={24} className="text-[#3B82F6] shrink-0" weight="fill" />
-              <span className="text-[14px] font-medium text-[#1b2a4e]">
+              <span className="text-[14px] font-medium text-brand-900">
                 {serviceName || "Memuat layanan..."}
               </span>
             </div>
-            <button onClick={onBack} className="text-[#F5B301] text-[14px] font-bold px-4 py-1.5 border border-[#F5B301] rounded-lg bg-white hover:bg-[#FFFBEA]">
+            <button onClick={onBack} className="text-gold-700 text-[14px] font-bold px-4 py-1.5 border border-brand-600 rounded-lg bg-white hover:bg-brand-50">
               Ubah
             </button>
           </div>
@@ -326,14 +326,14 @@ export default function Step2PilihWaktu({ onBack, onNext, selectedServiceId }: S
       )}
 
       <div className="w-full flex justify-between mt-10">
-        <button onClick={onBack} className="text-[#F5B301] font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] hover:bg-[#FFFBEA] border border-transparent hover:border-[#FDE68A] transition-colors">
+        <button onClick={onBack} className="text-gold-700 font-bold flex items-center gap-2 px-6 py-3 rounded-[12px] hover:bg-brand-50 border border-transparent hover:border-brand-100 transition-colors">
           <CaretLeft weight="bold" /> Kembali
         </button>
         <button 
           disabled={!selectedSlot} 
           onClick={handleNextStep2}
           className={`px-10 py-3 rounded-[12px] font-bold flex items-center gap-2 transition-all duration-300
-            ${selectedSlot ? "bg-[#F5B301] hover:bg-[#dda101] text-white shadow-md cursor-pointer" : "bg-gray-100 text-gray-400 cursor-not-allowed"}
+            ${selectedSlot ? "bg-brand-600 hover:bg-brand-700 text-brand-950 shadow-md cursor-pointer" : "bg-gray-100 text-gray-400 cursor-not-allowed"}
           `}
         >
           Lanjut <CaretRight weight="bold" />

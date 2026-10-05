@@ -28,8 +28,8 @@ export default function AuthShell({
 
   return (
     <section className="relative isolate min-h-[calc(100vh-120px)] flex items-center justify-center overflow-hidden bg-[#f8fafc] px-5 py-10 md:px-10 md:py-14">
-      <div className="absolute -left-24 top-16 -z-10 h-72 w-72 rounded-full bg-[#FBBF24]/35 blur-3xl" />
-      <div className="absolute -right-28 bottom-12 -z-10 h-80 w-80 rounded-full bg-[#FBBF24]/45 blur-3xl" />
+      <div className="absolute -left-24 top-16 -z-10 h-72 w-72 rounded-full bg-brand-500/35 blur-3xl" />
+      <div className="absolute -right-28 bottom-12 -z-10 h-80 w-80 rounded-full bg-brand-500/45 blur-3xl" />
 
       <div
         className={`mx-auto grid w-full items-center gap-10 ${
@@ -39,7 +39,7 @@ export default function AuthShell({
         {!hideHero ? (
         <div className="flex min-h-[420px] flex-col justify-center gap-7">
           <div className="max-w-[620px] space-y-5">
-            <h1 className="text-[32px] font-bold leading-tight text-[#D69A00] md:text-[52px]">
+            <h1 className="text-[32px] font-bold leading-tight text-gold-700 md:text-[52px]">
               {headline}
             </h1>
             {description ? (

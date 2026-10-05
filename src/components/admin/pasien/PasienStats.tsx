@@ -41,12 +41,12 @@ export default function PasienStats({ patients, bookings, isLoading }: PasienSta
       
       {/* 1. Total Pasien Terdaftar */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex items-center gap-5 hover:border-gray-300 transition-all">
-        <div className="w-14 h-14 rounded-full bg-yellow-50 text-[#F5B301] flex items-center justify-center shrink-0">
+        <div className="w-14 h-14 rounded-full bg-brand-50 text-gold-700 flex items-center justify-center shrink-0">
           <Users size={28} weight="fill" />
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-[#585858] text-[13px] font-medium">Total Pasien Terdaftar</span>
-          <span className="text-[32px] font-bold text-[#1b2a4e] leading-none">
+          <span className="text-[32px] font-bold text-brand-900 leading-none">
             {isLoading ? "..." : `${totalPasien}`}
           </span>
           <span className="text-[11px] text-gray-400 mt-0.5">Seluruh database klinik</span>
@@ -74,10 +74,10 @@ export default function PasienStats({ patients, bookings, isLoading }: PasienSta
         </div>
         <div className="flex flex-col gap-1">
           <span className="text-[#585858] text-[13px] font-medium">Total Sesi Selesai</span>
-          <span className="text-[32px] font-bold text-blue-600 leading-none">
+          <span className="text-[32px] font-bold text-gold-700 leading-none">
             {isLoading ? "..." : `${totalSelesai}`}
           </span>
-          <span className="text-[11px] text-blue-500 font-semibold mt-0.5">
+          <span className="text-[11px] text-gold-700 font-semibold mt-0.5">
             {selesaiBulanIni > 0 ? `+${selesaiBulanIni} sesi bulan ini` : "Keseluruhan riwayat"}
           </span>
         </div>

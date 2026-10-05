@@ -87,7 +87,7 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
             <select 
               value={filterLayanan}
               onChange={(e) => setFilterLayanan(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-[#1b2a4e] font-semibold text-[13px] py-2.5 pl-4 pr-10 rounded-xl outline-none focus:border-[#F5B301] cursor-pointer"
+              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 font-semibold text-[13px] py-2.5 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 cursor-pointer"
             >
               <option value="">Semua Layanan</option>
               <option value="Olahraga">Fisioterapi Olahraga</option>
@@ -99,9 +99,9 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
 
           <button 
             onClick={handleExportCsv}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-[#1b2a4e] font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-brand-900 font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm"
           >
-            <DownloadSimple size={18} weight="bold" className="text-[#F5B301]" />
+            <DownloadSimple size={18} weight="bold" className="text-gold-700" />
             Ekspor CSV
           </button>
         </div>
@@ -121,7 +121,7 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
           <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
             <Users size={32} />
           </div>
-          <h4 className="text-[17px] font-bold text-[#1b2a4e] mb-1">Data Pasien Tidak Ditemukan</h4>
+          <h4 className="text-[17px] font-bold text-brand-900 mb-1">Data Pasien Tidak Ditemukan</h4>
           <p className="text-[13px] text-gray-500 max-w-sm">
             Tidak ada pasien yang sesuai dengan kata kunci pencarian Anda.
           </p>
@@ -152,14 +152,14 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
 
                 return (
                   <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors bg-white">
-                    <td className="py-5 px-6 text-[14px] font-bold text-[#1b2a4e]">{pCode}</td>
+                    <td className="py-5 px-6 text-[14px] font-bold text-brand-900">{pCode}</td>
                     <td className="py-5 px-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full font-bold flex items-center justify-center text-[12px] shrink-0 bg-[#1b2a4e] text-white">
+                        <div className="w-9 h-9 rounded-full font-bold flex items-center justify-center text-[12px] shrink-0 bg-brand-900 text-white">
                           {initials}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-[14px] font-bold text-[#1b2a4e]">{pName}</span>
+                          <span className="text-[14px] font-bold text-brand-900">{pName}</span>
                           <span className="text-[12px] text-gray-400">{pPhone}</span>
                           {pEmail && pPhone !== pEmail && (
                             <span className="text-[12px] text-gray-400">{pEmail}</span>
@@ -169,18 +169,18 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
                     </td>
                     <td className="py-5 px-6 text-[14px] text-gray-500 font-medium">{lastDate}</td>
                     <td className="py-5 px-6">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
                         {renderLayananIcon(serviceName)}
                         <span className="text-[11px] font-bold">{serviceName}</span>
                       </div>
                     </td>
-                    <td className="py-5 px-6 text-[14px] font-bold text-[#1b2a4e] text-center">
+                    <td className="py-5 px-6 text-[14px] font-bold text-brand-900 text-center">
                       {totalSessions} Sesi
                     </td>
                     <td className="py-5 px-6 text-center">
                       <Link 
                         href={`/admin/pasien/detail?id=${row.id}`} 
-                        className="inline-flex items-center justify-center gap-1.5 text-[#F5B301] hover:text-[#dda101] transition-colors font-bold text-[14px] px-3 py-1.5 rounded-lg hover:bg-yellow-50"
+                        className="inline-flex items-center justify-center gap-1.5 text-gold-700 hover:text-gold-800 transition-colors font-bold text-[14px] px-3 py-1.5 rounded-lg hover:bg-brand-50"
                       >
                         Lihat Detail <CaretRight size={14} weight="bold" />
                       </Link>
@@ -213,7 +213,7 @@ export default function PasienTable({ patients, isLoading, searchQuery }: Pasien
                 onClick={() => setCurrentPage(i + 1)}
                 className={`w-8 h-8 rounded-lg font-bold text-[13px] transition-colors ${
                   currentPage === i + 1
-                    ? "bg-[#1b2a4e] text-white shadow-sm"
+                    ? "bg-brand-900 text-white shadow-sm"
                     : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                 }`}
               >

@@ -8,11 +8,11 @@ export default function AdminProfilePage() {
       {/* --- Bagian Judul & Breadcrumb Navigasi --- */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2 text-[13px] text-gray-400 mb-2">
-          <Link href="/admin" className="hover:text-[#F5B301] transition-colors">Dasbor Admin</Link>
+          <Link href="/admin" className="hover:text-gold-700 transition-colors">Dasbor Admin</Link>
           <span>›</span>
-          <span className="text-[#1b2a4e] font-medium">Profil</span>
+          <span className="text-brand-900 font-medium">Profil</span>
         </div>
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Edit Profil Anda</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Edit Profil Anda</h2>
       </div>
 
       {/* --- Render Komponen Form yang Barusan Kita Bikin --- */}

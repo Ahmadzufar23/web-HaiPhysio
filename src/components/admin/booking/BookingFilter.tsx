@@ -36,7 +36,7 @@ export default function BookingFilter({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Cari Nama Pasien / Kode Reservasi..." 
-          className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-[#1b2a4e] outline-none focus:border-[#F5B301] transition-colors"
+          className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-brand-900 outline-none focus:border-gold-600 transition-colors"
         />
       </div>
 
@@ -49,7 +49,7 @@ export default function BookingFilter({
             type="date"
             value={date}
             onChange={(e) => onDateChange(e.target.value)}
-            className="w-full bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+            className="w-full bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
           />
         </div>
 
@@ -58,7 +58,7 @@ export default function BookingFilter({
           <select 
             value={service}
             onChange={(e) => onServiceChange(e.target.value)}
-            className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-9 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+            className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-9 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
           >
             <option value="">Semua Layanan</option>
             <option value="Olahraga">Fisioterapi Olahraga</option>
@@ -73,7 +73,7 @@ export default function BookingFilter({
           <select 
             value={status}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-9 rounded-xl outline-none focus:border-[#F5B301] transition-colors cursor-pointer"
+            className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-9 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
           >
             <option value="">Semua Status</option>
             <option value="terkonfirmasi">Terkonfirmasi</option>
@@ -87,9 +87,9 @@ export default function BookingFilter({
         {/* Tombol Ekspor CSV */}
         <button 
           onClick={onExportCsv}
-          className="flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-200 text-[#1b2a4e] font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm shrink-0"
+          className="flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-200 text-brand-900 font-bold text-[13px] rounded-xl hover:bg-gray-50 transition-colors shadow-sm shrink-0"
         >
-          <DownloadSimple size={18} weight="bold" className="text-[#F5B301]" />
+          <DownloadSimple size={18} weight="bold" className="text-gold-700" />
           Ekspor CSV
         </button>
 

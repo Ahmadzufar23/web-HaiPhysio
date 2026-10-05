@@ -105,7 +105,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
           <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
             <CalendarX size={32} />
           </div>
-          <h4 className="text-[17px] font-bold text-[#1b2a4e] mb-1">Tidak Ada Booking</h4>
+          <h4 className="text-[17px] font-bold text-brand-900 mb-1">Tidak Ada Booking</h4>
           <p className="text-[13px] text-gray-500 max-w-sm">
             Tidak ada reservasi konsultasi yang sesuai dengan filter pencarian.
           </p>
@@ -145,19 +145,19 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                     <td className="py-5 px-6 text-[14px] text-gray-500">
                       {(currentPage - 1) * itemsPerPage + index + 1}.
                     </td>
-                    <td className="py-5 px-6 text-[14px] font-bold text-[#1b2a4e]">
+                    <td className="py-5 px-6 text-[14px] font-bold text-brand-900">
                       {refCode}
                     </td>
                     <td className="py-5 px-6">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-[14px] font-bold text-[#1b2a4e]">{pName}</span>
+                        <span className="text-[14px] font-bold text-brand-900">{pName}</span>
                         <span className="text-[12px] text-gray-500">{pPhone}</span>
                       </div>
                     </td>
                     <td className="py-5 px-6">
                       <div className="flex flex-col gap-1.5 items-start">
-                        <span className="text-[14px] font-bold text-[#1b2a4e]">{tName}</span>
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40">
+                        <span className="text-[14px] font-bold text-brand-900">{tName}</span>
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
                           {renderLayananIcon(sName)}
                           <span className="text-[11px] font-bold">{sName}</span>
                         </div>
@@ -165,7 +165,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                     </td>
                     <td className="py-5 px-6">
                       <div className="flex flex-col gap-0.5">
-                        <span className="text-[14px] font-semibold text-[#1b2a4e]">{dateStr}</span>
+                        <span className="text-[14px] font-semibold text-brand-900">{dateStr}</span>
                         <span className="text-[13px] text-gray-500">{timeStr}</span>
                       </div>
                     </td>
@@ -178,7 +178,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                           {/* Tombol Reschedule */}
                           <Link
                             href={`/admin/booking/reschedule?id=${row.id}`}
-                            className="px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 text-[12px] font-bold transition-colors flex items-center gap-1"
+                            className="px-2.5 py-1.5 rounded-lg bg-brand-50 text-gold-700 hover:bg-brand-100 border border-brand-100 text-[12px] font-bold transition-colors flex items-center gap-1"
                             title="Reschedule / Ubah Jadwal Pasien"
                           >
                             <ClockCounterClockwise size={14} weight="bold" />
@@ -235,7 +235,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                 onClick={() => setCurrentPage(i + 1)}
                 className={`w-8 h-8 rounded-lg font-bold text-[13px] transition-colors ${
                   currentPage === i + 1
-                    ? "bg-[#1b2a4e] text-white shadow-sm"
+                    ? "bg-brand-900 text-white shadow-sm"
                     : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                 }`}
               >
@@ -258,7 +258,7 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
         <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[18px] font-bold text-[#1b2a4e]">Batalkan Booking</h3>
+              <h3 className="text-[18px] font-bold text-brand-900">Batalkan Booking</h3>
               <button 
                 onClick={() => setIsCancelModalOpen(false)}
                 className="text-gray-400 hover:text-gray-600"
@@ -272,13 +272,13 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
             </p>
 
             <div className="flex flex-col gap-2 mb-5">
-              <label className="text-[13px] font-bold text-[#1b2a4e]">Alasan Pembatalan</label>
+              <label className="text-[13px] font-bold text-brand-900">Alasan Pembatalan</label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 placeholder="Tuliskan alasan pembatalan (misal: Pasien berhalangan hadir)..."
                 rows={3}
-                className="w-full p-3 border border-gray-200 rounded-xl text-[13px] outline-none focus:border-[#F5B301] resize-none"
+                className="w-full p-3 border border-gray-200 rounded-xl text-[13px] outline-none focus:border-gold-600 resize-none"
               />
             </div>
 

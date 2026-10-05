@@ -10,7 +10,7 @@ export default function AdminLoginPage() {
       illustration="admin"
     >
       <div className="mb-7 space-y-2">
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Login Admin</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Login Admin</h2>
         <p className="text-[15px] leading-6 text-slate-500">
           Masuk menggunakan kredensial admin klinik.
         </p>
@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
 
       <Link
         href="/"
-        className="mt-7 block text-center text-[14px] font-semibold text-[#1b2a4e] hover:text-[#F5B301]"
+        className="mt-7 block text-center text-[14px] font-semibold text-brand-900 hover:text-gold-700"
       >
         Bukan Admin? Kembali ke Beranda Pasien
       </Link>

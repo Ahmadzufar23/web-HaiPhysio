@@ -131,7 +131,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
   if (isLoading) {
     return (
       <div className="w-full py-20 flex flex-col items-center justify-center text-center">
-        <div className="text-[16px] font-bold text-[#1b2a4e] animate-pulse">
+        <div className="text-[16px] font-bold text-brand-900 animate-pulse">
           Memuat data slot jadwal...
         </div>
       </div>
@@ -144,15 +144,15 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
         <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
           <CalendarX size={32} />
         </div>
-        <h4 className="text-[18px] font-bold text-[#1b2a4e] mb-1">Belum Ada Slot Jadwal</h4>
+        <h4 className="text-[18px] font-bold text-brand-900 mb-1">Belum Ada Slot Jadwal</h4>
         <p className="text-[14px] text-gray-500 max-w-md mb-6">
           Belum ada slot waktu yang dibuat untuk terapis dan tanggal ini. Anda dapat membuat slot otomatis untuk 1 pekan ke depan.
         </p>
         <button
           onClick={onOpenGenerateModal}
-          className="px-6 py-3 bg-[#1b2a4e] hover:bg-[#14203b] text-white font-bold text-[14px] rounded-xl flex items-center gap-2 transition-colors shadow-sm"
+          className="px-6 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[14px] rounded-xl flex items-center gap-2 transition-colors shadow-sm"
         >
-          <Sparkle size={18} weight="fill" className="text-[#F5B301]" />
+          <Sparkle size={18} weight="fill" className="text-gold-700" />
           Generate Slot 1 Pekan Otomatis
         </button>
       </div>
@@ -170,7 +170,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
           {!isBulkMode ? (
             <button
               onClick={() => setIsBulkMode(true)}
-              className="flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-[#1b2a4e] bg-white border border-gray-200 hover:border-[#1b2a4e] rounded-xl transition-all shadow-sm"
+              className="flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-brand-900 bg-white border border-gray-200 hover:border-brand-900 rounded-xl transition-all shadow-sm"
             >
               <CheckSquare size={18} />
               Pilih Massal
@@ -180,12 +180,12 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
               {/* Checkbox Pilih Semua */}
               <button
                 onClick={toggleSelectAll}
-                className="flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-[#1b2a4e] bg-white border border-gray-200 hover:border-[#1b2a4e] rounded-xl transition-all shadow-sm"
+                className="flex items-center gap-2 px-4 py-2 text-[13px] font-bold text-brand-900 bg-white border border-gray-200 hover:border-brand-900 rounded-xl transition-all shadow-sm"
               >
                 {allSelected ? (
-                  <CheckSquare size={18} weight="fill" className="text-[#F5B301]" />
+                  <CheckSquare size={18} weight="fill" className="text-gold-700" />
                 ) : someSelected ? (
-                  <CheckSquare size={18} weight="duotone" className="text-[#F5B301]" />
+                  <CheckSquare size={18} weight="duotone" className="text-gold-700" />
                 ) : (
                   <Square size={18} className="text-gray-400" />
                 )}
@@ -195,7 +195,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
               {/* Aksi Bulk (muncul kalau ada yang dipilih) */}
               {selectedIds.size > 0 && (
                 <>
-                  <span className="text-[13px] font-bold text-[#1b2a4e] px-2">
+                  <span className="text-[13px] font-bold text-brand-900 px-2">
                     {selectedIds.size} dipilih
                   </span>
                   <button
@@ -257,7 +257,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
             statusLabel = "Terisi Pasien";
             badgeStyle = "bg-gray-100 text-gray-400 border border-gray-200";
             dotStyle = "bg-gray-400";
-            cardBg = "bg-[#FFFBEA] border-[#fdeeb3]";
+            cardBg = "bg-brand-50 border-brand-100";
           } else if (!isActive) {
             statusLabel = "Nonaktif";
             badgeStyle = "bg-[#f4f4f4] text-[#a1a1a1] border border-gray-200";
@@ -266,7 +266,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
           }
 
           if (isSelected) {
-            cardBg = "bg-yellow-50 border-[#F5B301] ring-2 ring-[#F5B301]/30";
+            cardBg = "bg-brand-50 border-brand-600 ring-2 ring-brand-600/30";
           }
 
           return (
@@ -279,7 +279,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
               {isBulkMode && (
                 <div className="flex justify-end mb-2">
                   {isSelected
-                    ? <CheckSquare size={22} weight="fill" className="text-[#F5B301]" />
+                    ? <CheckSquare size={22} weight="fill" className="text-gold-700" />
                     : <Square size={22} className="text-gray-300" />
                   }
                 </div>
@@ -287,7 +287,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
 
               <div className="flex justify-between items-start mb-2">
                 <div className="flex flex-col">
-                  <span className="text-[19px] font-bold text-[#1b2a4e] leading-tight">
+                  <span className="text-[19px] font-bold text-brand-900 leading-tight">
                     {timeDisplay} WIB
                   </span>
                   {therapistName && (
@@ -345,7 +345,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
           <div className="bg-white rounded-3xl p-8 max-w-[400px] w-full flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-[20px] font-bold text-[#1b2a4e] mb-2">Hapus Slot Jadwal?</h3>
+            <h3 className="text-[20px] font-bold text-brand-900 mb-2">Hapus Slot Jadwal?</h3>
             <p className="text-[14px] text-gray-500 mb-8">Slot jadwal ini akan dihapus permanen dari sistem.</p>
             <div className="flex gap-4 w-full">
               <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 rounded-xl font-bold text-[#585858] bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors">Batal</button>
@@ -362,7 +362,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
             <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4">
               <Trash size={28} weight="fill" className="text-red-500" />
             </div>
-            <h3 className="text-[20px] font-bold text-[#1b2a4e] mb-2">Hapus {selectedIds.size} Slot?</h3>
+            <h3 className="text-[20px] font-bold text-brand-900 mb-2">Hapus {selectedIds.size} Slot?</h3>
             <p className="text-[14px] text-gray-500 mb-8">Seluruh slot yang dipilih akan dihapus permanen dan tidak dapat dikembalikan.</p>
             <div className="flex gap-4 w-full">
               <button
@@ -390,7 +390,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
           ${toast.type === "success"
             ? "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"
             : toast.type === "warning"
-            ? "bg-[#fffbeb] border-[#fde68a] text-[#b45309]"
+            ? "bg-amber-50 border-amber-200 text-amber-700"
             : "bg-[#fef3f2] border-[#fecdca] text-[#b42318]"
           }`}
         >

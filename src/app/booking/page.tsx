@@ -52,7 +52,7 @@ export default function BookingPage() {
     <div className="relative w-full min-h-screen pt-[90px] pb-24 px-5 md:px-[80px] bg-[#FAFAFA] overflow-hidden">
 
       {/* Background Layer 1 (Gradasi Kuning) & Layer 2 (Efek Memudar) */}
-      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-r from-[#FDE89C]/40 to-[#F5B301]/70 z-0"></div>
+      <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-r from-brand-100/40 to-brand-600/70 z-0"></div>
       <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-transparent via-transparent to-[#FAFAFA] z-0"></div>
 
       {/* Kanvas Putih Utama Pembungkus Form */}

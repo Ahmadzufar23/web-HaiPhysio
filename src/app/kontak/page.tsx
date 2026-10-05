@@ -1,41 +1,33 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import HeroBanner from "../../components/home/HeroBanner";
-import LocationMap from "../../components/home/LocationMap";
-import ContactSection from "../../components/home/ContactSection";
-import {
-  EnvelopeSimple,
-  InstagramLogo
-} from "@phosphor-icons/react";
+import HeroBanner from "@/components/home/HeroBanner";
+import ContactSection from "@/components/home/ContactSection";
+import LocationMap from "@/components/home/LocationMap";
+import CtaBand from "@/components/home/CtaBand";
+import { useAuthStatus } from "@/hooks/useAuthStatus";
 
 export default function KontakKami() {
-  const isLoggedIn = false;
+  // Sebelumnya di-hardcode false → pasien yang sudah login tetap diarahkan ke /login
+  const { appointmentHref } = useAuthStatus();
 
   return (
-    <div className="w-full flex flex-col">
-
+    <div className="flex w-full flex-col">
       {/* 1. HERO BANNER KONTAK */}
-      <HeroBanner title="Kontak Kami" imageSrc="/hero-kontak.png" />
+      <HeroBanner
+        title="Kontak"
+        accent="kami"
+        subtitle="Hubungi kami lewat WhatsApp atau email, atau langsung datang ke klinik."
+        imageSrc="/hero-kontak.png"
+      />
 
-      {/* 2. SECTION HUBUNGI KAMI */}
-      <ContactSection
-        title="Masih Ada yang Ingin Ditanyakan?"
-        subtitle="Hubungi kami lewat WhatsApp atau Email, atau langsung datang ke klinik."
-      >
-        {/* Tombol CTA JANJI TEMU */}
-        <Link
-          href={isLoggedIn ? "/booking" : "/login"}
-          className="w-full h-[56px] flex items-center justify-center gap-2 bg-[#F5B301] hover:bg-[#dda101] text-white font-semibold text-[16px] rounded-[12px] transition-colors mt-2"
-        >
-          Buat Janji Temu
-        </Link>
-      </ContactSection>
+      {/* 2. SALURAN KONTAK */}
+      <ContactSection title="Masih ada yang" accent="ingin ditanyakan?" subtitle="Tim kami siap membantu pada jam operasional klinik." />
 
-      {/* 3. SECTION LOKASI KLINIK */}
+      {/* 3. LOKASI KLINIK */}
       <LocationMap />
 
+      {/* 4. AJAKAN */}
+      <CtaBand appointmentHref={appointmentHref} />
     </div>
   );
 }

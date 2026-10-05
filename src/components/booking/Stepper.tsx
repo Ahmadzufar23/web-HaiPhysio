@@ -16,7 +16,7 @@ export default function Stepper({ currentStep }: { currentStep: number }) {
         <div className="w-full border border-gray-200 rounded-[16px] p-8 mb-10 bg-white">
 
             {/* Judul di dalam kotak Stepper */}
-            <h3 className="text-center font-bold text-[#1b2a4e] text-[18px] mb-8">
+            <h3 className="text-center font-bold text-brand-900 text-[18px] mb-8">
                 Langkah Buat Janji Temu
             </h3>
 
@@ -39,7 +39,7 @@ export default function Stepper({ currentStep }: { currentStep: number }) {
                             {index < steps.length - 1 && (
                                 <div
                                     className={`absolute top-4 left-[50%] w-full h-[2px] z-0 transition-colors duration-300
-                    ${currentStep > step.num ? "bg-[#F5B301]" : "bg-gray-200"}
+                    ${currentStep > step.num ? "bg-brand-600" : "bg-gray-200"}
                   `}
                                 ></div>
                             )}
@@ -50,9 +50,9 @@ export default function Stepper({ currentStep }: { currentStep: number }) {
                                 // Catatan: bg-white sengaja dipisah ke dalam kondisi biar gak bentrok sama bg kuning
                                 className={`relative z-10 w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-bold transition-colors
                   ${isActive
-                                        ? "bg-white border-2 border-[#F5B301] text-[#F5B301]" // Aktif: Background putih, Border kuning, teks kuning
+                                        ? "bg-white border-2 border-brand-600 text-gold-700" // Aktif: Background putih, Border kuning, teks kuning
                                         : isPast
-                                            ? "bg-[#F5B301] text-white border-2 border-[#F5B301]" // Lewat: Background kuning full, ikon putih
+                                            ? "bg-brand-600 text-brand-950 border-2 border-brand-600" // Lewat: Background kuning full, ikon gelap
                                             : "bg-white border-2 border-gray-200 text-gray-400" // Belum: Background putih, Abu-abu
                                     }
                 `}
@@ -64,7 +64,7 @@ export default function Stepper({ currentStep }: { currentStep: number }) {
                             {/* TEKS LABEL & DESKRIPSI */}
                             <div className="flex flex-col items-center text-center mt-1">
                                 {/* Teks Label (Contoh: Langkah 1) */}
-                                <span className={`text-[14px] font-bold ${isActive || isPast ? "text-[#1b2a4e]" : "text-gray-400"}`}>
+                                <span className={`text-[14px] font-bold ${isActive || isPast ? "text-brand-900" : "text-gray-400"}`}>
                                     {step.label}
                                 </span>
                                 {/* Teks Deskripsi (Contoh: Pilih Layanan) */}

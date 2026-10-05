@@ -56,7 +56,7 @@ export default function ModalCancelBooking({ isOpen, onClose, bookingId, onSucce
             <WarningCircle size={28} weight="fill" />
           </div>
           <div>
-            <h3 className="text-[18px] font-bold text-[#1b2a4e]">Batalkan Sesi Terapi?</h3>
+            <h3 className="text-[18px] font-bold text-brand-900">Batalkan Sesi Terapi?</h3>
             <p className="text-[13px] text-gray-500">Sesi yang dibatalkan tidak dapat dikembalikan.</p>
           </div>
         </div>
@@ -68,7 +68,7 @@ export default function ModalCancelBooking({ isOpen, onClose, bookingId, onSucce
         )}
 
         <div className="flex flex-col gap-2 mb-6">
-          <label className="text-[14px] font-bold text-[#1b2a4e]">Alasan Pembatalan (Opsional)</label>
+          <label className="text-[14px] font-bold text-brand-900">Alasan Pembatalan (Opsional)</label>
           <textarea 
             rows={3}
             value={reason}

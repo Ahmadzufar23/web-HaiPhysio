@@ -24,8 +24,8 @@ export default function GridKalender({
 
   // Fungsi penentu warna kotak berdasarkan statusnya
   const getSlotStyle = (status: string, isSelected: boolean) => {
-  if (isSelected) return "bg-[#1b2a4e] text-white shadow-md border-transparent";      
-  if (status === "tersedia") return "bg-[#BFDBFE] text-[#1e3a8a] border-[#93C5FD] cursor-pointer hover:bg-[#93C5FD] transition-colors"; 
+  if (isSelected) return "bg-brand-900 text-white shadow-md border-transparent";      
+  if (status === "tersedia") return "bg-[#BFDBFE] text-[#1e3a8a] border-[#FDE233] cursor-pointer hover:bg-[#FDE233] transition-colors"; 
   if (status === "penuh") return "bg-[#F3F4F6] text-gray-400 border-gray-200 cursor-not-allowed";  
   if (status === "tidak_praktik") return "bg-[#FEF2F2] text-[#EF4444] border-red-200 cursor-not-allowed";  
   if (status === "lewat") return "bg-[#F3F4F6] text-gray-400 border-gray-200 cursor-not-allowed line-through";
@@ -47,7 +47,7 @@ export default function GridKalender({
   return (
     <div className="w-full mt-6">
       {/* Header minggu (Bisa dibikin dinamis nanti di parent) */}
-      <h3 className="text-[18px] font-bold text-[#1b2a4e] mb-4">{title}</h3>  
+      <h3 className="text-[18px] font-bold text-brand-900 mb-4">{title}</h3>  
 
       {/* Grid scroll horizontal */}
       <div className="w-full overflow-x-auto pb-4 hide-scrollbar">
@@ -60,7 +60,7 @@ export default function GridKalender({
             </div>
             {weekDays.map((day, idx) => (
               <div key={idx} className="p-3 text-center border-r border-gray-200 last:border-0 flex flex-col justify-center">
-                <span className="text-[15px] font-bold text-[#1b2a4e]">{day.name}</span>
+                <span className="text-[15px] font-bold text-brand-900">{day.name}</span>
                 <span className="text-[13px] text-gray-500">{day.date}</span>
               </div>  
             ))}

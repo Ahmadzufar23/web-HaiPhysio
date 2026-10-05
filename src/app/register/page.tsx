@@ -9,7 +9,7 @@ export default function RegisterPage() {
       description="Buat akun pasien untuk mengatur janji temu dan mengikuti progres terapi dengan lebih mudah."
     >
       <div className="mb-7 space-y-2">
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Daftar Pasien</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Daftar Pasien</h2>
         <p className="text-[15px] leading-6 text-slate-500">
           Lengkapi data berikut untuk membuat akun Hai Physio.
         </p>
@@ -19,7 +19,7 @@ export default function RegisterPage() {
 
       <p className="mt-7 text-center text-[14px] text-slate-600">
         Sudah punya akun?{" "}
-        <Link href="/login" className="font-semibold text-[#1b2a4e] hover:text-[#F5B301]">
+        <Link href="/login" className="font-semibold text-brand-900 hover:text-gold-700">
           Masuk di sini
         </Link>
       </p>

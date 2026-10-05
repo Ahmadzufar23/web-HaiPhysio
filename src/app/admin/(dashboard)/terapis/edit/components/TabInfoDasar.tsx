@@ -96,31 +96,31 @@ export default function TabInfoDasar({ formData, setFormData, therapistId }: Tab
       
       {/* Nama Lengkap */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Nama Lengkap</label>
+        <label className="text-[14px] font-bold text-brand-900">Nama Lengkap</label>
         <input 
           type="text" 
           name="nama" 
           value={formData.nama} 
           onChange={(e) => setFormData({...formData, nama: e.target.value})} 
-          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e] font-semibold" 
+          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900 font-semibold" 
         />
       </div>
 
       {/* Nomor SIP */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Nomor SIP (Surat Izin Praktik)</label>
+        <label className="text-[14px] font-bold text-brand-900">Nomor SIP (Surat Izin Praktik)</label>
         <input 
           type="text" 
           name="sip" 
           value={formData.sip} 
           onChange={(e) => setFormData({...formData, sip: e.target.value})} 
-          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e]" 
+          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900" 
         />
       </div>
 
       {/* Spesialisasi */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Spesialisasi <span className="text-red-500">*</span></label>
+        <label className="text-[14px] font-bold text-brand-900">Spesialisasi <span className="text-red-500">*</span></label>
         <FocusAreaCheckboxes
           focusAreas={focusAreasList}
           value={formData.focusIds || []}
@@ -131,37 +131,37 @@ export default function TabInfoDasar({ formData, setFormData, therapistId }: Tab
 
       {/* Nomor Telepon */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Nomor Telepon</label>
+        <label className="text-[14px] font-bold text-brand-900">Nomor Telepon</label>
         <input 
           type="text" 
           name="telepon" 
           value={formData.telepon} 
           onChange={(e) => setFormData({...formData, telepon: e.target.value})} 
-          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e]" 
+          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900" 
         />
       </div>
 
       {/* Email */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Email</label>
+        <label className="text-[14px] font-bold text-brand-900">Email</label>
         <input 
           type="email" 
           name="email" 
           value={formData.email} 
           onChange={(e) => setFormData({...formData, email: e.target.value})} 
-          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e]" 
+          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900" 
         />
       </div>
 
       {/* Latar Belakang Pendidikan */}
       <div className="flex flex-col gap-2">
-        <label className="text-[14px] font-bold text-[#1b2a4e]">Latar Belakang Pendidikan</label>
+        <label className="text-[14px] font-bold text-brand-900">Latar Belakang Pendidikan</label>
         <input 
           type="text" 
           name="pendidikan" 
           value={formData.pendidikan} 
           onChange={(e) => setFormData({...formData, pendidikan: e.target.value})} 
-          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-[#F5B301] text-[14px] text-[#1b2a4e]" 
+          className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900" 
         />
       </div>
 
@@ -177,7 +177,7 @@ export default function TabInfoDasar({ formData, setFormData, therapistId }: Tab
         <button 
           onClick={handleSaveInfo} 
           disabled={isSaving}
-          className="py-3.5 px-8 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101] shadow-sm transition-colors disabled:opacity-50"
+          className="py-3.5 px-8 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700 shadow-sm transition-colors disabled:opacity-50"
         >
           {isSaving ? "Menyimpan..." : "Simpan Perubahan"}
         </button>

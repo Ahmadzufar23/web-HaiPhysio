@@ -76,7 +76,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
   if (isLoading) {
     return (
       <div className="w-full min-h-screen pt-[120px] pb-24 flex justify-center items-center bg-[#FAFAFA]">
-        <span className="text-[#1b2a4e] font-bold animate-pulse">Menyiapkan data konfirmasi...</span>
+        <span className="text-brand-900 font-bold animate-pulse">Menyiapkan data konfirmasi...</span>
       </div>
     );
   }
@@ -89,14 +89,14 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
         
         <Link 
           href={`/riwayat-booking/ubah-jadwal/${id}`}
-          className="flex items-center gap-2 text-gray-500 hover:text-[#1b2a4e] mb-6 font-medium text-[14px] transition-colors w-fit"
+          className="flex items-center gap-2 text-gray-500 hover:text-brand-900 mb-6 font-medium text-[14px] transition-colors w-fit"
         >
           <ArrowLeft size={18} weight="bold" />
           Kembali Pilih Jadwal
         </Link>
 
         <div className="bg-white border border-gray-200 rounded-[32px] p-8 md:p-12 shadow-sm">
-          <h1 className="text-[24px] md:text-[28px] font-bold text-[#1b2a4e] mb-2">Konfirmasi Ubah Jadwal</h1>
+          <h1 className="text-[24px] md:text-[28px] font-bold text-brand-900 mb-2">Konfirmasi Ubah Jadwal</h1>
           <p className="text-gray-500 text-[14px] mb-8">Tinjau kembali perubahan jadwal sesi {namaLayanan} Anda sebelum mengonfirmasi.</p>
 
           {/* Banner Error */}
@@ -132,20 +132,20 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
             </div>
 
             {/* Card Jadwal Baru */}
-            <div className="p-6 rounded-2xl border-2 border-[#F5B301] bg-[#FFFBEA]">
-              <h3 className="text-[15px] font-bold text-[#1b2a4e] mb-4 pb-3 border-b border-[#FDE68A]">Jadwal Baru</h3>
+            <div className="p-6 rounded-2xl border-2 border-brand-600 bg-brand-50">
+              <h3 className="text-[15px] font-bold text-brand-900 mb-4 pb-3 border-b border-brand-100">Jadwal Baru</h3>
               
               <div className="flex flex-col gap-3 text-[14px]">
                 <div>
                   <span className="text-gray-500 block mb-0.5 text-[12px]">ID Slot Pengganti</span>
-                  <span className="font-bold text-[#1b2a4e] break-all">{slotId}</span>
+                  <span className="font-bold text-brand-900 break-all">{slotId}</span>
                 </div>
                 <div>
                   <span className="text-gray-500 block mb-0.5 text-[12px]">Alasan Perubahan</span>
-                  <span className="font-bold text-[#1b2a4e]">{reason || "Tidak ada alasan khusus"}</span>
+                  <span className="font-bold text-brand-900">{reason || "Tidak ada alasan khusus"}</span>
                 </div>
-                <div className="mt-2 pt-3 border-t border-[#FDE68A]">
-                  <span className="text-[11px] text-[#b88601] font-medium leading-relaxed block">
+                <div className="mt-2 pt-3 border-t border-brand-100">
+                  <span className="text-[11px] text-gold-700 font-medium leading-relaxed block">
                     *Detail hari dan jam terapis baru Anda akan dicetak pada halaman sukses setelah konfirmasi.
                   </span>
                 </div>
@@ -159,7 +159,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
             onClick={handleConfirm}
             disabled={isSubmitting || !slotId}
             className={`w-full py-4 rounded-xl font-bold text-[15px] transition-colors ${
-              isSubmitting || !slotId ? "bg-gray-400 text-white cursor-not-allowed" : "bg-[#F5B301] text-white hover:bg-[#dda101]"
+              isSubmitting || !slotId ? "bg-gray-400 text-brand-950 cursor-not-allowed" : "bg-brand-600 text-brand-950 hover:bg-brand-700"
             }`}
           >
             {isSubmitting ? "Memproses Perubahan..." : "Konfirmasi Ubah Jadwal"}

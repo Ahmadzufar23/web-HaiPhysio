@@ -81,7 +81,7 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
         {!isSuccess ? (
           <div className="flex flex-col">
             <div className="text-center mb-6">
-              <h3 className="text-[20px] font-bold text-[#1b2a4e] mb-2">Buat Kata Sandi Baru</h3>
+              <h3 className="text-[20px] font-bold text-brand-900 mb-2">Buat Kata Sandi Baru</h3>
               <p className="text-[13px] text-gray-500 leading-relaxed">
                 Pastikan kata sandi baru Anda berbeda dari sebelumnya dan tidak mudah ditebak.
               </p>
@@ -95,13 +95,13 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
 
             <div className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-[#1b2a4e]">Kata Sandi Lama</label>
+                <label className="text-[14px] font-bold text-brand-900">Kata Sandi Lama</label>
                 <div className="relative">
                   <input 
                     type={showOldPassword ? "text" : "password"} 
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-[#F5B301] transition-colors text-[14px]"
+                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-gold-600 transition-colors text-[14px]"
                     placeholder="••••••••"
                   />
                   <button type="button" onClick={() => setShowOldPassword(!showOldPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -111,13 +111,13 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-[#1b2a4e]">Kata Sandi Baru</label>
+                <label className="text-[14px] font-bold text-brand-900">Kata Sandi Baru</label>
                 <div className="relative">
                   <input 
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)} 
-                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-[#F5B301] transition-colors text-[14px]"
+                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-gold-600 transition-colors text-[14px]"
                     placeholder="••••••••"
                   />
                   <button type="button" onClick={() => setShowNewPassword(!showNewPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -128,13 +128,13 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="text-[14px] font-bold text-[#1b2a4e]">Konfirmasi Kata Sandi</label>
+                <label className="text-[14px] font-bold text-brand-900">Konfirmasi Kata Sandi</label>
                 <div className="relative">
                   <input 
                     type={showConfirmPassword ? "text" : "password"} 
                     value={newPasswordConfirmation}
                     onChange={(e) => setNewPasswordConfirmation(e.target.value)}
-                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-[#F5B301] transition-colors text-[14px]"
+                    className="w-full p-3.5 pr-12 border border-gray-200 rounded-xl outline-none focus:border-gold-600 transition-colors text-[14px]"
                     placeholder="••••••••"
                   />
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
@@ -147,7 +147,7 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
             <button 
               onClick={handleSubmitPassword}
               disabled={isPasswordLoading}
-              className={`w-full py-3.5 mt-8 rounded-xl text-white font-bold text-[15px] transition-colors ${isPasswordLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#F5B301] hover:bg-[#dda101]'}`}
+              className={`w-full py-3.5 mt-8 rounded-xl text-brand-950 font-bold text-[15px] transition-colors ${isPasswordLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-600 hover:bg-brand-700'}`}
             >
               {isPasswordLoading ? 'Memproses...' : 'Konfirmasi Kata Sandi Baru'}
             </button>
@@ -155,11 +155,11 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
         ) : (
           <div className="flex flex-col items-center text-center animate-in zoom-in-95 duration-300 pt-4">
             <img src="/success-illustration.png" alt="Success" className="w-[200px] h-[200px] object-contain mb-6 bg-gray-50 rounded-2xl" />
-            <h3 className="text-[20px] font-bold text-[#F5B301] mb-2">Sandi Baru Anda Berhasil Disimpan!</h3>
+            <h3 className="text-[20px] font-bold text-gold-700 mb-2">Sandi Baru Anda Berhasil Disimpan!</h3>
             <p className="text-[14px] text-gray-500 leading-relaxed mb-8">
               Sandi Anda sudah kami perbarui. Sesi di perangkat lain telah otomatis keluar.
             </p>
-            <button onClick={handleCloseModal} className="w-full py-3.5 rounded-xl bg-[#F5B301] text-white font-bold text-[15px] hover:bg-[#dda101] transition-colors">
+            <button onClick={handleCloseModal} className="w-full py-3.5 rounded-xl bg-brand-600 text-brand-950 font-bold text-[15px] hover:bg-brand-700 transition-colors">
               Kembali ke Profil
             </button>
           </div>

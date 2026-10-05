@@ -113,7 +113,7 @@ export default function LoginForm() {
       />
       <Link
         href="/reset-password"
-        className="block text-right text-[14px] font-semibold text-[#1b2a4e] hover:text-[#F5B301]"
+        className="block text-right text-[14px] font-semibold text-brand-900 hover:text-gold-700"
       >
         Lupa kata sandi?
       </Link>

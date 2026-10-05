@@ -165,7 +165,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari nama pasien atau kode reservasi..." 
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-[#1b2a4e] outline-none focus:border-[#F5B301] bg-white shadow-sm" 
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-200 text-[14px] text-brand-900 outline-none focus:border-gold-600 bg-white shadow-sm" 
           />
         </div>
         
@@ -175,7 +175,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
             <select 
               value={serviceFilter}
               onChange={(e) => setServiceFilter(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-[#F5B301] cursor-pointer shadow-sm"
+              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 cursor-pointer shadow-sm"
             >
               <option value="">Semua Layanan</option>
               <option value="Olahraga">Fisioterapi Olahraga</option>
@@ -190,7 +190,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
             <select 
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-[#F5B301] cursor-pointer shadow-sm"
+              className="w-full appearance-none bg-white border border-gray-200 text-[#585858] text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 cursor-pointer shadow-sm"
             >
               <option value="">Semua Status</option>
               <option value="terkonfirmasi">Terkonfirmasi</option>
@@ -204,9 +204,9 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
           {/* Tombol Ekspor */}
           <button 
             onClick={handleExportCsv}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-200 text-[#1b2a4e] font-bold text-[13px] rounded-xl hover:bg-gray-50 shadow-sm transition-colors"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-white border border-gray-200 text-brand-900 font-bold text-[13px] rounded-xl hover:bg-gray-50 shadow-sm transition-colors"
           >
-            <DownloadSimple size={18} weight="bold" className="text-[#F5B301]" />
+            <DownloadSimple size={18} weight="bold" className="text-gold-700" />
             Ekspor CSV
           </button>
         </div>
@@ -223,7 +223,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
             <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
               <CalendarX size={32} />
             </div>
-            <h4 className="text-[17px] font-bold text-[#1b2a4e] mb-1">Data Sesi Tidak Ditemukan</h4>
+            <h4 className="text-[17px] font-bold text-brand-900 mb-1">Data Sesi Tidak Ditemukan</h4>
             <p className="text-[13px] text-gray-500 max-w-sm">
               Tidak ada riwayat sesi yang sesuai dengan kriteria filter atau pencarian Anda.
             </p>
@@ -253,7 +253,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
                     <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/50 bg-white transition-colors">
                       <td className="py-5 px-6">
                         <div className="flex flex-col">
-                          <span className="text-[14px] font-bold text-[#1b2a4e]">{dateStr}</span>
+                          <span className="text-[14px] font-bold text-brand-900">{dateStr}</span>
                           <span className="text-[12px] text-gray-400">{timeStr}</span>
                         </div>
                       </td>
@@ -263,13 +263,13 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
                             {initials}
                           </div>
                           <div className="flex flex-col">
-                            <span className="text-[14px] font-bold text-[#1b2a4e]">{pName}</span>
+                            <span className="text-[14px] font-bold text-brand-900">{pName}</span>
                             <span className="text-[11px] text-gray-400 font-mono">{refCode}</span>
                           </div>
                         </div>
                       </td>
                       <td className="py-5 px-6">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-[#F5B301] text-[#D69A00] bg-yellow-50/40">
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
                           {renderLayananIcon(rawServiceName)}
                           <span className="text-[11px] font-bold">{rawServiceName}</span>
                         </div>
@@ -305,7 +305,7 @@ export default function TabRiwayat({ therapistName, therapistId }: TabRiwayatPro
                   onClick={() => setCurrentPage(i + 1)}
                   className={`w-8 h-8 rounded-lg font-bold text-[13px] transition-colors ${
                     currentPage === i + 1
-                      ? "bg-[#1b2a4e] text-white shadow-sm"
+                      ? "bg-brand-900 text-white shadow-sm"
                       : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
                   }`}
                 >

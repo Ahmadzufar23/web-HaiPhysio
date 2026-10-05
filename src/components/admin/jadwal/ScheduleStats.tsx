@@ -28,7 +28,7 @@ export default function ScheduleStats({ slots, isLoading }: ScheduleStatsProps) 
       {/* Total Slot */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col gap-2">
         <span className="text-[#585858] text-[14px] font-medium">Total Slot Jadwal</span>
-        <span className="text-[32px] font-bold text-[#1b2a4e]">
+        <span className="text-[32px] font-bold text-brand-900">
           {isLoading ? "..." : `${totalSlots} Slot`}
         </span>
       </div>
@@ -44,7 +44,7 @@ export default function ScheduleStats({ slots, isLoading }: ScheduleStatsProps) 
       {/* Slot Tersedia */}
       <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm flex flex-col gap-2">
         <span className="text-[#585858] text-[14px] font-medium">Slot Tersedia</span>
-        <span className="text-[32px] font-bold text-[#F5B301]">
+        <span className="text-[32px] font-bold text-gold-700">
           {isLoading ? "..." : `${availableSlots} Slot`}
         </span>
       </div>

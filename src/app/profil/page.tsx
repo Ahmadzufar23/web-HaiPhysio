@@ -94,7 +94,7 @@ export default function PengaturanProfilPage() {
   if (isLoading) {
     return (
       <div className="w-full min-h-screen flex justify-center items-center bg-[#FAFAFA]">
-        <span className="text-[#1b2a4e] font-bold">Sedang memuat data profil...</span>
+        <span className="text-brand-900 font-bold">Sedang memuat data profil...</span>
       </div>
     );
   }
@@ -106,7 +106,7 @@ export default function PengaturanProfilPage() {
         
         {/* Judul & Deskripsi Atas */}
         <div className="text-center mb-10">
-          <h1 className="text-[28px] md:text-[32px] font-bold text-[#1b2a4e] mb-3">Pengaturan Profil</h1>
+          <h1 className="text-[28px] md:text-[32px] font-bold text-brand-900 mb-3">Pengaturan Profil</h1>
           <p className="text-[#585858] text-[14px] md:text-[15px]">
             Kelola informasi pribadi akun Anda dan pantau riwayat sesi terapi fisioterapi yang pernah Anda jalani.
           </p>
@@ -116,17 +116,17 @@ export default function PengaturanProfilPage() {
           
           {/* Bagian Avatar Kiri */}
           <div className="flex flex-col items-center shrink-0">
-            <div className="w-[140px] h-[140px] rounded-full overflow-hidden mb-4 bg-blue-100 border-4 border-white shadow-md">
+            <div className="w-[140px] h-[140px] rounded-full overflow-hidden mb-4 bg-brand-100 border-4 border-white shadow-md">
               <img 
                 src={`https://ui-avatars.com/api/?name=${profileData.fullName.replace(/ /g, "+")}&background=1b2a4e&color=fff&size=140`}
                 alt="Avatar" 
                 className="w-full h-full object-cover"
               />
             </div>
-           <h3 className="text-[#1b2a4e] font-bold text-[18px] mb-1 w-full max-w-[200px] text-center break-words">
+           <h3 className="text-brand-900 font-bold text-[18px] mb-1 w-full max-w-[200px] text-center break-words">
             {profileData.fullName || "User"}
             </h3>
-            <button className="text-[#F5B301] text-[13px] font-bold hover:text-[#dda101] transition-colors">
+            <button className="text-gold-700 text-[13px] font-bold hover:text-gold-800 transition-colors">
               Edit Foto
             </button>
           </div>
@@ -136,19 +136,19 @@ export default function PengaturanProfilPage() {
             
             {/* Input Nama Lengkap (Bisa diedit) */}
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-[#1b2a4e]">Nama Lengkap</label>
+              <label className="text-[14px] font-bold text-brand-900">Nama Lengkap</label>
               <input 
                 type="text" 
                 value={profileData.fullName}
                 maxLength={100}
                 onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                className="w-full p-4 border border-gray-200 rounded-xl outline-none focus:border-[#F5B301] transition-colors text-[14px]"
+                className="w-full p-4 border border-gray-200 rounded-xl outline-none focus:border-gold-600 transition-colors text-[14px]"
               />
             </div>
 
             {/* Input Email (Disabled) */}
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-[#1b2a4e]">Email</label>
+              <label className="text-[14px] font-bold text-brand-900">Email</label>
               <input 
                 type="email" 
                 value={profileData.email}
@@ -159,7 +159,7 @@ export default function PengaturanProfilPage() {
 
             {/* Input No HP (Disabled) */}
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-[#1b2a4e]">Nomor Telepon</label>
+              <label className="text-[14px] font-bold text-brand-900">Nomor Telepon</label>
               <input 
                 type="text" 
                 value={profileData.phone}
@@ -170,7 +170,7 @@ export default function PengaturanProfilPage() {
 
             {/* Input Tanggal Lahir (Disabled) */}
             <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-[#1b2a4e]">Tanggal Lahir</label>
+              <label className="text-[14px] font-bold text-brand-900">Tanggal Lahir</label>
               <input 
                 type="text" 
                 value={profileData.dateOfBirth}
@@ -198,13 +198,13 @@ export default function PengaturanProfilPage() {
             <div className="flex flex-col md:flex-row gap-4 mt-4">
               <button 
                 onClick={() => setIsModalOpen(true)}
-                className="w-full md:w-[220px] py-4 rounded-xl border-2 border-[#F5B301] text-[#F5B301] font-bold text-[15px] hover:bg-[#FFFBEA] transition-colors shrink-0"
+                className="w-full md:w-[220px] py-4 rounded-xl border-2 border-brand-600 text-gold-700 font-bold text-[15px] hover:bg-brand-50 transition-colors shrink-0"
               >
                 Ganti Password
               </button>
               <button 
                 onClick={handleSaveProfile}
-                className="w-full py-4 rounded-xl bg-[#F5B301] text-white font-bold text-[15px] hover:bg-[#dda101] transition-colors shadow-[0_4px_12px_rgba(245,179,1,0.2)]"
+                className="w-full py-4 rounded-xl bg-brand-600 text-brand-950 font-bold text-[15px] hover:bg-brand-700 transition-colors shadow-[0_4px_12px_rgba(245,201,0,0.2)]"
               >
                 Simpan Perubahan
               </button>

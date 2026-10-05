@@ -103,7 +103,7 @@ export default function AdminBookingPage() {
       
       {/* --- HEADER HALAMAN --- */}
       <div className="flex flex-col gap-1 mb-2">
-        <h2 className="text-[28px] font-bold text-[#1b2a4e]">Daftar Booking Pasien</h2>
+        <h2 className="text-[28px] font-bold text-brand-900">Daftar Booking Pasien</h2>
         <p className="text-[#585858] text-[15px]">Kelola dan pantau seluruh jadwal konsultasi masuk secara real-time.</p>
       </div>
 

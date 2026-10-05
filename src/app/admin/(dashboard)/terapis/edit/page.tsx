@@ -86,7 +86,7 @@ function EditTerapisContent() {
   if (isLoading) {
     return (
       <div className="w-full py-20 flex justify-center items-center">
-        <span className="text-[#1b2a4e] font-bold animate-pulse">Memuat data terapis...</span>
+        <span className="text-brand-900 font-bold animate-pulse">Memuat data terapis...</span>
       </div>
     );
   }
@@ -94,8 +94,8 @@ function EditTerapisContent() {
   if (notFound) {
     return (
       <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
-        <span className="text-[#1b2a4e] font-bold text-[18px]">Data terapis tidak ditemukan.</span>
-        <Link href="/admin/terapis" className="px-6 py-3 rounded-xl font-bold text-white bg-[#F5B301] hover:bg-[#dda101]">
+        <span className="text-brand-900 font-bold text-[18px]">Data terapis tidak ditemukan.</span>
+        <Link href="/admin/terapis" className="px-6 py-3 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700">
           Kembali ke Kelola Data Terapis
         </Link>
       </div>
@@ -107,16 +107,16 @@ function EditTerapisContent() {
       
       {/* --- BREADCRUMB --- */}
       <div className="flex items-center gap-2 text-[13px] text-gray-500 font-medium">
-        <Link href="/admin/terapis" className="hover:text-[#F5B301] transition-colors">Kelola Data Terapis</Link>
+        <Link href="/admin/terapis" className="hover:text-gold-700 transition-colors">Kelola Data Terapis</Link>
         <span>›</span>
         {isAddingException ? (
           <>
-            <span className="cursor-pointer hover:text-[#F5B301]" onClick={() => setIsAddingException(false)}>Edit Data Terapis</span>
+            <span className="cursor-pointer hover:text-gold-700" onClick={() => setIsAddingException(false)}>Edit Data Terapis</span>
             <span>›</span>
-            <span className="text-[#1b2a4e] font-bold">Tambah Pengecualian Jadwal</span>
+            <span className="text-brand-900 font-bold">Tambah Pengecualian Jadwal</span>
           </>
         ) : (
-          <span className="text-[#1b2a4e] font-bold">Edit Data Terapis</span>
+          <span className="text-brand-900 font-bold">Edit Data Terapis</span>
         )}
       </div>
 
@@ -125,7 +125,7 @@ function EditTerapisContent() {
         <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
           <div className="flex items-center gap-5">
             <div className="relative">
-              <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden bg-[#1b2a4e]">
+              <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden bg-brand-900">
                 <img 
                   src={`https://ui-avatars.com/api/?name=${encodeURIComponent((formData.nama || "Terapis").replace("Ftr. ", ""))}&background=1b2a4e&color=fff&size=150`} 
                   alt="Avatar" 
@@ -134,7 +134,7 @@ function EditTerapisContent() {
               </div>
             </div>
             <div className="flex flex-col gap-1">
-              <h2 className="text-[24px] font-bold text-[#1b2a4e] leading-tight">{formData.nama || "Nama Terapis"}</h2>
+              <h2 className="text-[24px] font-bold text-brand-900 leading-tight">{formData.nama || "Nama Terapis"}</h2>
               <p className="text-[14px] text-gray-500">{formData.spesialisasi} • SIP: {formData.sip || "-"}</p>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#00b074]' : 'bg-gray-400'}`}></span>
@@ -147,7 +147,7 @@ function EditTerapisContent() {
 
           {/* Switch Status Keaktifan */}
           <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 py-2.5 px-4 rounded-xl shrink-0">
-            <span className="text-[14px] font-bold text-[#1b2a4e]">Status Keaktifan</span>
+            <span className="text-[14px] font-bold text-brand-900">Status Keaktifan</span>
             <div onClick={handleToggleActive} className="flex items-center gap-2 cursor-pointer">
               <div className={`w-12 h-7 rounded-full p-1 transition-colors flex items-center ${isActive ? 'bg-[#00b074]' : 'bg-gray-300'}`}>
                 <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-0'}`}></div>
@@ -166,7 +166,7 @@ function EditTerapisContent() {
           {['info', 'jadwal', 'riwayat'].map(tab => (
             <button 
               key={tab} onClick={() => setActiveTab(tab)} 
-              className={`flex items-center gap-2 pb-4 border-b-2 font-bold capitalize transition-colors ${activeTab === tab ? "border-[#F5B301] text-[#F5B301]" : "border-transparent text-gray-400 hover:text-gray-600"}`}
+              className={`flex items-center gap-2 pb-4 border-b-2 font-bold capitalize transition-colors ${activeTab === tab ? "border-brand-600 text-gold-700" : "border-transparent text-gray-400 hover:text-gray-600"}`}
             >
               {tab === 'info' && <><Info size={18} weight={activeTab === tab ? "bold" : "regular"} /> Informasi Dasar</>}
               {tab === 'jadwal' && <><CalendarBlank size={18} weight={activeTab === tab ? "bold" : "regular"} /> Jadwal Praktek</>}
@@ -201,7 +201,7 @@ function EditTerapisContent() {
 
 export default function EditTerapisPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-[#1b2a4e] font-bold">Memuat halaman edit...</div>}>
+    <Suspense fallback={<div className="py-20 text-center text-brand-900 font-bold">Memuat halaman edit...</div>}>
       <EditTerapisContent />
     </Suspense>
   );

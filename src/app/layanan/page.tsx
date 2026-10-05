@@ -1,111 +1,90 @@
 "use client";
 
-import Image from "next/image";
-import HeroBanner from "../../components/home/HeroBanner";
-import { jenisPelayananData, manfaatData } from "@/constants/data";
+import HeroBanner from "@/components/home/HeroBanner";
 import FokusLayanan from "@/components/home/FokusLayanan";
-import {
-  Lightbulb,
-  ShieldCheck,
-  Stethoscope,
-  Person,
-  Bandaids,
-  Brain,
-  Barbell,
-  PersonSimpleRun,
-  Bed,
-  Heartbeat,
-  HandHeart
-} from "@phosphor-icons/react";
+import CtaBand from "@/components/home/CtaBand";
+import Reveal from "@/components/motion/Reveal";
+import SpotlightCard from "@/components/motion/SpotlightCard";
+import SectionHeading from "@/components/shared/SectionHeading";
+import { useAuthStatus } from "@/hooks/useAuthStatus";
+import { jenisPelayananData, manfaatData } from "@/constants/data";
 
 export default function Layanan() {
+  const { appointmentHref } = useAuthStatus();
+
   return (
-    <div className="w-full flex flex-col">
-
+    <div className="flex w-full flex-col">
       {/* 1. HERO BANNER LAYANAN */}
-      <HeroBanner title="Layanan" imageSrc="/hero-layanan.png" />
+      <HeroBanner
+        title="Layanan"
+        accent="kami"
+        subtitle="Dari pencegahan hingga rehabilitasi — penanganan yang disesuaikan dengan kondisi dan tujuan Anda."
+        imageSrc="/hero-layanan.png"
+      />
 
-      {/* 2. SECTION JENIS PELAYANAN */}
-      <section className="w-full bg-[#F8F9FA] py-16 md:py-24 px-5 md:px-[80px]">
-
-        {/* Kotak Putih Pembungkus Utama */}
-        <div className="w-full max-w-[1200px] mx-auto bg-white rounded-[32px] p-8 md:p-16 flex flex-col gap-12 shadow-[0_4px_20px_rgb(0,0,0,0.02)]">
-
-          {/* Header Judul */}
-          <div className="flex flex-col items-center text-center gap-3">
-            <h2 className="text-[28px] md:text-[36px] font-bold text-[#F5B301]">
-              Jenis Pelayanan
-            </h2>
-            <p className="text-[#585858] text-[15px] md:text-[16px]">
+      {/* 2. JENIS PELAYANAN */}
+      <section className="w-full bg-white py-24 md:py-32">
+        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-14 px-5 md:px-8 lg:px-10 xl:px-[80px]">
+          <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+            <SectionHeading eyebrow="Pendekatan" title="Jenis" accent="pelayanan" />
+            <Reveal delay={200} className="max-w-[420px] text-[16px] leading-relaxed text-brand-900/70 md:text-[17px] lg:pb-3">
               Empat pendekatan yang kami pakai dalam menangani pasien.
-            </p>
+            </Reveal>
           </div>
 
-          {/* Grid 2x2 Kontainer */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-[900px] mx-auto w-full">
-            {jenisPelayananData.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col items-center text-center p-8 md:p-10 bg-white rounded-[24px] border border-gray-100 shadow-[0_4px_20px_rgb(0,0,0,0.04)] hover:shadow-md transition-shadow gap-5"
-              >
-                {/* Render Phosphor Icon */}
-                <div className="flex items-center justify-center h-[64px]">
-                  {item.icon}
-                </div>
-
-                {/* Teks Judul & Deskripsi */}
-                <div className="flex flex-col gap-2">
-                  <h3 className="text-[#F5B301] text-[20px] font-bold">
-                    {item.title}
-                  </h3>
-                  <p className="text-[#585858] text-[14px] leading-relaxed">
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {jenisPelayananData.map((item, i) => (
+              <Reveal key={item.id} delay={i * 120} className="h-full">
+                <SpotlightCard className="group flex h-full flex-col gap-10 rounded-[28px] border border-brand-900/[0.07] bg-white p-7 transition-[transform,box-shadow,background-color] duration-700 hover:-translate-y-2 hover:bg-brand-900 hover:shadow-[0_40px_80px_-32px_rgb(26_24_20/0.5)]">
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-50 text-gold-700 transition-colors duration-500 group-hover:bg-white/10 group-hover:text-brand-200 [&_svg]:h-8 [&_svg]:w-8">
+                      {item.icon}
+                    </span>
+                    <span className="font-display text-[28px] italic leading-none text-brand-900/20 transition-colors duration-500 group-hover:text-white/30">
+                      0{i + 1}
+                    </span>
+                  </div>
+                  <div className="mt-auto flex flex-col gap-2">
+                    <h3 className="text-[22px] font-semibold tracking-[-0.01em] text-brand-900 transition-colors duration-500 group-hover:text-white">{item.title}</h3>
+                    <p className="text-[15px] leading-relaxed text-brand-900/70 transition-colors duration-500 group-hover:text-white/75">{item.desc}</p>
+                  </div>
+                </SpotlightCard>
+              </Reveal>
             ))}
           </div>
-
         </div>
       </section>
 
-      {/* 3. SECTION FOKUS LAYANAN KAMI */}
-      <FokusLayanan className="bg-[#F8F9FA] pb-16 md:pb-24" />
+      {/* 3. FOKUS LAYANAN KAMI */}
+      <FokusLayanan className="bg-brand-50/40 py-24 md:py-32" />
 
-      {/* 4. SECTION MANFAAT FISIOTERAPI */}
-      <section className="w-full bg-white py-10 md:py-24">
-        <div className="w-full max-w-[1000px] mx-auto px-5 flex flex-col gap-12">
+      {/* 4. MANFAAT FISIOTERAPI */}
+      <section className="w-full bg-white py-24 md:py-32">
+        <div className="mx-auto flex w-full max-w-[1100px] flex-col gap-14 px-5">
+          <SectionHeading
+            align="center"
+            eyebrow="Manfaat"
+            title="Yang bisa Anda rasakan dari"
+            accent="terapi rutin."
+          />
 
-          {/* Header Judul */}
-          <div className="flex flex-col items-center text-center gap-1">
-            <h2 className="text-[28px] md:text-[36px] font-bold text-[#F5B301]">
-              Manfaat Fisioterapi
-            </h2>
-            <p className="text-[#585858] text-[16px]">
-              Beberapa manfaat yang bisa dirasakan lewat terapi rutin.
-            </p>
-          </div>
-
-          {/* Kontainer Flexbox untuk Kapsul */}
-          <div className="flex flex-wrap justify-center gap-4 md:gap-6">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             {manfaatData.map((manfaat, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-center gap-3 bg-white border border-gray-100 shadow-[0_4px_15px_rgb(0,0,0,0.06)] rounded-full px-6 py-4 md:px-8 md:py-5 hover:shadow-md transition-shadow"
-              >
-                <div className="shrink-0">
-                  {manfaat.icon}
+              <Reveal key={manfaat.text} variant="scale" delay={index * 90}>
+                <div className="group flex items-center gap-3 rounded-full border border-brand-900/[0.08] bg-white py-3 pl-3 pr-6 shadow-[0_12px_32px_-20px_rgb(26_24_20/0.35)] transition-all duration-500 hover:-translate-y-1 hover:border-brand-600 md:py-3.5 md:pl-3.5 md:pr-7">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-50 text-gold-700 transition-colors duration-500 group-hover:bg-brand-600 group-hover:text-brand-950 [&_svg]:h-6 [&_svg]:w-6">
+                    {manfaat.icon}
+                  </span>
+                  <span className="text-[15px] font-semibold text-brand-900 md:text-[16px]">{manfaat.text}</span>
                 </div>
-                <span className="text-[#1b2a4e] font-bold text-[14px] md:text-[16px]">
-                  {manfaat.text}
-                </span>
-              </div>
+              </Reveal>
             ))}
           </div>
-
         </div>
       </section>
 
+      {/* 5. AJAKAN */}
+      <CtaBand appointmentHref={appointmentHref} />
     </div>
   );
 }
