@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Sparkle, Plus, CalendarBlank, Users, CheckCircle, WarningCircle, Clock } from "@phosphor-icons/react";
 import ScheduleStats from "@/components/admin/jadwal/ScheduleStats";
 import ScheduleFilter from "@/components/admin/jadwal/ScheduleFilter";
 import ScheduleGrid from "@/components/admin/jadwal/ScheduleGrid";
 import { adminService } from "@/services/adminService";
-import { getApiErrorMessage } from "@/app/utils/api";
+import { getApiErrorMessage, getApiErrorStatus } from "@/app/utils/api";
+import type { AdminSlot, AdminTherapist } from "@/types/api.types";
+import { todayWib, wibDateFromToday } from "@/lib/format";
 
 // Jam standar klinik — tampil sebagai checklist di modal generate
 const ALL_HOURS = [
@@ -24,23 +26,23 @@ const ALL_HOURS = [
 // Default aktif (jam standar klinik)
 const DEFAULT_ACTIVE = new Set(["08:00", "09:00", "10:00", "11:00", "13:00", "14:00", "15:00"]);
 
-const todayStr = () => new Date().toISOString().split("T")[0];
-const offsetStr = (n: number) => {
-  const d = new Date();
-  d.setDate(d.getDate() + n);
-  return d.toISOString().split("T")[0];
-};
+// Tanggal kalender WIB (bukan UTC, yang pukul 00.00–07.00 WIB masih tanggal kemarin)
+const todayStr = todayWib;
+const offsetStr = wibDateFromToday;
 
 export default function AdminJadwalPage() {
-  const [therapists, setTherapists] = useState<any[]>([]);
+  const [therapists, setTherapists] = useState<AdminTherapist[]>([]);
   const [selectedTherapistId, setSelectedTherapistId] = useState("");
 
   // === Filter Date Range ===
   const [filterDateFrom, setFilterDateFrom] = useState(todayStr);
   const [filterDateTo, setFilterDateTo] = useState(todayStr);
 
-  const [slots, setSlots] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [slots, setSlots] = useState<AdminSlot[]>([]);
+  // Filter yang datanya sedang tampil; beda dengan filter aktif = masih memuat
+  const filterKey = `${selectedTherapistId}|${filterDateFrom}|${filterDateTo}`;
+  const [loadedKey, setLoadedKey] = useState<string | null>(null);
+  const isLoading = loadedKey !== filterKey;
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateResult, setGenerateResult] = useState<{ count: number; skipped: number } | null>(null);
@@ -73,28 +75,26 @@ export default function AdminJadwalPage() {
   }, []);
 
   // 2. Ambil data slot sesuai filter
-  const loadSlots = async () => {
-    setIsLoading(true);
-    try {
-      const res = await adminService.getSlots({
-        date_from: filterDateFrom,
-        date_to: filterDateTo,
-        therapist_id: selectedTherapistId || undefined,
-      });
-      const list = res.data.slots || [];
-      setSlots(list);
-    } catch (error) {
-      console.error("Gagal memuat slot jadwal:", error);
-      setSlots([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const loadSlots = useCallback(
+    () =>
+      adminService
+        .getSlots({
+          date_from: filterDateFrom,
+          date_to: filterDateTo,
+          therapist_id: selectedTherapistId || undefined,
+        })
+        .then((res) => setSlots(res.data.slots || []))
+        .catch((error) => {
+          console.error("Gagal memuat slot jadwal:", error);
+          setSlots([]);
+        })
+        .finally(() => setLoadedKey(filterKey)),
+    [filterDateFrom, filterDateTo, selectedTherapistId, filterKey]
+  );
 
   useEffect(() => {
     loadSlots();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTherapistId, filterDateFrom, filterDateTo]);
+  }, [loadSlots]);
 
   // 3. Hitung durasi hari generate
   const genDayCount = (() => {
@@ -168,10 +168,10 @@ export default function AdminJadwalPage() {
                 capacity: 1,
               });
               createdCount++;
-            } catch (err: any) {
+            } catch (err) {
               // HANYA bentrok jadwal (409 SLOT_DATE_TIME_CONFLICT) yang boleh dilewati.
               // Error lain (validasi, sesi habis, server) menghentikan proses & ditampilkan.
-              if (err?.response?.status === 409) {
+              if (getApiErrorStatus(err) === 409) {
                 skippedCount++;
                 continue;
               }
@@ -188,7 +188,7 @@ export default function AdminJadwalPage() {
         showNotification(`Semua slot sudah ada (${skippedCount} dilewati).`, "warning");
       }
       loadSlots();
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal generate slot:", error);
       if (createdCount > 0) loadSlots();
       showNotification(
@@ -215,14 +215,14 @@ export default function AdminJadwalPage() {
       {/* --- HEADER HALAMAN --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-bold text-brand-900">Manajemen Slot Jadwal Terapi</h2>
-          <p className="text-[#585858] text-[15px]">Atur ketersediaan waktu untuk sesi fisioterapi harian.</p>
+          <h2 className="text-[20px] font-bold text-brand-900">Manajemen Slot Jadwal Terapi</h2>
+          <p className="text-[#585858] text-[13px]">Atur ketersediaan waktu untuk sesi fisioterapi harian.</p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={openGenerateModal}
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[13px] rounded-xl transition-all shadow-sm shrink-0"
           >
             <Sparkle size={18} weight="fill" className="text-gold-700" />
             Generate Otomatis
@@ -230,7 +230,7 @@ export default function AdminJadwalPage() {
 
           <Link
             href="/admin/jadwal/tambah"
-            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-600 hover:bg-brand-700 text-brand-950 font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+            className="flex items-center justify-center gap-2 px-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold text-[13px] rounded-xl transition-all shadow-sm shrink-0"
           >
             <Plus size={18} weight="bold" />
             Tambah Slot
@@ -290,12 +290,12 @@ export default function AdminJadwalPage() {
                 <select
                   value={genTherapistId}
                   onChange={(e) => setGenTherapistId(e.target.value)}
-                  className="w-full bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer appearance-none"
+                  className="w-full bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-3 px-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer appearance-none"
                 >
                   <option value="">Semua Fisioterapis ({therapists.length} terapis)</option>
                   {therapists.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.fullName || t.full_name || t.name || `Terapis #${t.id}`}
+                      {t.fullName}
                     </option>
                   ))}
                 </select>
@@ -315,7 +315,7 @@ export default function AdminJadwalPage() {
                       className="w-full bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-2.5 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
                     />
                   </div>
-                  <div className="mt-5 text-gray-400 font-bold text-[14px] shrink-0">—</div>
+                  <div className="mt-5 text-gray-400 font-bold text-[13px] shrink-0">s/d</div>
                   <div className="flex-1 flex flex-col gap-1">
                     <span className="text-[11px] text-gray-400 font-semibold uppercase tracking-wide">Sampai</span>
                     <input type="date" value={genEndDate} min={genStartDate}
@@ -369,7 +369,7 @@ export default function AdminJadwalPage() {
                             : "bg-white border-gray-200 text-gray-400 hover:border-gray-300"
                         }`}
                       >
-                        {h.start}–{h.end}
+                        {h.start} s/d {h.end}
                       </button>
                     );
                   })}
@@ -417,7 +417,7 @@ export default function AdminJadwalPage() {
               <button
                 onClick={() => setIsGenerateModalOpen(false)}
                 disabled={isGenerating}
-                className="flex-1 py-3.5 rounded-xl font-bold text-[#585858] bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-[14px] disabled:opacity-50"
+                className="flex-1 py-3.5 rounded-xl font-bold text-[#585858] bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-[13px] disabled:opacity-50"
               >
                 {generateResult ? "Tutup" : "Batal"}
               </button>
@@ -425,7 +425,7 @@ export default function AdminJadwalPage() {
                 <button
                   onClick={handleGenerateRange}
                   disabled={isGenerating || genDayCount === 0 || genDayCount > 31 || activeHoursList.length === 0}
-                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-brand-900 hover:bg-brand-950 transition-colors shadow-md text-[14px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 py-3.5 rounded-xl font-bold text-white bg-brand-900 hover:bg-brand-950 transition-colors shadow-md text-[13px] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   {isGenerating ? (
                     <>
@@ -448,13 +448,13 @@ export default function AdminJadwalPage() {
       {/* === TOAST === */}
       {toast && (
         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-[60] animate-in slide-in-from-bottom-5 duration-300 border
-          ${toast.type === "success" ? "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"
+          ${toast.type === "success" ? "bg-[#f4f4f5] border-[#e4e4e7] text-[#3f3f46]"
           : toast.type === "warning" ? "bg-amber-50 border-amber-200 text-amber-700"
-          : "bg-[#fef3f2] border-[#fecdca] text-[#b42318]"}`}
+          : "bg-[#fef3f2] border-[#fecdca] text-[#b91c1c]"}`}
         >
           {toast.type === "success" && <CheckCircle size={20} weight="fill" />}
           {(toast.type === "warning" || toast.type === "error") && <WarningCircle size={20} weight="fill" />}
-          <span className="text-[14px] font-bold">{toast.message}</span>
+          <span className="text-[13px] font-bold">{toast.message}</span>
         </div>
       )}
 

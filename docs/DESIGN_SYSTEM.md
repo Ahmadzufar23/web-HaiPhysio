@@ -1,6 +1,6 @@
 # HaiPhysio — Design System (Kuning Logo · Putih · Hitam)
 
-> Diperbarui: 2026-10-05 · Warna diambil langsung dari logo Hai Physio: kuning `#FCDF09` + hitam teks logo.
+> Diperbarui: 2026-10-05 · Kuning logo `#FCDF09` sebagai aksen di atas dasar putih/abu dingin + hitam netral.
 
 Semua warna brand didefinisikan **sekali** di `src/app/globals.css` (`@theme`) sebagai token Tailwind v4. Komponen memakai class token (`bg-brand-600`), **bukan** hex hardcode.
 
@@ -11,31 +11,31 @@ Semua warna brand didefinisikan **sekali** di `src/app/globals.css` (`@theme`) s
 | `brand-50` | `#fffbe6` | Latar tint lembut, kartu terpilih | `bg-brand-50` |
 | `brand-100` | `#fff3bf` | Border tint, badge | `border-brand-100` |
 | `brand-200` / `300` | `#ffea85` / `#ffe14d` | Aksen kuning **di atas latar gelap / foto** | `text-brand-300` |
-| `brand-400` | `#fdd92a` | Stabilo judul (`.mark-swoosh`) | — |
+| `brand-400` | `#fdd92a` | Cadangan (tidak dipakai di halaman publik) | — |
 | `brand-500` | `#fcdf09` | **Kuning logo** | `text-brand-500` (di atas hitam) |
 | **`brand-600`** | **`#f5c900`** | **Primary**: tombol CTA, isian aktif, progress | `bg-brand-600 text-brand-950` |
 | `brand-700` | `#e0b400` | Hover isian kuning | `hover:bg-brand-700` |
-| `brand-800` | `#2b2820` | Tinta sekunder | |
-| `brand-900` | `#1a1814` | Judul & teks utama, panel gelap, sidebar admin, pil menu aktif | `text-brand-900`, `bg-brand-900` |
-| `brand-950` | `#0e0d0a` | **Teks di atas kuning**, latar footer | `text-brand-950` |
+| `brand-800` | `#2a2c31` | Tinta sekunder (netral) | |
+| `brand-900` | `#141518` | Judul & teks utama, panel gelap, sidebar admin | `text-brand-900`, `bg-brand-900` |
+| `brand-950` | `#0b0b0d` | **Teks di atas kuning**, latar footer | `text-brand-950` |
 | `gold-600` | `#b58a00` | Border fokus input | `focus:border-gold-600` |
 | `gold-700` | `#8a6500` | **Teks/ikon aksen di atas latar terang** (eyebrow, link, ikon) | `text-gold-700` |
 | `gold-800` | `#6b4e00` | Hover teks aksen | `hover:text-gold-800` |
+| `surface` / `surface-2` | `#f4f5f7` / `#eaecf0` | Latar section selang-seling & border kartu (abu dingin) | `bg-surface`, `border-surface-2` |
 
 Alias lama (`primary`, `accent`, …) tetap ada di `@theme` dan menunjuk ke token di atas.
 
 > **Aturan emas:** kuning adalah warna **isian**, bukan warna **teks** di atas putih. Kuning murni di atas putih hanya ±1,5 : 1 — tidak terbaca. Untuk teks beraksen di latar terang selalu pakai `gold-700`; teks di atas isian kuning selalu `brand-950`.
 
-## 2. Ciri khas visual
+## 2. Prinsip visual halaman publik
 
-| Elemen | Implementasi | Dipakai di |
-|---|---|---|
-| **Figur logo sebagai watermark** | `<LogoWatermark />` (`src/components/shared/LogoWatermark.tsx`), aset `public/brand/logo-mark.png` (figur + sapuan, dipotong dari logo asli tanpa teks) | Hero beranda, section Tentang, panel CTA, banner subhalaman, footer |
-| **Cap logo di foto** | `<LogoWatermark tone="white" drift={false} />` + teks "Hai Physio" serif | Pojok foto hero, foto kartu layanan, banner |
-| **Pola latar figur logo** | kelas `.bg-logo-pattern` | Section "Cara buat janji" |
-| **Stabilo kuning** di kata aksen judul | kelas `.mark-swoosh` (tersapu kiri→kanan saat judul muncul) | Semua `<SectionHeading>` & hero |
-| **Figur logo sebagai pemisah** | `<img src="/brand/logo-mark.png">` | Pita berjalan keluhan |
-| **Tombol berbalik warna** | `.btn-primary`: kuning → hover hitam + teks kuning (warna logo) | Semua CTA utama |
+Tampilan dibuat tenang supaya informasi penting (layanan, terapis, jam, lokasi, cara booking) langsung terbaca.
+
+1. **Setiap elemen harus menjawab pertanyaan pasien.** Tanpa emoji/ikon 3D, angka 01/02/03, atau grafik ilustrasi.
+2. **Aksen logo maksimal 3 per halaman:** cap putih di foto hero, figur hitam di panel kuning (FAQ/CTA), figur kuning asli di footer.
+3. **Kuning untuk tombol, panel aksen, dan satu pil `.hl` di judul hero saja.** Latar section bergantian putih dan `bg-surface` (abu dingin), bukan krem.
+4. **Satu info, satu tempat per halaman.** Jam & kontak tidak diulang di banyak section; sumbernya `src/constants/clinic.ts`.
+5. **Konten asli saja.** Jangan menulis testimoni, angka, atau data yang tidak bisa diverifikasi.
 
 ## 3. Warna semantik (tidak ikut kuning)
 
@@ -74,38 +74,36 @@ Alias lama (`primary`, `accent`, …) tetap ada di `@theme` dan menunjuk ke toke
 
 1. Jangan menambah hex brand baru di komponen — tambah/ubah token di `globals.css`.
 2. Jangan pernah `text-white` di atas isian kuning, dan jangan `text-brand-500/600` di atas latar putih.
-3. Watermark logo harus tetap samar (opacity 0,06–0,22) agar tidak bersaing dengan konten; cap logo di foto boleh 0,9.
-4. Logo asli `public/fisio_nobg.png` tidak diubah; versi figur saja ada di `public/brand/logo-mark.png`.
+3. Kontainer halaman publik: `mx-auto max-w-[1200px] px-5 md:px-8`, jarak section `py-16 md:py-20`. Kartu `.card` (24px), panel besar `rounded-[28px]`.
+4. Logo asli `public/fisio_nobg.png` tidak diubah. Di footer gelap dipakai figur `public/brand/logo-mark.png` + teks putih.
 
 ## 6. Tipografi
 
-| Peran | Font | Pemakaian |
-|---|---|---|
-| Utama (`font-sans`) | **Plus Jakarta Sans** | Seluruh teks UI & judul (semibold, tracking rapat) |
-| Aksen (`font-display`) | **Instrument Serif** (miring) | 1–3 kata aksen di judul, angka urutan `01/02/03`, wordmark footer |
+Satu huruf saja: **Plus Jakarta Sans** (`font-sans`), dimuat lewat `next/font` di `src/app/layout.tsx`.
 
-Keduanya dimuat lewat `next/font` di `src/app/layout.tsx` (self-hosted, tanpa layout shift). Pola judul: kata biasa sans + kata aksen serif miring dengan stabilo kuning — pakai `<SectionHeading title="Fokus" accent="layanan kami" />`.
-
-## 7. Sistem Motion
-
-Semua animasi publik memakai komponen di `src/components/motion/` dan kelas di `src/styles/motion.css`. Easing tunggal: `--ease-out-soft` (`cubic-bezier(0.22, 1, 0.36, 1)`).
-
-| Komponen | Fungsi |
+| Peran | Ukuran |
 |---|---|
-| `<Reveal variant="up\|fade\|left\|right\|scale\|blur" delay={ms}>` | Muncul saat masuk viewport. `mask` = gambar terbuka dari bawah + zoom-out |
-| `<SplitText parts={[...]} />` | Judul muncul kata per kata; teks lengkap tetap dibaca screen reader (`aria-label`) |
-| `<CountUp to={1985} />` | Angka berhitung naik saat terlihat |
-| `<SpotlightCard>` | Cahaya kuning lembut mengikuti kursor di kartu |
-| `<Marquee items={[...]} />` | Pita teks berjalan, berhenti saat hover |
-| `<ScrollProgress />` | Garis progres scroll di atas layar (halaman publik) |
+| Judul hero (h1) | 40px → 56px (lg) |
+| Judul halaman dalam (h1, `<HeroBanner>`) | 36px → 50px |
+| Judul section (h2, `<SectionHeading>`) | 30px → 38px, `font-extrabold` |
+| Teks paragraf | 15px → 16px |
+| Lencana (`.badge`) | 13px, pil putih + titik kuning |
+
+## 7. Motion
+
+Secukupnya: satu efek masuk dan transisi warna saat hover.
+
+| Elemen | Fungsi |
+|---|---|
+| `<Reveal delay={ms}>` | Fade naik 12px saat masuk viewport (0,6 s) |
 | `src/app/template.tsx` | Fade halus antar halaman (opacity saja, aman untuk elemen `fixed`) |
 
-Kelas pendukung: `.btn .btn-primary/.btn-ghost/.btn-light/.btn-outline-light` (tombol pil dengan kilau saat hover), `.eyebrow`, `.grain` (tekstur panel gelap), `.bg-grid-faint`, `.animate-float`, `.animate-orb`.
+Kelas pendukung di `src/styles/motion.css`: `.btn .btn-primary/.btn-ghost/.btn-dark`, `.card` (kartu standar, radius 24px), `.badge` (lencana pil), `.hl` (pil kuning, hanya hero), `.bg-dots` (latar titik hero/header).
 
 **Aturan**
 
-1. Stagger antar item 90–180 ms; jangan lebih dari ~1,2 s total sebelum konten utama terbaca.
-2. Satu `IntersectionObserver` dipakai bersama (`src/hooks/useInView.ts`) — jangan membuat observer baru per elemen.
+1. Jangan menambah animasi berulang (float, orb, marquee, teks berputar) atau efek yang mengikuti kursor.
+2. Satu `IntersectionObserver` dipakai bersama (`src/hooks/useInView.ts`).
 3. Konten hanya disembunyikan bila JS aktif (kelas `js` di `<html>`), jadi tanpa JS halaman tetap terbaca.
-4. `prefers-reduced-motion: reduce` mematikan semua gerakan — wajib tetap didukung (pengguna lansia / sensitif gerak).
+4. `prefers-reduced-motion: reduce` mematikan semua gerakan.
 5. Jangan beri `transform` pada pembungkus yang berisi elemen `position: fixed` (sidebar admin, modal).

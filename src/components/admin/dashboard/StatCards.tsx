@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { CalendarBlank, CalendarCheck, CheckSquareOffset, CheckCircle, XCircle, ArrowClockwise } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 
@@ -18,36 +18,42 @@ export default function StatCards() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchDashboardStats = async (showRefreshing = false) => {
-    if (showRefreshing) setIsRefreshing(true);
-    try {
-      // GET /api/admin/bookings/stats — dihitung di BE pakai kalender WIB,
-      // totalToday/totalThisWeek tidak menghitung booking Dibatalkan.
-      const res = await adminService.getBookingStats();
-      const s = res.data?.stats;
+  // GET /api/admin/bookings/stats — dihitung di BE pakai kalender WIB,
+  // totalToday/totalThisWeek tidak menghitung booking Dibatalkan.
+  const loadStats = useCallback(
+    () =>
+      adminService
+        .getBookingStats()
+        .then((res) => {
+          const s = res.data?.stats;
+          setStats({
+            todayCount: s?.totalToday ?? 0,
+            weekCount: s?.totalThisWeek ?? 0,
+            confirmedCount: s?.byStatus?.Terkonfirmasi ?? 0,
+            doneCount: s?.byStatus?.Selesai ?? 0,
+            cancelledCount: s?.byStatus?.Dibatalkan ?? 0,
+          });
+          setLastUpdated(new Date());
+        })
+        .catch((error) => console.error("Gagal memuat statistik dashboard admin:", error))
+        .finally(() => {
+          setIsLoading(false);
+          setIsRefreshing(false);
+        }),
+    []
+  );
 
-      setStats({
-        todayCount: s?.totalToday ?? 0,
-        weekCount: s?.totalThisWeek ?? 0,
-        confirmedCount: s?.byStatus?.Terkonfirmasi ?? 0,
-        doneCount: s?.byStatus?.Selesai ?? 0,
-        cancelledCount: s?.byStatus?.Dibatalkan ?? 0,
-      });
-      setLastUpdated(new Date());
-    } catch (error) {
-      console.error("Gagal memuat statistik dashboard admin:", error);
-    } finally {
-      setIsLoading(false);
-      setIsRefreshing(false);
-    }
+  const refreshStats = () => {
+    setIsRefreshing(true);
+    loadStats();
   };
 
   useEffect(() => {
-    fetchDashboardStats();
+    loadStats();
     // Auto-refresh setiap 30 detik
-    const interval = setInterval(() => fetchDashboardStats(), REFRESH_INTERVAL);
+    const interval = setInterval(loadStats, REFRESH_INTERVAL);
     return () => clearInterval(interval);
-  }, []);
+  }, [loadStats]);
 
   // Gunakan format manual (bukan toLocaleTimeString) agar tidak ada SSR/client mismatch
   const formatTime = (d: Date | null) => {
@@ -105,12 +111,12 @@ export default function StatCards() {
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
           </span>
-          <span className="text-[12px] font-semibold text-gray-400">Live — diperbarui otomatis tiap 30 detik</span>
+          <span className="text-[12px] font-semibold text-gray-400">Live, diperbarui otomatis tiap 30 detik</span>
         </div>
         <div className="flex items-center gap-2 text-[12px] text-gray-400">
           <span>Terakhir: {formatTime(lastUpdated)}</span>
           <button
-            onClick={() => fetchDashboardStats(true)}
+            onClick={refreshStats}
             disabled={isRefreshing}
             className="p-1 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
             title="Refresh sekarang"
@@ -125,13 +131,13 @@ export default function StatCards() {
         {cardData.map((card, i) => (
           <div key={i} className="bg-white rounded-2xl p-6 border border-gray-100 flex flex-col gap-4 shadow-sm">
             <div className="flex justify-between items-start">
-              <span className="text-[#585858] text-[14px] font-medium leading-tight whitespace-pre-line">{card.label}</span>
+              <span className="text-[#585858] text-[13px] font-medium leading-tight whitespace-pre-line">{card.label}</span>
               <div className={`p-2 rounded-lg ${card.iconBg}`}>
                 {card.iconEl}
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-[28px] font-bold text-brand-900">
+              <span className="text-[20px] font-bold text-brand-900">
                 {isLoading ? (
                   <span className="inline-block w-20 h-7 bg-gray-100 rounded-lg animate-pulse"></span>
                 ) : card.value}

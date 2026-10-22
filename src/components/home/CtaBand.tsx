@@ -1,43 +1,33 @@
-"use client";
-
 import Link from "next/link";
-import { ArrowRight, WhatsappLogo } from "@phosphor-icons/react";
-import Reveal from "@/components/motion/Reveal";
-import SectionHeading from "@/components/shared/SectionHeading";
+import { ArrowRight, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { CLINIC } from "@/constants/clinic";
 import LogoWatermark from "@/components/shared/LogoWatermark";
+import { mk } from "@/components/marketing/ui";
 
-/** Panel ajakan hitam (warna teks logo) dengan cahaya bergerak + tekstur grain. */
+/** Ajakan penutup halaman: panel kuning brand dengan figur logo. */
 export default function CtaBand({ appointmentHref }: { appointmentHref: string }) {
   return (
-    <section className="w-full bg-white px-5 py-20 md:px-8 md:py-28 lg:px-10 xl:px-[80px]">
-      <Reveal variant="scale" className="mx-auto w-full max-w-[1280px]">
-        <div className="grain relative isolate overflow-hidden rounded-[40px] bg-brand-900 px-6 py-16 md:px-16 md:py-24">
-          <div className="animate-orb pointer-events-none absolute -left-24 -top-32 -z-10 h-[420px] w-[420px] rounded-full bg-brand-600/25 blur-[110px]" aria-hidden="true" />
-          <div className="animate-orb-slow pointer-events-none absolute -bottom-40 -right-20 -z-10 h-[460px] w-[460px] rounded-full bg-brand-400/20 blur-[120px]" aria-hidden="true" />
-          {/* Figur logo besar di sisi kanan panel */}
-          <LogoWatermark className="-z-10 -right-16 -bottom-20 w-[340px] md:-right-10 md:w-[460px]" opacity={0.22} rotate={-6} />
-
-          <div className="flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-end">
-            <SectionHeading
-              tone="light"
-              eyebrow="Mulai hari ini"
-              title="Langkah pertama menuju pulih"
-              accent="dimulai di sini."
-              subtitle="Pilih jadwal yang cocok, datang ke klinik, dan biarkan terapis kami memandu pemulihan Anda — sesi demi sesi."
-            />
-            <Reveal delay={400} className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row lg:flex-col xl:flex-row">
-              <Link href={appointmentHref} className="btn btn-light">
-                Buat Janji Temu
-                <ArrowRight size={18} weight="bold" className="btn-arrow" />
+    <section className={`${mk.section} bg-white`}>
+      <div className={mk.container}>
+        <div className="relative overflow-hidden rounded-3xl bg-brand-500 px-6 py-12 sm:px-12 md:py-16">
+          <LogoWatermark className="-bottom-16 right-0 w-[260px] md:right-10 md:w-[320px]" opacity={0.14} rotate={-6} tone="ink" />
+          <div className="relative flex max-w-[560px] flex-col gap-4">
+            <p className="text-[12px] font-semibold uppercase tracking-[0.1em] text-brand-950/70">Efektif & Progresif</p>
+            <h2 className="text-[28px] font-semibold leading-[1.15] tracking-[-0.025em] text-brand-950 md:text-[38px]">Siap bergerak lagi? Pesan jadwal terapi Anda hari ini.</h2>
+            <p className="text-[15px] leading-relaxed text-brand-950/70">Pilih jam yang kosong secara online, atau konsultasikan keluhan Anda dulu lewat WhatsApp.</p>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <Link href={appointmentHref} className={mk.btnDark}>
+                Buat janji temu
+                <ArrowRight size={15} />
               </Link>
-              <a href="https://wa.me/628983050149" target="_blank" rel="noopener noreferrer" className="btn btn-outline-light">
-                <WhatsappLogo size={20} weight="fill" />
-                Tanya via WhatsApp
+              <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center gap-2 rounded-lg border border-brand-950/20 px-5 text-[14px] font-medium text-brand-950 hover:bg-brand-950/5">
+                <WhatsappLogo size={16} weight="fill" />
+                WhatsApp
               </a>
-            </Reveal>
+            </div>
           </div>
         </div>
-      </Reveal>
+      </div>
     </section>
   );
 }

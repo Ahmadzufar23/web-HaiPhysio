@@ -66,7 +66,7 @@ export default function AuthPolicyModal({
               </div>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">2. Ketentuan Perubahan & Pembatalan Jadwal</h4>
-                <p>Perubahan jadwal (reschedule) dan pembatalan sesi dapat dilakukan maksimal <strong>24 jam sebelum waktu sesi dimulai</strong>. Pembatalan kurang dari 24 jam tidak dapat diproses secara mandiri.</p>
+                <p>Booking dapat dilakukan paling cepat <strong>H-1</strong> (sehari sebelum sesi). Perubahan jadwal (reschedule) dan pembatalan sesi dapat dilakukan paling lambat <strong>H-2</strong> (dua hari sebelum sesi); sisa sesi paket dikembalikan dan bisa dijadwalkan ulang. Setelah lewat H-2, perubahan tidak dapat diproses secara mandiri. Pasien yang tidak hadir tanpa pembatalan dianggap hangus.</p>
               </div>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">3. Kehadiran di Klinik</h4>

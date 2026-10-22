@@ -9,14 +9,26 @@ export const profileService = {
     return response.data;
   },
 
-  // Fungsi buat nyimpen editan profil (PATCH) — hanya full_name yang didukung backend
-  updateProfile: async (data: { full_name: string }) => {
+  // Simpan editan profil (PATCH). Email, telepon, dan tanggal lahir tidak bisa diubah di sini.
+  // String kosong pada address/occupation = hapus isian.
+  updateProfile: async (data: Partial<Record<"full_name" | "gender" | "address" | "occupation", string | null>>) => {
     const response = await authApi.patch("/profile", data);
     return response.data;
   },
 
+  // Foto profil: data URL JPEG yang sudah diperkecil (lib/imageResize.ts), maks 200 KB
+  uploadPhoto: async (image: string) => {
+    const response = await authApi.put("/profile/photo", { image });
+    return response.data;
+  },
+
+  deletePhoto: async () => {
+    const response = await authApi.delete("/profile/photo");
+    return response.data;
+  },
+
   // Fungsi buat ganti password (PATCH)
-  changePassword: async (data: any) => {
+  changePassword: async (data: { current_password: string; new_password: string; new_password_confirmation: string }) => {
     // Lu perhatiin di kodingan asli lu kemaren endpointnya panjang banget,
     // sekarang cukup tulis path ujungnya aja karena baseURL udah di-setting di authApi
     const response = await authApi.patch("/profile/password", data);

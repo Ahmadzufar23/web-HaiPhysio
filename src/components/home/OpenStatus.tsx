@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-// Jam operasional klinik (WIB): Senin–Sabtu 08.00–16.00, Minggu tutup.
+// Jam operasional klinik (WIB): Senin sampai Sabtu 08.00 sampai 16.00, Minggu tutup.
 const OPEN_HOUR = 8;
 const CLOSE_HOUR = 16;
 
@@ -18,15 +18,15 @@ function getStatus(now: Date): Status {
   const weekday = parts.find((p) => p.type === "weekday")?.value;
   const hour = Number(parts.find((p) => p.type === "hour")?.value) % 24;
 
-  if (weekday === "Sun") return { open: false, label: "Minggu tutup · Buka Senin 08.00" };
+  if (weekday === "Sun") return { open: false, label: "Hari ini tutup, buka lagi Senin pukul 08.00" };
   if (hour < OPEN_HOUR) return { open: false, label: "Buka hari ini pukul 08.00 WIB" };
   if (hour >= CLOSE_HOUR) {
-    return { open: false, label: weekday === "Sat" ? "Tutup · Buka Senin 08.00" : "Tutup · Buka besok 08.00" };
+    return { open: false, label: weekday === "Sat" ? "Sudah tutup, buka lagi Senin pukul 08.00" : "Sudah tutup, buka lagi besok pukul 08.00" };
   }
-  return { open: true, label: "Buka sekarang · sampai 16.00 WIB" };
+  return { open: true, label: "Buka sekarang sampai 16.00 WIB" };
 }
 
-/** Lencana status buka/tutup klinik berdasarkan waktu Jakarta. */
+/** Status buka/tutup klinik berdasarkan waktu Jakarta. */
 export default function OpenStatus({ className = "" }: { className?: string }) {
   // Dihitung setelah mount supaya tidak bentrok dengan HTML hasil prerender
   const [status, setStatus] = useState<Status | null>(null);
@@ -39,17 +39,11 @@ export default function OpenStatus({ className = "" }: { className?: string }) {
   }, []);
 
   return (
-    <div
-      className={`inline-flex items-center gap-2.5 rounded-full border border-white/60 bg-white/85 px-4 py-2 text-[13px] font-semibold text-brand-900 shadow-[0_12px_32px_-12px_rgb(26_24_20/0.35)] backdrop-blur-md transition-opacity duration-500 ${
-        status ? "opacity-100" : "opacity-0"
-      } ${className}`}
-      aria-live="polite"
-    >
-      <span className="relative flex h-2.5 w-2.5">
-        {status?.open && <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />}
-        <span className={`relative inline-flex h-2.5 w-2.5 rounded-full ${status?.open ? "bg-emerald-500" : "bg-brand-900/30"}`} />
+    <span className={`flex items-center gap-2 ${className}`} aria-live="polite">
+      <span className="flex w-[18px] shrink-0 justify-center">
+        <span className={`h-2 w-2 rounded-full ${status?.open ? "bg-emerald-500" : "bg-brand-900/30"}`} />
       </span>
-      {status?.label ?? "Senin–Sabtu · 08.00–16.00 WIB"}
-    </div>
+      <span>{status?.label ?? "Senin sampai Sabtu, 08.00 sampai 16.00 WIB"}</span>
+    </span>
   );
 }

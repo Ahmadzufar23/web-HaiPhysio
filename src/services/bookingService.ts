@@ -1,4 +1,18 @@
 import { bookingApi } from "@/app/utils/api";
+import type { ApiSuccess, CreateBookingResult, PatientPackage } from "@/types/api.types";
+
+// Body POST /api/bookings (strict di BE). Paket baru: package_id + focus_id;
+// sisa paket: patient_package_id. slot_ids = 1..sisa kuota jadwal.
+export type CreateBookingPayload = {
+  slot_ids: string[];
+  focus_id?: string;
+  package_id?: string;
+  patient_package_id?: string;
+  pain_level: number;
+  complaint_notes?: string;
+  patient_name?: string;
+  patient_phone?: string;
+};
 
 export const bookingService = {
   
@@ -18,12 +32,18 @@ export const bookingService = {
   },
 
   // 3. Bikin booking baru (Buat di ujung Langkah 4 Konfirmasi)
-  createBooking: async (data: any) => {
+  createBooking: async (data: CreateBookingPayload): Promise<ApiSuccess<CreateBookingResult>> => {
     const response = await bookingApi.post("/bookings", data);
     return response.data;
   },
 
-  // 4. Batalin booking (Wajib >24 jam sebelum jadwal)
+  // Paket milik pasien beserta sisa sesi yang belum dijadwalkan
+  getMyPackages: async (): Promise<ApiSuccess<{ packages: PatientPackage[] }>> => {
+    const response = await bookingApi.get("/patient-packages");
+    return response.data;
+  },
+
+  // 4. Batalin booking (paling lambat H-2 sebelum jadwal)
   cancelBooking: async (id: string, cancellation_reason?: string) => {
     const response = await bookingApi.patch(`/bookings/${id}/cancel`, {
       cancellation_reason
@@ -31,7 +51,7 @@ export const bookingService = {
     return response.data;
   },
 
-  // 5. Ubah jadwal / Reschedule (Wajib >24 jam sebelum jadwal)
+  // 5. Ubah jadwal / Reschedule (paling lambat H-2 sebelum jadwal)
   rescheduleBooking: async (id: string, new_slot_id: string, reschedule_reason?: string) => {
     const response = await bookingApi.patch(`/bookings/${id}/reschedule`, {
       new_slot_id,

@@ -41,6 +41,8 @@ export interface FormBookingData {
     phone: string;
     email: string;
     complaint?: string;
+    painPoints?: string[]; // id dari BODY_REGIONS (body map)
+    painScale?: number | null; // 1 sampai 10
     photoPreview?: string | null;
   } | null;
 }

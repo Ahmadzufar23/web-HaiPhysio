@@ -6,13 +6,16 @@ import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
 import AuthPolicyModal from "./AuthPolicyModal";
-import { authApi, getApiErrorMessage, saveSessionToken } from "../../app/utils/api";
+import EmailVerificationNotice from "./EmailVerificationNotice";
+import { authApi, getApiErrorCode, getApiErrorMessage, getApiErrorStatus, saveSessionToken } from "../../app/utils/api";
+import { GENDER_OPTIONS } from "@/constants/patient";
 
 type RegisterErrors = {
   name?: string;
   email?: string;
   phone?: string;
   birthDate?: string;
+  gender?: string;
   password?: string;
   confirmPassword?: string;
 };
@@ -32,6 +35,7 @@ export default function RegisterForm() {
     email: "",
     phone: "",
     birthDate: "",
+    gender: "",
     password: "",
     confirmPassword: "",
   });
@@ -39,6 +43,8 @@ export default function RegisterForm() {
 
   // State buat ngunci tombol pas lagi nembak API
   const [isLoading, setIsLoading] = useState(false);
+  // Terisi setelah registrasi sukses: form diganti petunjuk cek email
+  const [registeredEmail, setRegisteredEmail] = useState("");
 
   function updateField(field: keyof typeof values, value: string) {
     setValues((current) => ({ ...current, [field]: value }));
@@ -65,6 +71,10 @@ export default function RegisterForm() {
 
     if (!values.birthDate) {
       nextErrors.birthDate = "Tanggal lahir wajib diisi.";
+    }
+
+    if (!values.gender) {
+      nextErrors.gender = "Jenis kelamin wajib dipilih.";
     }
 
     if (!values.password) {
@@ -103,22 +113,27 @@ export default function RegisterForm() {
         email: values.email,
         phone: values.phone,
         dateOfBirth: values.birthDate,
+        gender: values.gender,
         password: values.password,
         passwordConfirmation: values.confirmPassword,
         termsAgreement: agreed,
       });
 
+      // Verifikasi email wajib: belum ada sesi sampai tautan di email diklik
+      if (res.data?.data?.requiresEmailVerification) {
+        setRegisteredEmail(values.email.trim().toLowerCase());
+        return;
+      }
+
       // Simpan session token ke localStorage
       saveSessionToken(res.data?.data?.token);
-
-      // Kalau sukses, user dilempar ke profil
       window.location.href = "/profil";
 
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal register:", error);
       
-      const status = error.response?.status;
-      const errorCode = error.response?.data?.error?.code;
+      const status = getApiErrorStatus(error);
+      const errorCode = getApiErrorCode(error);
 
       const systemErrors: RegisterErrors = {};
 
@@ -144,6 +159,10 @@ export default function RegisterForm() {
       setIsLoading(false);
     }
   };
+
+  if (registeredEmail) {
+    return <EmailVerificationNotice email={registeredEmail} intro="Pendaftaran berhasil. Kami sudah mengirim tautan verifikasi ke" />;
+  }
 
   return (
     <>
@@ -190,6 +209,39 @@ export default function RegisterForm() {
           onChange={(event) => updateField("birthDate", event.target.value)}
           error={errors.birthDate}
         />
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-2 text-[14px] font-semibold text-brand-900">Jenis Kelamin</legend>
+          <div className="grid grid-cols-2 gap-3" role="radiogroup" aria-describedby={errors.gender ? "gender-error" : undefined}>
+            {GENDER_OPTIONS.map((g) => {
+              const on = values.gender === g.value;
+              return (
+                <button
+                  key={g.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  onClick={() => updateField("gender", g.value)}
+                  className={`h-12 rounded-[8px] border px-4 text-[15px] transition ${
+                    on
+                      ? "border-gold-600 bg-brand-50 font-semibold text-brand-900 ring-4 ring-brand-500/20"
+                      : errors.gender
+                        ? "border-red-500 bg-white text-slate-600"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  {g.label}
+                </button>
+              );
+            })}
+          </div>
+          {errors.gender ? (
+            <span id="gender-error" className="text-[13px] leading-5 text-red-600">
+              {errors.gender}
+            </span>
+          ) : (
+            <span className="text-[13px] leading-5 text-slate-500">Tidak bisa diubah setelah akun dibuat.</span>
+          )}
+        </fieldset>
         <div className="space-y-2">
           <AuthPasswordInput
             label="Kata Sandi"

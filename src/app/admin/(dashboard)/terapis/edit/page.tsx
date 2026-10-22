@@ -1,207 +1,369 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Info, CalendarBlank, ClockCounterClockwise } from "@phosphor-icons/react";
-import TabInfoDasar from "./components/TabInfoDasar";
-import TabJadwal from "./components/TabJadwal";
-import TabRiwayat from "./components/TabRiwayat";
+import { ArrowLeft, CaretRight } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 import { getApiErrorMessage } from "@/app/utils/api";
+import type { AdminBooking, AdminSlot, AdminTherapist } from "@/types/api.types";
+import { btn, EmptyState, inputClass, linkClass, Notice, Panel, StatusBadge, tableHead } from "@/components/admin/shared/AdminUI";
+import { AccountFields, Field, ProfileFields, validateAccount, validateProfile, type AccountDraft, type ProfileDraft } from "@/components/admin/terapis/TherapistForms";
+import { formatDate, formatSlotTime, todayWib } from "@/lib/format";
 
-function EditTerapisContent() {
-  const searchParams = useSearchParams();
-  const therapistId = searchParams.get("id") || "";
+type Tab = "profil" | "akun" | "jadwal" | "riwayat";
+const TABS: { value: Tab; label: string }[] = [
+  { value: "profil", label: "Profil" },
+  { value: "akun", label: "Akun login" },
+  { value: "jadwal", label: "Jadwal" },
+  { value: "riwayat", label: "Riwayat sesi" },
+];
 
-  const [activeTab, setActiveTab] = useState("info"); 
-  const [isActive, setIsActive] = useState(true);
-  const [isAddingException, setIsAddingException] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+const toDraft = (t: AdminTherapist): ProfileDraft => ({
+  fullName: t.fullName,
+  sip: t.sip ?? "",
+  phone: t.phone ?? "",
+  email: t.email ?? "",
+  education: t.education ?? "",
+  focusIds: t.specializations.map((s) => s.id),
+});
 
-  const [formData, setFormData] = useState({
-    nama: "",
-    sip: "",
-    spesialisasi: "",
-    focusIds: [] as string[],
-    telepon: "",
-    email: "",
-    pendidikan: ""
-  });
+function ProfileTab({ therapist, onSaved }: { therapist: AdminTherapist; onSaved: () => Promise<void> }) {
+  const [draft, setDraft] = useState(() => toDraft(therapist));
+  const [msg, setMsg] = useState<{ tone: "info" | "error"; text: string } | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  // Load data terapis berdasarkan ID — GET /api/admin/therapists/:id (tidak ada fallback ke terapis lain)
-  useEffect(() => {
-    const fetchTherapistDetail = async () => {
-      try {
-        if (!therapistId) {
-          setNotFound(true);
-          return;
-        }
-        const res = await adminService.getTherapistById(therapistId);
-        const target = res.data?.therapist;
-        if (!target) {
-          setNotFound(true);
-          return;
-        }
-
-        setFormData({
-          nama: target.fullName || "",
-          sip: target.sip || "",
-          spesialisasi: (target.specializations || []).map((s) => `Fisioterapi ${s.name}`).join(", "),
-          // Semua spesialisasi dipertahankan (bukan cuma yang pertama) supaya tidak terhapus saat simpan
-          focusIds: (target.specializations || []).map((s) => s.id),
-          telepon: target.phone || "",
-          email: target.email || "",
-          pendidikan: target.education || "",
-        });
-        // BE mengirim status: "aktif" | "nonaktif"
-        setIsActive(target.status === "aktif");
-      } catch (error) {
-        console.error("Gagal memuat detail terapis:", error);
-        setNotFound(true);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTherapistDetail();
-  }, [therapistId]);
-
-  // Toggle status keaktifan terapis
-  const handleToggleActive = async () => {
-    const newStatus = !isActive;
-    setIsActive(newStatus);
-    if (therapistId) {
-      try {
-        await adminService.updateTherapist(therapistId, { status: newStatus ? "aktif" : "nonaktif" });
-      } catch (error) {
-        console.error("Gagal update status aktif terapis:", error);
-        setIsActive(!newStatus); // kembalikan toggle kalau gagal tersimpan
-        alert(getApiErrorMessage(error, "Gagal mengubah status terapis."));
-      }
+  const save = async () => {
+    const invalid = validateProfile(draft);
+    if (invalid) return setMsg({ tone: "error", text: invalid });
+    setSaving(true);
+    setMsg(null);
+    try {
+      await adminService.updateTherapist(therapist.id, {
+        full_name: draft.fullName.trim(),
+        sip: draft.sip,
+        phone: draft.phone,
+        email: draft.email,
+        education: draft.education,
+        focus_ids: draft.focusIds,
+      });
+      await onSaved();
+      setMsg({ tone: "info", text: "Perubahan profil tersimpan." });
+    } catch (err) {
+      setMsg({ tone: "error", text: getApiErrorMessage(err) });
+    } finally {
+      setSaving(false);
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="w-full py-20 flex justify-center items-center">
-        <span className="text-brand-900 font-bold animate-pulse">Memuat data terapis...</span>
+  return (
+    <Panel bodyClassName="p-4">
+      <div className="flex flex-col gap-4">
+        {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
+        <ProfileFields value={draft} onChange={setDraft} />
+        <div className="flex justify-end">
+          <button className={btn.primary} onClick={save} disabled={saving}>
+            {saving ? "Menyimpan…" : "Simpan perubahan"}
+          </button>
+        </div>
       </div>
-    );
-  }
+    </Panel>
+  );
+}
 
-  if (notFound) {
+function AccountTab({ therapist, initialError, onSaved }: { therapist: AdminTherapist; initialError: string; onSaved: () => Promise<void> }) {
+  const [draft, setDraft] = useState<AccountDraft>({ email: therapist.email ?? "", phone: therapist.phone ?? "", password: "" });
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState<{ tone: "info" | "error"; text: string } | null>(initialError ? { tone: "error", text: `Akun belum dibuat: ${initialError}` } : null);
+  const [saving, setSaving] = useState(false);
+
+  const create = async () => {
+    const invalid = validateAccount(draft);
+    if (invalid) return setMsg({ tone: "error", text: invalid });
+    setSaving(true);
+    setMsg(null);
+    try {
+      await adminService.createTherapistAccount(therapist.id, draft);
+      await onSaved();
+      setMsg({ tone: "info", text: "Akun dibuat. Berikan email dan password awal kepada terapis." });
+    } catch (err) {
+      setMsg({ tone: "error", text: getApiErrorMessage(err) });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const reset = async () => {
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+      return setMsg({ tone: "error", text: "Password minimal 8 karakter, kombinasi huruf dan angka." });
+    }
+    setSaving(true);
+    setMsg(null);
+    try {
+      await adminService.resetTherapistPassword(therapist.id, password);
+      setPassword("");
+      setMsg({ tone: "info", text: "Password baru tersimpan. Terapis perlu login ulang." });
+    } catch (err) {
+      setMsg({ tone: "error", text: getApiErrorMessage(err) });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (therapist.account?.isOwner) {
     return (
-      <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
-        <span className="text-brand-900 font-bold text-[18px]">Data terapis tidak ditemukan.</span>
-        <Link href="/admin/terapis" className="px-6 py-3 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700">
-          Kembali ke Kelola Data Terapis
-        </Link>
-      </div>
+      <Panel bodyClassName="p-4">
+        <p className="text-[13px] text-zinc-600">
+          Profil ini milik akun owner (<span className="text-zinc-900">{therapist.account.email}</span>). Password owner diubah dari halaman{" "}
+          <Link href="/admin/profil" className="underline">
+            Profil
+          </Link>
+          .
+        </p>
+      </Panel>
     );
   }
 
   return (
-    <div className="w-full flex flex-col gap-6 pb-12 max-w-[1000px] mx-auto">
-      
-      {/* --- BREADCRUMB --- */}
-      <div className="flex items-center gap-2 text-[13px] text-gray-500 font-medium">
-        <Link href="/admin/terapis" className="hover:text-gold-700 transition-colors">Kelola Data Terapis</Link>
-        <span>›</span>
-        {isAddingException ? (
-          <>
-            <span className="cursor-pointer hover:text-gold-700" onClick={() => setIsAddingException(false)}>Edit Data Terapis</span>
-            <span>›</span>
-            <span className="text-brand-900 font-bold">Tambah Pengecualian Jadwal</span>
-          </>
+    <Panel
+      title={therapist.account ? "Akun aktif" : "Belum ada akun"}
+      description={therapist.account ? `Login sebagai ${therapist.account.email} di /admin/login` : "Buat akun supaya terapis bisa login dan menjalankan sesi."}
+      bodyClassName="p-4"
+    >
+      <div className="flex flex-col gap-4">
+        {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
+        {therapist.account ? (
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+            <div className="flex-1">
+              <Field label="Password baru" hint="Min. 8 karakter, huruf + angka. Sesi terapis yang sedang login akan diakhiri.">
+                <input value={password} onChange={(e) => setPassword(e.target.value)} type="text" autoComplete="new-password" className={inputClass} />
+              </Field>
+            </div>
+            <button className={`${btn.primary} sm:mb-[18px]`} onClick={reset} disabled={saving || !password}>
+              Atur ulang password
+            </button>
+          </div>
         ) : (
-          <span className="text-brand-900 font-bold">Edit Data Terapis</span>
+          <>
+            <AccountFields value={draft} onChange={setDraft} />
+            <div className="flex justify-end">
+              <button className={btn.primary} onClick={create} disabled={saving}>
+                {saving ? "Membuat…" : "Buat akun"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    </Panel>
+  );
+}
+
+function ScheduleTab({ therapistId }: { therapistId: string }) {
+  const [slots, setSlots] = useState<AdminSlot[] | null>(null);
+
+  useEffect(() => {
+    const from = todayWib();
+    const to = new Date(Date.parse(`${from}T00:00:00Z`) + 30 * 86400_000).toISOString().slice(0, 10);
+    adminService
+      .getSlots({ therapist_id: therapistId, date_from: from, date_to: to })
+      .then((res) => setSlots(res.data.slots))
+      .catch(() => setSlots([]));
+  }, [therapistId]);
+
+  return (
+    <Panel title="Slot 30 hari ke depan" actions={<Link href="/admin/jadwal" className={linkClass}>Atur di Jadwal Slot</Link>}>
+      {slots === null ? (
+        <div className="h-24 animate-pulse bg-zinc-50" />
+      ) : slots.length === 0 ? (
+        <EmptyState title="Belum ada slot" description="Tambahkan slot praktik terapis ini dari menu Jadwal Slot." />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[520px] text-left text-[13px]">
+            <thead>
+              <tr className={tableHead}>
+                <th className="px-4 py-2 font-medium">Tanggal</th>
+                <th className="px-4 py-2 font-medium">Jam</th>
+                <th className="px-4 py-2 text-right font-medium">Terisi</th>
+                <th className="px-4 py-2 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {slots.map((s) => (
+                <tr key={s.id} className="border-b border-zinc-100 last:border-0">
+                  <td className="px-4 py-2.5 text-zinc-900">{formatDate(s.slotDate)}</td>
+                  <td className="px-4 py-2.5 tabular-nums text-zinc-600">
+                    {formatSlotTime(s.startTime)}–{formatSlotTime(s.endTime)}
+                  </td>
+                  <td className="px-4 py-2.5 text-right tabular-nums text-zinc-600">
+                    {s.bookedCount}/{s.capacity}
+                  </td>
+                  <td className="px-4 py-2.5 text-zinc-600">{s.status === "aktif" ? "Buka" : "Ditutup"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+function HistoryTab({ therapistId }: { therapistId: string }) {
+  const [bookings, setBookings] = useState<AdminBooking[] | null>(null);
+
+  useEffect(() => {
+    adminService
+      .getBookings()
+      .then((res) => setBookings(res.data.bookings.filter((b) => b.therapistId === therapistId).reverse()))
+      .catch(() => setBookings([]));
+  }, [therapistId]);
+
+  return (
+    <Panel title="Riwayat sesi" description={bookings ? `${bookings.length} sesi terjadwal untuk terapis ini` : undefined}>
+      {bookings === null ? (
+        <div className="h-24 animate-pulse bg-zinc-50" />
+      ) : bookings.length === 0 ? (
+        <EmptyState title="Belum ada sesi" />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[600px] text-left text-[13px]">
+            <thead>
+              <tr className={tableHead}>
+                <th className="px-4 py-2 font-medium">Jadwal</th>
+                <th className="px-4 py-2 font-medium">Pasien</th>
+                <th className="px-4 py-2 font-medium">Paket</th>
+                <th className="px-4 py-2 font-medium">Status</th>
+                <th className="w-10" />
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.map((b) => (
+                <tr key={b.id} className="group border-b border-zinc-100 last:border-0 hover:bg-zinc-50">
+                  <td className="px-4 py-2.5 tabular-nums text-zinc-700">
+                    {formatDate(b.bookingDate)}, {formatSlotTime(b.bookingTime)}
+                  </td>
+                  <td className="px-4 py-2.5 text-zinc-900">{b.patientName}</td>
+                  <td className="px-4 py-2.5 text-zinc-600">{b.packageName ?? "—"}</td>
+                  <td className="px-4 py-2.5">
+                    <StatusBadge status={b.bookingStatus} />
+                  </td>
+                  <td className="pr-3 text-right">
+                    <Link href={`/admin/sesi/${b.id}`} aria-label="Buka sesi" className="inline-flex p-1 text-zinc-300 group-hover:text-zinc-600">
+                      <CaretRight size={14} />
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </Panel>
+  );
+}
+
+function EditTerapisContent() {
+  const params = useSearchParams();
+  const id = params.get("id") ?? "";
+  const [tab, setTab] = useState<Tab>(() => (params.get("tab") as Tab) || "profil");
+  const [therapist, setTherapist] = useState<AdminTherapist | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const [statusMsg, setStatusMsg] = useState("");
+  const [toggling, setToggling] = useState(false);
+
+  const load = useCallback(
+    () =>
+      adminService.getTherapistById(id).then(
+        (res) => setTherapist(res.data.therapist),
+        () => setNotFound(true)
+      ),
+    [id]
+  );
+
+  useEffect(() => {
+    if (id) void load();
+  }, [id, load]);
+
+  const toggleStatus = async () => {
+    if (!therapist) return;
+    setToggling(true);
+    setStatusMsg("");
+    try {
+      await adminService.updateTherapist(therapist.id, { status: therapist.status === "aktif" ? "nonaktif" : "aktif" });
+      await load();
+    } catch (err) {
+      setStatusMsg(getApiErrorMessage(err));
+    } finally {
+      setToggling(false);
+    }
+  };
+
+  const back = (
+    <Link href="/admin/terapis" className="inline-flex w-fit items-center gap-1 text-[12px] text-zinc-500 hover:text-zinc-900">
+      <ArrowLeft size={12} />
+      Terapis
+    </Link>
+  );
+
+  if (!id || notFound) {
+    return (
+      <div className="flex flex-col gap-4">
+        {back}
+        <Panel>
+          <EmptyState title="Terapis tidak ditemukan" />
+        </Panel>
+      </div>
+    );
+  }
+  if (!therapist) return <div className="h-40 animate-pulse rounded-lg bg-white" />;
+
+  const active = therapist.status === "aktif";
+
+  return (
+    <div className="mx-auto flex max-w-[960px] flex-col gap-4">
+      {back}
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-[17px] font-semibold text-zinc-900">{therapist.fullName}</h1>
+          <p className="text-[12px] text-zinc-500">
+            {[therapist.specializations.map((s) => s.name).join(", "), therapist.sip && `SIP ${therapist.sip}`, active ? "Aktif" : "Nonaktif"].filter(Boolean).join(" · ")}
+          </p>
+        </div>
+        {!therapist.account?.isOwner && (
+          <button className={active ? btn.danger : btn.secondary} onClick={toggleStatus} disabled={toggling}>
+            {active ? "Nonaktifkan" : "Aktifkan kembali"}
+          </button>
         )}
       </div>
 
-      {/* --- HEADER KARTU PROFIL --- */}
-      {!isAddingException && (
-        <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full border-4 border-white shadow-sm overflow-hidden bg-brand-900">
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${encodeURIComponent((formData.nama || "Terapis").replace("Ftr. ", ""))}&background=1b2a4e&color=fff&size=150`} 
-                  alt="Avatar" 
-                  className="w-full h-full object-cover" 
-                />
-              </div>
-            </div>
-            <div className="flex flex-col gap-1">
-              <h2 className="text-[24px] font-bold text-brand-900 leading-tight">{formData.nama || "Nama Terapis"}</h2>
-              <p className="text-[14px] text-gray-500">{formData.spesialisasi} • SIP: {formData.sip || "-"}</p>
-              <div className="flex items-center gap-1.5 mt-1">
-                <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-[#00b074]' : 'bg-gray-400'}`}></span>
-                <span className={`text-[13px] font-bold ${isActive ? 'text-[#00b074]' : 'text-gray-400'}`}>
-                  Status: {isActive ? 'Aktif' : 'Nonaktif'}
-                </span>
-              </div>
-            </div>
-          </div>
+      {statusMsg && <Notice tone="error">{statusMsg}</Notice>}
 
-          {/* Switch Status Keaktifan */}
-          <div className="flex items-center gap-3 bg-gray-50 border border-gray-100 py-2.5 px-4 rounded-xl shrink-0">
-            <span className="text-[14px] font-bold text-brand-900">Status Keaktifan</span>
-            <div onClick={handleToggleActive} className="flex items-center gap-2 cursor-pointer">
-              <div className={`w-12 h-7 rounded-full p-1 transition-colors flex items-center ${isActive ? 'bg-[#00b074]' : 'bg-gray-300'}`}>
-                <div className={`w-5 h-5 bg-white rounded-full shadow-sm transition-transform ${isActive ? 'translate-x-5' : 'translate-x-0'}`}></div>
-              </div>
-              <span className={`text-[14px] font-bold ${isActive ? 'text-[#00b074]' : 'text-gray-400'}`}>
-                {isActive ? 'Aktif' : 'Off'}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
+      <div className="flex gap-4 border-b border-zinc-200" role="tablist">
+        {TABS.map((t) => (
+          <button
+            key={t.value}
+            role="tab"
+            aria-selected={tab === t.value}
+            onClick={() => setTab(t.value)}
+            className={`-mb-px border-b-2 pb-2 text-[13px] transition-colors ${tab === t.value ? "border-zinc-900 font-medium text-zinc-900" : "border-transparent text-zinc-500 hover:text-zinc-900"}`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
-      {/* --- SISTEM TABS NAVIGATION --- */}
-      {!isAddingException && (
-        <div className="w-full flex items-center gap-8 border-b border-gray-200 px-2 mt-2">
-          {['info', 'jadwal', 'riwayat'].map(tab => (
-            <button 
-              key={tab} onClick={() => setActiveTab(tab)} 
-              className={`flex items-center gap-2 pb-4 border-b-2 font-bold capitalize transition-colors ${activeTab === tab ? "border-brand-600 text-gold-700" : "border-transparent text-gray-400 hover:text-gray-600"}`}
-            >
-              {tab === 'info' && <><Info size={18} weight={activeTab === tab ? "bold" : "regular"} /> Informasi Dasar</>}
-              {tab === 'jadwal' && <><CalendarBlank size={18} weight={activeTab === tab ? "bold" : "regular"} /> Jadwal Praktek</>}
-              {tab === 'riwayat' && <><ClockCounterClockwise size={18} weight={activeTab === tab ? "bold" : "regular"} /> Riwayat Sesi</>}
-            </button>
-          ))}
-        </div>
-      )}
-
-      {/* --- KONTEN TAB RENDERER --- */}
-      {activeTab === "info" && !isAddingException && (
-        <TabInfoDasar formData={formData} setFormData={setFormData} therapistId={therapistId} />
-      )}
-      {activeTab === "jadwal" && (
-        <TabJadwal 
-          isAddingException={isAddingException} 
-          setIsAddingException={setIsAddingException} 
-          therapistName={formData.nama} 
-          therapistId={therapistId}
-        />
-      )}
-      {activeTab === "riwayat" && !isAddingException && (
-        <TabRiwayat 
-          therapistName={formData.nama} 
-          therapistId={therapistId} 
-        />
-      )}
-
+      {tab === "profil" && <ProfileTab key={therapist.id} therapist={therapist} onSaved={load} />}
+      {tab === "akun" && <AccountTab key={therapist.account?.email ?? "baru"} therapist={therapist} initialError={params.get("gagal") ?? ""} onSaved={load} />}
+      {tab === "jadwal" && <ScheduleTab therapistId={therapist.id} />}
+      {tab === "riwayat" && <HistoryTab therapistId={therapist.id} />}
     </div>
   );
 }
 
 export default function EditTerapisPage() {
   return (
-    <Suspense fallback={<div className="py-20 text-center text-brand-900 font-bold">Memuat halaman edit...</div>}>
+    <Suspense fallback={<div className="h-40 animate-pulse rounded-lg bg-white" />}>
       <EditTerapisContent />
     </Suspense>
   );

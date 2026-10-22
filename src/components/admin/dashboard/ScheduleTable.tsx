@@ -4,40 +4,27 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Brain, Barbell, Bandaids, CalendarX, ArrowRight } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
+import { todayWib } from "@/lib/format";
+import { genderShort } from "@/constants/patient";
+import type { AdminBooking } from "@/types/api.types";
 
 export default function ScheduleTable() {
-  const [todaySchedules, setTodaySchedules] = useState<any[]>([]);
+  const [todaySchedules, setTodaySchedules] = useState<AdminBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchTodaySchedules = async () => {
-    try {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
-      const todayStr = `${y}-${m}-${d}`;
-
-      const res = await adminService.getBookings();
-      const allBookings = res.data.bookings || [];
-
-      const filteredToday = allBookings.filter((b: any) => {
-        // bookingDate format ISO: "2026-08-31T00:00:00.000Z", ambil substring YYYY-MM-DD
-        const rawDate = b.bookingDate || b.slotDate || b.slot_date || "";
-        return rawDate.substring(0, 10) === todayStr;
-      });
-
-      setTodaySchedules(filteredToday);
-    } catch (error) {
-      console.error("Gagal menarik jadwal hari ini:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchTodaySchedules();
+    const load = () => {
+      // Disaring di server ke hari ini (kalender WIB), bukan menarik semua booking
+      const today = todayWib();
+      return adminService
+        .getBookings({ date_from: today, date_to: today })
+        .then((res) => setTodaySchedules(res.data.bookings || []))
+        .catch((error) => console.error("Gagal menarik jadwal hari ini:", error))
+        .finally(() => setIsLoading(false));
+    };
+    load();
     // Auto-refresh setiap 30 detik
-    const interval = setInterval(fetchTodaySchedules, 30000);
+    const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -87,13 +74,8 @@ export default function ScheduleTable() {
     return `${bookingTime.substring(0, 5)} WIB`;
   };
 
-  const getLayananName = (b: any): string => {
-    // API tidak punya serviceName, pakai therapistSpecializations[0].name
-    if (b.therapistSpecializations?.length > 0) {
-      return b.therapistSpecializations[0].name || "Fisioterapi";
-    }
-    return b.serviceName || b.service_name || "Fisioterapi";
-  };
+  // Layanan yang dipesan (focusArea); booking lama tanpa focusArea pakai spesialisasi terapis
+  const getLayananName = (b: AdminBooking): string => b.focusArea?.name || b.therapistSpecializations[0]?.name || "Fisioterapi";
 
   return (
     <div className="w-full bg-white border border-gray-200 rounded-[20px] shadow-sm overflow-hidden">
@@ -102,7 +84,7 @@ export default function ScheduleTable() {
       <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
         <div className="flex flex-col gap-0.5">
           <div className="flex items-center gap-2">
-            <h3 className="text-[18px] font-bold text-brand-900">Jadwal Sesi Hari Ini</h3>
+            <h3 className="text-[15px] font-bold text-brand-900">Jadwal Sesi Hari Ini</h3>
             {/* Live indicator */}
             <span className="relative flex h-2 w-2 ml-1">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
@@ -133,7 +115,7 @@ export default function ScheduleTable() {
           <div className="w-16 h-16 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 mb-3">
             <CalendarX size={32} />
           </div>
-          <h4 className="text-[16px] font-bold text-brand-900 mb-1">Belum Ada Sesi Hari Ini</h4>
+          <h4 className="text-[14px] font-bold text-brand-900 mb-1">Belum Ada Sesi Hari Ini</h4>
           <p className="text-[13px] text-gray-500 max-w-sm">
             Tidak ada pasien yang memiliki jadwal terapi untuk hari ini. Anda dapat melihat jadwal di hari lain pada menu Booking.
           </p>
@@ -146,20 +128,22 @@ export default function ScheduleTable() {
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 w-[50px]">No</th>
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 min-w-[150px]">Waktu</th>
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 min-w-[200px]">Nama Pasien</th>
+                <th className="py-4 px-6 text-[13px] font-bold text-gray-500 text-center" title="Jenis kelamin">L/P</th>
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 min-w-[180px]">Nama Terapis</th>
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 min-w-[180px] text-center">Layanan</th>
                 <th className="py-4 px-6 text-[13px] font-bold text-gray-500 min-w-[150px] text-center">Status</th>
               </tr>
             </thead>
             <tbody>
-              {todaySchedules.map((row: any, index: number) => (
+              {todaySchedules.map((row, index) => (
                 <tr key={row.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                  <td className="py-4 px-6 text-[14px] text-gray-500">{index + 1}</td>
-                  <td className="py-4 px-6 text-[14px] text-gray-600 font-medium">{formatJam(row.bookingTime || row.startTime || row.start_time)}</td>
-                  <td className="py-4 px-6 text-[14px] font-bold text-brand-900">{row.patientName || row.patient_name}</td>
-                  <td className="py-4 px-6 text-[14px] text-brand-900">{row.therapistName || row.therapist_name}</td>
+                  <td className="py-4 px-6 text-[13px] text-gray-500">{index + 1}</td>
+                  <td className="py-4 px-6 text-[13px] text-gray-600 font-medium">{formatJam(row.bookingTime)}</td>
+                  <td className="py-4 px-6 text-[13px] font-bold text-brand-900">{row.patientName}</td>
+                  <td className="py-4 px-6 text-[13px] text-brand-900 text-center">{genderShort(row.patientGender) ?? "—"}</td>
+                  <td className="py-4 px-6 text-[13px] text-brand-900">{row.therapistName}</td>
                   <td className="py-4 px-6 text-center">{renderLayananBadge(getLayananName(row))}</td>
-                  <td className="py-4 px-6 text-center">{renderStatusBadge(row.bookingStatus || row.status)}</td>
+                  <td className="py-4 px-6 text-center">{renderStatusBadge(row.bookingStatus)}</td>
                 </tr>
               ))}
             </tbody>

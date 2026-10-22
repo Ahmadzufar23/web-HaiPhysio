@@ -4,6 +4,8 @@ import { useState, useEffect, use } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { bookingService } from "@/services/bookingService";
+import { getApiErrorMessage } from "@/app/utils/api";
+import type { BookingDetail } from "@/types/api.types";
 import { ArrowLeft, WarningCircle } from "@phosphor-icons/react";
 
 export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{ id: string }> }) {
@@ -14,7 +16,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
   const slotId = searchParams.get("slotId");
   const reason = searchParams.get("reason") || "";
 
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<BookingDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -35,7 +37,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
     fetchOldBooking();
   }, [id]);
 
-  const formatTanggal = (isoString: string) => {
+  const formatTanggal = (isoString?: string) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
     return date.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
@@ -67,8 +69,8 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
       
       // Kalau dapet status 200 OK, langsung lempar ke halaman sukses!
       router.push(`/riwayat-booking/ubah-jadwal/${id}/sukses`);
-    } catch (error: any) {
-      setErrorMessage(error.response?.data?.error?.message || "Gagal mengubah jadwal. Pastikan perubahan dilakukan >24 jam sebelum jadwal.");
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "Gagal mengubah jadwal. Perubahan hanya bisa dilakukan paling lambat H-2 sebelum jadwal."));
       setIsSubmitting(false);
     }
   };

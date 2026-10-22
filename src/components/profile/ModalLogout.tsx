@@ -11,24 +11,18 @@ export default function ModalLogout({ isOpen, onClose, onConfirm, isLoggingOut }
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-5 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white w-full max-w-[400px] rounded-[20px] p-8 text-center relative shadow-2xl animate-in zoom-in-95 duration-200">
-        <h3 className="text-[20px] font-bold text-brand-900 mb-2">Keluar Akun?</h3>
-        <p className="text-[14px] text-gray-500 mb-8">Sesi kamu akan diakhiri.</p>
-        
-        <div className="flex gap-4">
-          <button 
-            onClick={onClose}
-            className="flex-1 py-3 rounded-xl border border-gray-200 text-gold-700 font-bold text-[15px] hover:bg-gray-50 transition-colors"
-          >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 px-4" role="dialog" aria-modal="true" aria-labelledby="logout-title" onClick={onClose}>
+      <div className="w-full max-w-[360px] rounded-xl border border-zinc-200 bg-white p-5 shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <h3 id="logout-title" className="text-[15px] font-semibold text-zinc-900">
+          Keluar dari akun?
+        </h3>
+        <p className="mt-1 text-[13px] text-zinc-500">Sesi di perangkat ini akan diakhiri.</p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button onClick={onClose} className="inline-flex h-9 items-center rounded-lg border border-zinc-200 bg-white px-4 text-[13px] font-medium text-zinc-700 hover:bg-zinc-50">
             Batal
           </button>
-          <button 
-            onClick={onConfirm}
-            disabled={isLoggingOut}
-            className={`flex-1 py-3 rounded-xl text-white font-bold text-[15px] transition-colors ${isLoggingOut ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#EF4444] hover:bg-[#DC2626]'}`}
-          >
-            {isLoggingOut ? "Keluar..." : "Keluar"}
+          <button onClick={onConfirm} disabled={isLoggingOut} className="inline-flex h-9 items-center rounded-lg bg-red-600 px-4 text-[13px] font-medium text-white hover:bg-red-700 disabled:opacity-60">
+            {isLoggingOut ? "Keluar…" : "Keluar"}
           </button>
         </div>
       </div>

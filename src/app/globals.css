@@ -5,24 +5,28 @@
   /* Palet Brand Hai Physio — diambil dari logo: kuning #FCDF09 + hitam teks logo.
      Satu-satunya sumber warna brand. Lihat docs/DESIGN_SYSTEM.md.
      50–700  = kuning (isian, tint, border). Teks di atas kuning SELALU gelap (brand-950).
-     800–950 = tinta hitam hangat (teks utama, panel gelap, sidebar admin). */
+     800–950 = tinta hitam netral (teks utama, panel gelap, sidebar admin). */
   --color-brand-50: #fffbe6;   /* latar tint lembut */
   --color-brand-100: #fff3bf;  /* border tint, badge */
   --color-brand-200: #ffea85;  /* aksen di atas latar gelap / foto */
   --color-brand-300: #ffe14d;  /* aksen di atas latar gelap */
-  --color-brand-400: #fdd92a;  /* stabilo judul */
+  --color-brand-400: #fdd92a;
   --color-brand-500: #fcdf09;  /* kuning logo */
   --color-brand-600: #f5c900;  /* PRIMARY: tombol CTA, isian aktif */
   --color-brand-700: #e0b400;  /* hover tombol kuning */
-  --color-brand-800: #2b2820;  /* tinta sekunder */
-  --color-brand-900: #1a1814;  /* judul, teks utama, panel gelap, sidebar admin */
-  --color-brand-950: #0e0d0a;  /* teks di atas kuning, latar footer */
+  --color-brand-800: #2a2c31;  /* tinta sekunder */
+  --color-brand-900: #141518;  /* judul, teks utama, panel gelap, sidebar admin (hitam netral) */
+  --color-brand-950: #0b0b0d;  /* teks di atas kuning, latar footer */
 
   /* Emas gelap — KHUSUS teks/ikon beraksen di atas latar terang
      (kuning murni di atas putih hanya ±1,5:1, tidak terbaca) */
   --color-gold-600: #b58a00;   /* border fokus input (≥3:1) */
   --color-gold-700: #8a6500;   /* teks/ikon aksen (≈4,9:1 di atas putih) */
   --color-gold-800: #6b4e00;   /* hover teks aksen */
+
+  /* Permukaan abu dingin: latar kartu & section selang-seling (bukan krem) */
+  --color-surface: #f4f5f7;
+  --color-surface-2: #eaecf0;
 
   /* Alias lama (kompatibilitas) */
   --color-primary-light: var(--color-brand-50);
@@ -36,7 +40,7 @@
   --color-accent-darker: var(--color-brand-950);
 
   /* Netral */
-  --color-neutral-light: #fafaf7;
+  --color-neutral-light: #f8f9fb;
   --color-neutral-dark: #585858;
 
   /* Easing khas HaiPhysio — dipakai semua animasi supaya terasa satu sistem */
@@ -47,7 +51,6 @@
 /* Font dimuat via next/font di layout.tsx (variabel CSS di <html>) */
 @theme inline {
   --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, sans-serif;
-  --font-display: var(--font-instrument), ui-serif, Georgia, serif;
 }
 
 /* Hapus ikon mata di password (khusus browser Edge/IE) */
@@ -65,4 +68,72 @@ input[type="password"]::-webkit-password-clear {
 /* Firefox */
 input[type="password"] {
   -moz-appearance: textfield;
+}
+
+/* Tema dashboard admin: netral (putih, abu, hitam). Token kuning & warna status
+   dipetakan ulang HANYA di dalam .admin-theme, halaman publik tetap memakai kuning logo.
+   Kuning asli hanya tersisa di logo dan titik nyeri pasien pada gambar organ. */
+.admin-theme {
+  --color-brand-50: #f4f4f5;
+  --color-brand-100: #e4e4e7;
+  --color-brand-200: #d4d4d8;
+  --color-brand-300: #a1a1aa;
+  --color-brand-400: #3f3f46;
+  --color-brand-600: #18181b;   /* tombol utama: hitam */
+  --color-brand-700: #27272a;
+  --color-brand-800: #3f3f46;
+  --color-brand-900: #18181b;
+  --color-gold-600: #a1a1aa;    /* border fokus */
+  --color-gold-700: #3f3f46;    /* teks aksen → abu gelap */
+  --color-gold-800: #18181b;
+  --color-surface: #fafafa;
+  --color-surface-2: #e4e4e7;
+
+  /* Warna status di halaman lama → abu; merah tetap untuk aksi berbahaya */
+  --color-green-50: #f4f4f5;
+  --color-green-100: #e4e4e7;
+  --color-green-200: #e4e4e7;
+  --color-green-300: #d4d4d8;
+  --color-green-400: #a1a1aa;
+  --color-green-500: #52525b;
+  --color-green-600: #3f3f46;
+  --color-green-700: #27272a;
+  --color-emerald-50: #f4f4f5;
+  --color-emerald-200: #e4e4e7;
+  --color-emerald-500: #52525b;
+  --color-emerald-600: #3f3f46;
+  --color-emerald-700: #27272a;
+  --color-emerald-800: #27272a;
+  --color-orange-50: #f4f4f5;
+  --color-orange-100: #e4e4e7;
+  --color-orange-300: #d4d4d8;
+  --color-orange-500: #71717a;
+  --color-orange-600: #52525b;
+  --color-orange-700: #3f3f46;
+  --color-amber-50: #f4f4f5;
+  --color-amber-200: #e4e4e7;
+  --color-amber-500: #71717a;
+  --color-amber-600: #52525b;
+  --color-amber-700: #3f3f46;
+  --color-amber-800: #27272a;
+  --color-sky-50: #f4f4f5;
+  --color-sky-500: #18181b;
+  --color-sky-700: #27272a;
+  --color-sky-800: #18181b;
+  --color-blue-50: #f4f4f5;
+  --color-blue-500: #52525b;
+  --color-blue-600: #3f3f46;
+  --color-red-50: #fef2f2;
+  --color-red-500: #dc2626;
+
+  color: var(--color-brand-900);
+  background: #fafafa;
+}
+
+/* Cetak rekam medis (MedicalRecordPrint): A4 dengan margin standar */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
 }

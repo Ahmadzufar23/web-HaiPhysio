@@ -14,7 +14,7 @@ Dokumen ini berisi panduan, konvensi koding, dan aturan arsitektur untuk AI codi
   - Ink (teks, judul, panel gelap, sidebar): `brand-900` #1a1814 / `brand-950` #0e0d0a
   - Teks aksen di latar terang: `gold-700` #8a6500 (kuning murni tidak terbaca di atas putih)
   - Tint: `brand-50` #fffbe6, `brand-100` #fff3bf
-  - Ciri khas: `<LogoWatermark />`, `.mark-swoosh`, `.bg-logo-pattern`. Panduan lengkap: `docs/DESIGN_SYSTEM.md`
+  - Prinsip: tampilan publik tenang, tanpa hiasan. Panduan lengkap: `docs/DESIGN_SYSTEM.md`
 - **Iconography:** `@phosphor-icons/react`.
 - **State & Data Fetching:** React Hooks (`useState`, `useEffect`, `useCallback`) + Service Layer dengan Axios (`authApi`, `bookingApi`).
 - **Authentication & Sessions:** Cookie-based session auth (`withCredentials: true`).

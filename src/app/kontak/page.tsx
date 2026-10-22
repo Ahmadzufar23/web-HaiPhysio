@@ -1,33 +1,36 @@
 "use client";
 
-import HeroBanner from "@/components/home/HeroBanner";
+import Link from "next/link";
+import { ArrowRight, WhatsappLogo } from "@phosphor-icons/react";
+import { PageIntro, mk } from "@/components/marketing/ui";
 import ContactSection from "@/components/home/ContactSection";
-import LocationMap from "@/components/home/LocationMap";
-import CtaBand from "@/components/home/CtaBand";
+import FaqSection from "@/components/home/FaqSection";
+import { CLINIC } from "@/constants/clinic";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
 
 export default function KontakKami() {
-  // Sebelumnya di-hardcode false → pasien yang sudah login tetap diarahkan ke /login
   const { appointmentHref } = useAuthStatus();
 
   return (
     <div className="flex w-full flex-col">
-      {/* 1. HERO BANNER KONTAK */}
-      <HeroBanner
-        title="Kontak"
-        accent="kami"
-        subtitle="Hubungi kami lewat WhatsApp atau email, atau langsung datang ke klinik."
-        imageSrc="/hero-kontak.png"
-      />
-
-      {/* 2. SALURAN KONTAK */}
-      <ContactSection title="Masih ada yang" accent="ingin ditanyakan?" subtitle="Tim kami siap membantu pada jam operasional klinik." />
-
-      {/* 3. LOKASI KLINIK */}
-      <LocationMap />
-
-      {/* 4. AJAKAN */}
-      <CtaBand appointmentHref={appointmentHref} />
+      <PageIntro
+        crumb="Kontak Kami"
+        title="Kami siap membantu pemulihan Anda"
+        lead={`Tanyakan keluhan, tarif, atau jadwal lewat WhatsApp. ${CLINIC.hours}, ${CLINIC.hoursNote.toLowerCase()}.`}
+        image={{ src: "/ruangan-klinik.png", alt: "Ruang latihan dan terapi klinik" }}
+      >
+        <div className="mt-2 flex flex-wrap gap-3">
+          <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnPrimary}>
+            <WhatsappLogo size={16} weight="fill" />
+            Chat WhatsApp
+          </a>
+          <Link href={appointmentHref} className={mk.btnSecondary}>
+            Booking online <ArrowRight size={14} />
+          </Link>
+        </div>
+      </PageIntro>
+      <ContactSection hideHeading className="bg-zinc-50" />
+      <FaqSection />
     </div>
   );
 }

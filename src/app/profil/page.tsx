@@ -1,239 +1,388 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CheckCircle, SignOut } from "@phosphor-icons/react";
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowRight, Check, Plus } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
+import { bookingService } from "@/services/bookingService";
 import { getApiErrorMessage } from "@/app/utils/api";
+import { formatDate, formatLongDate, formatSlotTime, initials, todayWib } from "@/lib/format";
+import { resizeToSquareJpeg } from "@/lib/imageResize";
+import { GENDER_OPTIONS, genderLabel } from "@/constants/patient";
 import ModalLogout from "@/components/profile/ModalLogout";
 import ModalGantiPassword from "@/components/profile/ModalGantiPassword";
+import PatientPageHeader from "@/components/shared/PatientPageHeader";
+import { ui } from "@/components/booking/BookingUI";
+
+type Profile = {
+  fullName: string;
+  email: string;
+  phone: string;
+  dateOfBirth: string | null;
+  gender: string | null;
+  address: string;
+  occupation: string;
+  photo: string | null;
+};
+type Draft = Pick<Profile, "fullName" | "gender" | "address" | "occupation">;
+type BookingItem = {
+  id: string;
+  bookingDate: string;
+  bookingTime: string;
+  therapistName: string;
+  bookingStatus: string;
+  referenceCode?: string;
+  focusArea?: { name: string } | null;
+};
+
+// Respons GET/PATCH /profile → bentuk yang dipakai halaman
+const toProfile = (user: Record<string, string | null>): Profile => ({
+  fullName: user.full_name || "",
+  email: user.email || "",
+  phone: user.phone || "",
+  dateOfBirth: user.date_of_birth ?? null,
+  gender: user.gender ?? null,
+  address: user.address ?? "",
+  occupation: user.occupation ?? "",
+  photo: user.photo ?? null,
+});
+
+/** Baris pengaturan: judul + keterangan di kiri, isi di kanan (bertumpuk di layar kecil) */
+function SettingsRow({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+  return (
+    <section className="grid gap-4 border-t border-zinc-200 py-6 md:grid-cols-[220px_minmax(0,1fr)] md:gap-10">
+      <div>
+        <h2 className="text-[14px] font-semibold text-zinc-900">{title}</h2>
+        <p className="mt-1 text-[12px] leading-relaxed text-zinc-500">{description}</p>
+      </div>
+      <div className="min-w-0">{children}</div>
+    </section>
+  );
+}
+
+function ReadOnlyItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-0.5 py-2.5 sm:flex-row sm:items-center sm:gap-4">
+      <dt className="w-[130px] shrink-0 text-[12px] text-zinc-500">{label}</dt>
+      <dd className={`text-[13px] ${value ? "text-zinc-900" : "text-zinc-400"}`}>{value || "Belum diisi"}</dd>
+    </div>
+  );
+}
+
+function Avatar({ profile, size }: { profile: Profile; size: "md" | "lg" }) {
+  const box = size === "lg" ? "h-16 w-16 text-[18px]" : "h-12 w-12 text-[15px]";
+  return profile.photo ? (
+    // eslint-disable-next-line @next/next/no-img-element -- data URL dari API profil
+    <img src={profile.photo} alt="Foto profil" className={`${box} shrink-0 rounded-xl border border-zinc-200 object-cover`} />
+  ) : (
+    <span className={`${box} flex shrink-0 items-center justify-center rounded-xl bg-brand-500 font-semibold text-brand-950`}>{initials(profile.fullName) || "?"}</span>
+  );
+}
 
 export default function PengaturanProfilPage() {
-  // State untuk UI (Modal, Toast, Loading)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [draft, setDraft] = useState<Draft>({ fullName: "", gender: null, address: "", occupation: "" });
+  const [bookings, setBookings] = useState<BookingItem[] | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const [photoError, setPhotoError] = useState("");
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
+  const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // State untuk Data Profil
-  const [profileData, setProfileData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    dateOfBirth: "12/03/1995",
-  });
-  
-  // Ambil data profil dari API pas halaman pertama kali dimuat
+  const applyProfile = (user: Record<string, string | null>) => {
+    const p = toProfile(user);
+    setProfile(p);
+    setDraft({ fullName: p.fullName, gender: p.gender, address: p.address, occupation: p.occupation });
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const data = await profileService.getProfile();
-        const user = data.data.user;
-
-        // Bikin fungsi kecil buat ngerapiin format tanggal (dari YYYY-MM-DDTHH... jadi DD/MM/YYYY)
-        let formattedDate = "Belum diatur";
-        const rawDob = user.date_of_birth || user.dateOfBirth;
-        
-        if (rawDob && typeof rawDob === "string") {
-          const parts = rawDob.split("T")[0].split("-"); // ["1995", "03", "12"]
-          if (parts.length === 3) {
-            formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`; // "12/03/1995"
-          }
-        }
-        setProfileData({
-          fullName: user.full_name || user.name || "",
-          email: user.email || "",
-          phone: user.phone || "",
-          dateOfBirth: formattedDate, 
-        });
-      } catch (error: any) {
-        console.error("Gagal narik data profil:", error);
+    profileService
+      .getProfile()
+      .then((data) => applyProfile(data.data.user))
+      .catch((error) => {
         // Belum login / sesi habis -> arahkan ke halaman login
-        if (error?.response?.status === 401) {
-          window.location.href = "/login";
-          return;
-        }
-      } finally {
-        setIsLoading(false); 
-      }
-    };
-
-    fetchProfile();
+        if (error?.response?.status === 401) window.location.href = "/login";
+      });
+    bookingService
+      .getRiwayatBooking()
+      .then((res) => setBookings(res.data?.bookings ?? []))
+      .catch(() => setBookings([]));
   }, []);
 
-  // Simpan perubahan nama ke API
-  const handleSaveProfile = async () => {
+  const name = draft.fullName.trim();
+  const nameError = name.length < 3 ? "Nama minimal 3 karakter." : "";
+  const changes: Record<string, string | null> = {};
+  if (profile) {
+    if (name !== profile.fullName) changes.full_name = name;
+    // Jenis kelamin hanya bisa diisi sekali (akun lama yang masih kosong)
+    if (!profile.gender && draft.gender) changes.gender = draft.gender;
+    if (draft.address.trim() !== profile.address) changes.address = draft.address.trim();
+    if (draft.occupation.trim() !== profile.occupation) changes.occupation = draft.occupation.trim();
+  }
+  const dirty = Object.keys(changes).length > 0;
+  const set = (key: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setDraft((d) => ({ ...d, [key]: e.target.value }));
+    setSaveError("");
+  };
+
+  const handleSave = async () => {
+    if (!dirty || nameError) return;
+    setSaving(true);
+    setSaveError("");
     try {
-      await profileService.updateProfile({
-        full_name: profileData.fullName,
-      });
-      
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
+      const res = await profileService.updateProfile(changes);
+      applyProfile(res.data.user);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
     } catch (error) {
-      console.error("Gagal update profil:", error);
-      alert(getApiErrorMessage(error, "Gagal menyimpan perubahan. Coba lagi!"));
+      setSaveError(getApiErrorMessage(error, "Gagal menyimpan perubahan."));
+    } finally {
+      setSaving(false);
     }
   };
 
-  // Proses logout ke API
+  const handlePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // supaya file yang sama bisa dipilih ulang
+    if (!file) return;
+    setPhotoBusy(true);
+    setPhotoError("");
+    try {
+      const res = await profileService.uploadPhoto(await resizeToSquareJpeg(file));
+      setProfile((p) => (p ? { ...p, photo: res.data.user.photo } : p));
+    } catch (error) {
+      setPhotoError(error instanceof Error && !("response" in error) ? error.message : getApiErrorMessage(error, "Gagal mengunggah foto."));
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
+  const removePhoto = async () => {
+    setPhotoBusy(true);
+    setPhotoError("");
+    try {
+      await profileService.deletePhoto();
+      setProfile((p) => (p ? { ...p, photo: null } : p));
+    } catch (error) {
+      setPhotoError(getApiErrorMessage(error, "Gagal menghapus foto."));
+    } finally {
+      setPhotoBusy(false);
+    }
+  };
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     try {
       await profileService.logout();
-    } catch (error) {
+    } catch {
       // Sesi di server bisa saja sudah habis (401); token lokal tetap dihapus oleh service
-      console.error("Gagal logout:", error);
     } finally {
       window.location.href = "/login";
-      setIsLoggingOut(false);
     }
   };
 
-  // Tampilan layar loading
-  if (isLoading) {
-    return (
-      <div className="w-full min-h-screen flex justify-center items-center bg-[#FAFAFA]">
-        <span className="text-brand-900 font-bold">Sedang memuat data profil...</span>
-      </div>
-    );
-  }
+  // Janji temu terdekat yang masih aktif + hitungan sederhana
+  const today = todayWib();
+  const upcoming = (bookings ?? [])
+    .filter((b) => b.bookingStatus === "Terkonfirmasi" && b.bookingDate.slice(0, 10) >= today)
+    .sort((a, b) => `${a.bookingDate}${a.bookingTime}`.localeCompare(`${b.bookingDate}${b.bookingTime}`));
+  const next = upcoming[0];
+  const doneCount = (bookings ?? []).filter((b) => b.bookingStatus === "Selesai").length;
 
   return (
-    <div className="w-full min-h-screen pt-[120px] pb-24 px-5 md:px-[80px] bg-[#FAFAFA] flex justify-center">
-      {/* Card Utama Profil */}
-      <div className="w-full max-w-[900px] bg-white rounded-[32px] p-8 md:p-12 shadow-[0_8px_40px_rgba(0,0,0,0.04)] h-fit">
-        
-        {/* Judul & Deskripsi Atas */}
-        <div className="text-center mb-10">
-          <h1 className="text-[28px] md:text-[32px] font-bold text-brand-900 mb-3">Pengaturan Profil</h1>
-          <p className="text-[#585858] text-[14px] md:text-[15px]">
-            Kelola informasi pribadi akun Anda dan pantau riwayat sesi terapi fisioterapi yang pernah Anda jalani.
-          </p>
+    <div className="min-h-screen w-full bg-zinc-50 px-4 pb-20 pt-[104px] md:px-8">
+      <div className="mx-auto w-full max-w-[960px]">
+        <PatientPageHeader
+          crumbs={[{ label: "Beranda", href: "/" }, { label: "Akun" }]}
+          title="Akun saya"
+          aside={
+            <Link href="/booking" className={ui.btnPrimary}>
+              <Plus size={13} />
+              Buat janji temu
+            </Link>
+          }
+        />
+
+        {/* Ringkasan akun */}
+        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+          <div className={`${ui.card} flex items-center gap-4 p-5`}>
+            {profile ? (
+              <>
+                <Avatar profile={profile} size="md" />
+                <div className="min-w-0">
+                  <p className="truncate text-[15px] font-semibold text-zinc-900">{profile.fullName}</p>
+                  <p className="truncate text-[12px] text-zinc-500">{profile.email}</p>
+                  <p className="mt-1.5 text-[12px] text-zinc-500">
+                    <span className="font-medium tabular-nums text-zinc-900">{bookings === null ? "–" : doneCount}</span> sesi selesai
+                    <span className="mx-1.5 text-zinc-300">·</span>
+                    <span className="font-medium tabular-nums text-zinc-900">{bookings === null ? "–" : upcoming.length}</span> akan datang
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="h-12 w-full animate-pulse rounded-lg bg-zinc-100" />
+            )}
+          </div>
+
+          <div className={`${ui.card} flex flex-col justify-between gap-3 p-5`}>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[12px] font-medium text-zinc-500">Janji temu berikutnya</p>
+              <Link href="/riwayat-booking" className="inline-flex items-center gap-1 text-[12px] text-zinc-500 hover:text-zinc-900">
+                Riwayat & rekam medis <ArrowRight size={11} />
+              </Link>
+            </div>
+            {bookings === null ? (
+              <div className="h-10 animate-pulse rounded-lg bg-zinc-100" />
+            ) : next ? (
+              <div className="flex items-end justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[15px] font-semibold text-zinc-900">
+                    {formatLongDate(next.bookingDate)} · {formatSlotTime(next.bookingTime)} WIB
+                  </p>
+                  <p className="mt-0.5 truncate text-[12px] text-zinc-500">
+                    {next.focusArea?.name ? `Fisioterapi ${next.focusArea.name} · ` : ""}
+                    {next.therapistName}
+                  </p>
+                </div>
+                {next.referenceCode && <span className="shrink-0 rounded-md border border-zinc-200 bg-zinc-50 px-2 py-1 font-mono text-[11px] text-zinc-700">{next.referenceCode}</span>}
+              </div>
+            ) : (
+              <p className="text-[13px] text-zinc-500">Belum ada jadwal terapi yang akan datang.</p>
+            )}
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row gap-10 md:gap-16">
-          
-          {/* Bagian Avatar Kiri */}
-          <div className="flex flex-col items-center shrink-0">
-            <div className="w-[140px] h-[140px] rounded-full overflow-hidden mb-4 bg-brand-100 border-4 border-white shadow-md">
-              <img 
-                src={`https://ui-avatars.com/api/?name=${profileData.fullName.replace(/ /g, "+")}&background=1b2a4e&color=fff&size=140`}
-                alt="Avatar" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-           <h3 className="text-brand-900 font-bold text-[18px] mb-1 w-full max-w-[200px] text-center break-words">
-            {profileData.fullName || "User"}
-            </h3>
-            <button className="text-gold-700 text-[13px] font-bold hover:text-gold-800 transition-colors">
-              Edit Foto
-            </button>
-          </div>
-
-          {/* Form Input Data Kanan */}
-          <div className="flex-1 flex flex-col gap-5">
-            
-            {/* Input Nama Lengkap (Bisa diedit) */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-brand-900">Nama Lengkap</label>
-              <input 
-                type="text" 
-                value={profileData.fullName}
-                maxLength={100}
-                onChange={(e) => setProfileData({ ...profileData, fullName: e.target.value })}
-                className="w-full p-4 border border-gray-200 rounded-xl outline-none focus:border-gold-600 transition-colors text-[14px]"
-              />
-            </div>
-
-            {/* Input Email (Disabled) */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-brand-900">Email</label>
-              <input 
-                type="email" 
-                value={profileData.email}
-                disabled 
-                className="w-full p-4 border border-gray-200 bg-gray-100 text-gray-400 rounded-xl outline-none cursor-not-allowed text-[14px]"
-              />
-            </div>
-
-            {/* Input No HP (Disabled) */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-brand-900">Nomor Telepon</label>
-              <input 
-                type="text" 
-                value={profileData.phone}
-                disabled
-                className="w-full p-4 border border-gray-200 bg-gray-100 text-gray-400 rounded-xl outline-none cursor-not-allowed text-[14px]"
-              />
-            </div>
-
-            {/* Input Tanggal Lahir (Disabled) */}
-            <div className="flex flex-col gap-2">
-              <label className="text-[14px] font-bold text-brand-900">Tanggal Lahir</label>
-              <input 
-                type="text" 
-                value={profileData.dateOfBirth}
-                disabled 
-                className="w-full p-4 border border-gray-200 bg-gray-100 text-gray-400 rounded-xl outline-none cursor-not-allowed text-[14px]"
-              />
-            </div>
-
-            {/* Banner Tombol Logout */}
-            <div className="mt-2 p-5 border border-red-200 bg-[#FEF2F2] rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex flex-col">
-                <span className="text-[#DC2626] font-bold text-[15px]">Keluar dari Akun</span>
-                <span className="text-[#EF4444] text-[13px]">Keluar dari akun kamu saat ini.</span>
+        {/* Pengaturan */}
+        <div className="mt-8">
+          <SettingsRow title="Foto profil" description="Membantu terapis mengenali kamu saat datang ke klinik. Foto otomatis dipotong persegi.">
+            <div className={`${ui.card} flex flex-wrap items-center gap-4 p-5`}>
+              {profile ? <Avatar profile={profile} size="lg" /> : <div className="h-16 w-16 animate-pulse rounded-xl bg-zinc-100" />}
+              <div className="flex flex-col gap-2">
+                <div className="flex flex-wrap gap-2">
+                  <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handlePhoto} className="hidden" />
+                  <button type="button" onClick={() => fileRef.current?.click()} disabled={!profile || photoBusy} className={ui.btnSecondary}>
+                    {photoBusy ? "Memproses…" : profile?.photo ? "Ganti foto" : "Unggah foto"}
+                  </button>
+                  {profile?.photo && (
+                    <button type="button" onClick={removePhoto} disabled={photoBusy} className="inline-flex h-9 items-center rounded-lg px-3 text-[13px] text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-50">
+                      Hapus
+                    </button>
+                  )}
+                </div>
+                {photoError ? <p className="text-[11px] text-red-600">{photoError}</p> : <p className="text-[11px] text-zinc-400">JPG, PNG, atau WebP, maksimal 10 MB.</p>}
               </div>
-              <button 
-                onClick={() => setIsLogoutModalOpen(true)}
-                className="flex items-center gap-2 bg-[#EF4444] hover:bg-[#DC2626] text-white px-5 py-2.5 rounded-lg font-medium text-[14px] transition-colors"
-              >
-                Keluar Akun
-                <SignOut size={18} weight="bold" />
-              </button>
             </div>
+          </SettingsRow>
 
-            {/* Tombol Aksi Bawah */}
-            <div className="flex flex-col md:flex-row gap-4 mt-4">
-              <button 
-                onClick={() => setIsModalOpen(true)}
-                className="w-full md:w-[220px] py-4 rounded-xl border-2 border-brand-600 text-gold-700 font-bold text-[15px] hover:bg-brand-50 transition-colors shrink-0"
-              >
-                Ganti Password
-              </button>
-              <button 
-                onClick={handleSaveProfile}
-                className="w-full py-4 rounded-xl bg-brand-600 text-brand-950 font-bold text-[15px] hover:bg-brand-700 transition-colors shadow-[0_4px_12px_rgba(245,201,0,0.2)]"
-              >
-                Simpan Perubahan
+          <SettingsRow title="Informasi pribadi" description="Dipakai terapis untuk asesmen awal. Email, telepon, tanggal lahir, dan jenis kelamin hanya bisa diubah lewat klinik.">
+            <div className={ui.card}>
+              <div className="grid gap-4 p-5 sm:grid-cols-2">
+                <label className="flex flex-col gap-1.5 sm:col-span-2">
+                  <span className={ui.label}>Nama lengkap</span>
+                  <input value={draft.fullName} onChange={set("fullName")} maxLength={100} disabled={!profile} className={`${ui.input} ${profile && nameError ? "border-red-300" : "border-zinc-200"}`} />
+                  {profile && nameError && <span className="text-[11px] text-red-600">{nameError}</span>}
+                </label>
+
+                <div className="flex flex-col gap-1.5">
+                  <span className={ui.label} id="gender-label">
+                    Jenis kelamin
+                  </span>
+                  {profile?.gender ? (
+                    <p className={`${ui.input} flex items-center border-zinc-200 bg-zinc-50 text-zinc-700`} aria-labelledby="gender-label">
+                      {genderLabel(profile.gender)}
+                    </p>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-2 gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-0.5" role="radiogroup" aria-labelledby="gender-label">
+                        {GENDER_OPTIONS.map((g) => {
+                          const on = draft.gender === g.value;
+                          return (
+                            <button
+                              key={g.value}
+                              type="button"
+                              role="radio"
+                              aria-checked={on}
+                              disabled={!profile}
+                              onClick={() => setDraft((d) => ({ ...d, gender: g.value }))}
+                              className={`h-8 rounded-md text-[13px] transition-colors ${on ? "bg-white font-medium text-zinc-900 shadow-sm ring-1 ring-zinc-200" : "text-zinc-500 hover:text-zinc-800"}`}
+                            >
+                              {g.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <span className="text-[11px] text-zinc-400">Pilih dengan benar, tidak bisa diubah setelah disimpan.</span>
+                    </>
+                  )}
+                </div>
+
+                <label className="flex flex-col gap-1.5">
+                  <span className={ui.label}>Pekerjaan</span>
+                  <input value={draft.occupation} onChange={set("occupation")} maxLength={100} disabled={!profile} placeholder="Mis. karyawan kantor, guru, atlet" className={`${ui.input} border-zinc-200`} />
+                </label>
+
+                <label className="flex flex-col gap-1.5 sm:col-span-2">
+                  <span className={ui.label}>Alamat</span>
+                  <textarea value={draft.address} onChange={set("address")} maxLength={300} rows={2} disabled={!profile} className={`${ui.input} h-auto border-zinc-200 py-2 leading-relaxed`} />
+                  <span className="text-[11px] text-zinc-400">Dipakai bila memilih paket homecare.</span>
+                </label>
+
+                <dl className="divide-y divide-zinc-100 border-t border-zinc-100 sm:col-span-2">
+                  <ReadOnlyItem label="Email" value={profile?.email ?? ""} />
+                  <ReadOnlyItem label="Nomor telepon" value={profile?.phone ?? ""} />
+                  <ReadOnlyItem label="Tanggal lahir" value={profile?.dateOfBirth ? formatDate(profile.dateOfBirth) : ""} />
+                </dl>
+              </div>
+              <div className="flex items-center justify-end gap-3 border-t border-zinc-100 bg-zinc-50/60 px-5 py-3">
+                {saveError && <span className="mr-auto text-[12px] text-red-600">{saveError}</span>}
+                {saved && (
+                  <span className="inline-flex items-center gap-1 text-[12px] text-zinc-600">
+                    <Check size={12} /> Tersimpan
+                  </span>
+                )}
+                <button type="button" onClick={handleSave} disabled={!dirty || !!nameError || saving} className={ui.btnPrimary}>
+                  {saving ? "Menyimpan…" : "Simpan"}
+                </button>
+              </div>
+            </div>
+          </SettingsRow>
+
+          <SettingsRow title="Keamanan" description="Setelah kata sandi diganti, sesi di perangkat lain otomatis keluar.">
+            <div className={`${ui.card} flex flex-wrap items-center justify-between gap-3 p-5`}>
+              <div>
+                <p className="text-[13px] font-medium text-zinc-900">Kata sandi</p>
+                <p className="text-[12px] text-zinc-500">Minimal 8 karakter, kombinasi huruf dan angka.</p>
+              </div>
+              <button type="button" onClick={() => setIsPasswordOpen(true)} className={ui.btnSecondary}>
+                Ganti kata sandi
               </button>
             </div>
-          </div>
+          </SettingsRow>
+
+          <SettingsRow title="Sesi" description="Keluar dari akun di perangkat ini.">
+            <div className={`${ui.card} flex flex-wrap items-center justify-between gap-3 p-5`}>
+              <div>
+                <p className="text-[13px] font-medium text-zinc-900">Keluar akun</p>
+                <p className="text-[12px] text-zinc-500">Kamu perlu login lagi untuk membuat booking.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsLogoutOpen(true)}
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-zinc-200 bg-white px-4 text-[13px] font-medium text-red-700 transition-colors hover:border-red-200 hover:bg-red-50"
+              >
+                Keluar
+              </button>
+            </div>
+          </SettingsRow>
         </div>
       </div>
 
-      {/* Pop-up Toast Notifikasi Sukses */}
-      {showToast && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 bg-[#E6F4EA] border border-[#bbf7d0] px-5 py-3 rounded-lg shadow-lg animate-in slide-in-from-bottom-5 fade-in duration-300">
-          <CheckCircle size={20} weight="fill" className="text-[#1E8E3E]" />
-          <span className="text-[#1E8E3E] text-[14px] font-bold">Data berhasil diperbarui</span>
-        </div>
-      )}
-
-      {/* Render Komponen Modal Logout & Ganti Password */}
-      <ModalLogout 
-        isOpen={isLogoutModalOpen} 
-        onClose={() => setIsLogoutModalOpen(false)} 
-        onConfirm={handleLogout} 
-        isLoggingOut={isLoggingOut} 
-      />
-
-      <ModalGantiPassword 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
-
+      <ModalLogout isOpen={isLogoutOpen} onClose={() => setIsLogoutOpen(false)} onConfirm={handleLogout} isLoggingOut={isLoggingOut} />
+      <ModalGantiPassword isOpen={isPasswordOpen} onClose={() => setIsPasswordOpen(false)} />
     </div>
   );
 }

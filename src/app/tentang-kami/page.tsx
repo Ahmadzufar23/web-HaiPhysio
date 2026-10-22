@@ -1,64 +1,43 @@
 "use client";
 
-import Image from "next/image";
-import HeroBanner from "@/components/home/HeroBanner";
-import AboutSection from "@/components/home/AboutSection";
+import { PageIntro } from "@/components/marketing/ui";
+import BrandStory from "@/components/marketing/BrandStory";
+import ScopeSection from "@/components/marketing/ScopeSection";
+import DigitalCare from "@/components/marketing/DigitalCare";
+import TerapisSection from "@/components/home/TerapisSection";
 import CtaBand from "@/components/home/CtaBand";
-import Reveal from "@/components/motion/Reveal";
-import SpotlightCard from "@/components/motion/SpotlightCard";
-import SectionHeading from "@/components/shared/SectionHeading";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
-import { reasonsData } from "@/constants/data";
+
+const FACTS = [
+  { value: "1985", label: "Klinik Pratama Condet Jaya berdiri" },
+  { value: "3", label: "Bidang fisioterapi" },
+  { value: "Homecare", label: "Terapi di rumah tersedia" },
+];
 
 export default function TentangKami() {
   const { appointmentHref } = useAuthStatus();
 
   return (
     <div className="flex w-full flex-col">
-      {/* 1. HERO BANNER */}
-      <HeroBanner
-        title="Tentang"
-        accent="kami"
-        subtitle="Bagian dari Klinik Pratama Condet Jaya sejak 1985 — kini dengan layanan fisioterapi yang terukur di setiap sesi."
-        imageSrc="/hero-tentang-kami.png"
-      />
-
-      {/* 2. TENTANG HAI PHYSIO */}
-      <AboutSection eyebrow="Siapa kami" title="Tentang" accent="Hai Physio" />
-
-      {/* 3. KENAPA PILIH KAMI? */}
-      <section className="w-full bg-brand-50/50 py-24 md:py-32">
-        <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-14 px-5 md:px-8 lg:px-10 xl:px-[80px]">
-          <SectionHeading
-            align="center"
-            eyebrow="Nilai kami"
-            title="Kenapa pilih"
-            accent="kami?"
-            subtitle="Beberapa hal yang kami perhatikan dalam menangani setiap pasien."
-          />
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {reasonsData.map((reason, i) => (
-              <Reveal key={reason.id} delay={i * 140} className="h-full">
-                <SpotlightCard className="group flex h-full flex-col items-center gap-6 rounded-[28px] border border-brand-900/[0.07] bg-white p-8 text-center transition-[transform,box-shadow] duration-700 hover:-translate-y-2 hover:shadow-[0_40px_80px_-32px_rgb(26_24_20/0.35)] md:p-10">
-                  <span className="self-start font-display text-[40px] italic leading-none text-brand-200 transition-colors duration-500 group-hover:text-gold-700">
-                    0{i + 1}
-                  </span>
-                  <div className="relative -mt-6 h-[170px] w-[170px] transition-transform duration-700 group-hover:scale-105">
-                    <Image src={reason.imgSrc} alt="" fill sizes="170px" className="object-contain" />
-                  </div>
-                  <div className="flex flex-col gap-3">
-                    <h3 className="text-[21px] font-semibold leading-tight tracking-[-0.01em] text-brand-900">{reason.title}</h3>
-                    <p className="text-[15px] leading-relaxed text-brand-900/70">{reason.desc}</p>
-                  </div>
-                </SpotlightCard>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 4. AJAKAN */}
+      <PageIntro
+        crumb="Tentang Kami"
+        title="Pengalaman klinik sejak 1985, cara kerja yang modern"
+        lead="Hai Physio adalah layanan fisioterapi di bawah Klinik Pratama Condet Jaya. Kami menangani nyeri dan gangguan gerak dengan pemeriksaan yang teliti, terapi yang terarah, dan pemantauan dari sesi ke sesi."
+        image={{ src: "/hero-tentang-kami.png", alt: "Ruang terapi dengan poster anatomi" }}
+      >
+        <dl className="mt-2 grid max-w-[480px] grid-cols-3 gap-4 border-t border-zinc-200 pt-6">
+          {FACTS.map((f) => (
+            <div key={f.label} className="flex flex-col gap-1">
+              <dt className="order-2 text-[12px] leading-snug text-zinc-500">{f.label}</dt>
+              <dd className="order-1 text-[22px] font-semibold tracking-[-0.02em] text-zinc-900">{f.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </PageIntro>
+      <BrandStory className="bg-zinc-50" />
+      <ScopeSection className="bg-white" />
+      <DigitalCare appointmentHref={appointmentHref} />
+      <TerapisSection appointmentHref={appointmentHref} className="bg-white" />
       <CtaBand appointmentHref={appointmentHref} />
     </div>
   );

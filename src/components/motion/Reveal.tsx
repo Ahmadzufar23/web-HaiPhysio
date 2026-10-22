@@ -3,53 +3,27 @@
 import type { CSSProperties, ElementType, ReactNode } from "react";
 import { useInView } from "@/hooks/useInView";
 
-export type RevealVariant = "up" | "fade" | "left" | "right" | "scale" | "blur";
-
 interface RevealProps {
   children: ReactNode;
   as?: ElementType;
-  variant?: RevealVariant;
-  /** Jeda sebelum animasi mulai (ms) — untuk efek berurutan (stagger). */
+  /** Jeda sebelum animasi mulai (ms). */
   delay?: number;
-  /** Mode gambar: konten "dibuka" dari bawah + zoom-out halus. */
-  mask?: boolean;
   className?: string;
   style?: CSSProperties;
 }
 
 /**
- * Pembungkus animasi masuk-viewport. Semua gaya ada di src/styles/motion.css,
- * komponen ini hanya menambahkan kelas `is-visible` saat elemen terlihat.
+ * Pembungkus fade-in pendek saat elemen masuk viewport. Gaya ada di
+ * src/styles/motion.css, komponen ini hanya menambahkan kelas `is-visible`.
  */
-export default function Reveal({
-  children,
-  as: Tag = "div",
-  variant = "up",
-  delay = 0,
-  mask = false,
-  className = "",
-  style,
-}: RevealProps) {
+export default function Reveal({ children, as: Tag = "div", delay = 0, className = "", style }: RevealProps) {
   const { ref, inView } = useInView<HTMLElement>();
-  const delayStyle = { "--reveal-delay": `${delay}ms`, ...style } as CSSProperties;
-
-  // Mode mask: elemen yang diamati harus TIDAK ter-clip (IntersectionObserver
-  // tidak menganggap elemen ber-clip-path penuh sebagai terlihat), jadi clip
-  // diterapkan di lapisan dalam, sementara pembungkus luar yang diamati.
-  if (mask) {
-    return (
-      <Tag ref={ref} className={className} style={delayStyle}>
-        <div className={`reveal-mask absolute inset-0 ${inView ? "is-visible" : ""}`}>{children}</div>
-      </Tag>
-    );
-  }
 
   return (
     <Tag
       ref={ref}
-      data-variant={variant}
       className={`reveal ${inView ? "is-visible" : ""} ${className}`}
-      style={delayStyle}
+      style={{ "--reveal-delay": `${delay}ms`, ...style } as CSSProperties}
     >
       {children}
     </Tag>

@@ -5,7 +5,8 @@ import { useState } from "react";
 import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
-import { authApi, getApiErrorMessage, saveSessionToken } from "../../app/utils/api";
+import EmailVerificationNotice from "./EmailVerificationNotice";
+import { authApi, getApiErrorCode, getApiErrorMessage, getApiErrorStatus, saveSessionToken } from "../../app/utils/api";
 
 type LoginErrors = {
   email?: string;
@@ -19,6 +20,8 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState<LoginErrors>({});
   const [isLoading, setIsLoading] = useState(false);
+  // Email belum diverifikasi: BE sudah mengirim ulang tautan, tampilkan petunjuk
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
 
   function validate() {
     const nextErrors: LoginErrors = {};
@@ -65,13 +68,15 @@ export default function LoginForm() {
       // Kalau sukses dapet cookie/token dari backend, langsung lempar ke halaman profil
       window.location.href = "/";
       
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal login:", error);
       
       // Tangkep pesan error dari backend
-      const status = error.response?.status;
+      const status = getApiErrorStatus(error);
       
-      if (status === 401) {
+      if (getApiErrorCode(error) === "EMAIL_NOT_VERIFIED") {
+        setUnverifiedEmail(email.trim().toLowerCase());
+      } else if (status === 401) {
         setErrors({ password: "Email atau kata sandi salah. Silakan cek kembali." });
       } else if (status === 403) {
         setErrors({ email: "Akun ini terdaftar sebagai admin. Silakan masuk lewat halaman admin." });
@@ -85,6 +90,10 @@ export default function LoginForm() {
       setIsLoading(false);
     }
   };
+
+  if (unverifiedEmail) {
+    return <EmailVerificationNotice email={unverifiedEmail} intro="Akunmu belum diverifikasi. Kami sudah mengirim ulang tautan verifikasi ke" />;
+  }
 
   return (
     <form

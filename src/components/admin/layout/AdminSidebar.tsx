@@ -4,12 +4,41 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ChartBar, CalendarBlank, ClipboardText, Stethoscope, Users, SignOut } from "@phosphor-icons/react";
+import { SquaresFour, ClipboardText, CalendarBlank, Users, Stethoscope, Package, ChartLineUp, FilmStrip, SignOut, X, type Icon } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
 import ModalLogout from "@/components/profile/ModalLogout";
+import { useStaffUser } from "./AdminGuard";
+import type { StaffRole } from "@/types/api.types";
 
-export default function AdminSidebar() {
+type NavItem = { title: string; path: string; icon: Icon; roles: StaffRole[] };
+
+// Terapis: Ringkasan (jadwal miliknya, tanpa harga), Booking, Pasien, dan Video Terapi; sisanya khusus owner.
+export const NAV: { group: string; items: NavItem[] }[] = [
+  {
+    group: "Operasional",
+    items: [
+      { title: "Ringkasan", path: "/admin", icon: SquaresFour, roles: ["owner", "terapis"] },
+      { title: "Booking & Sesi", path: "/admin/booking", icon: ClipboardText, roles: ["owner", "terapis"] },
+      { title: "Pasien", path: "/admin/pasien", icon: Users, roles: ["owner", "terapis"] },
+      { title: "Video Terapi", path: "/admin/video", icon: FilmStrip, roles: ["owner", "terapis"] },
+      { title: "Jadwal Slot", path: "/admin/jadwal", icon: CalendarBlank, roles: ["owner"] },
+    ],
+  },
+  {
+    group: "Pengelolaan",
+    items: [
+      { title: "Terapis", path: "/admin/terapis", icon: Stethoscope, roles: ["owner"] },
+      { title: "Paket Terapi", path: "/admin/paket", icon: Package, roles: ["owner"] },
+      { title: "Keuangan & Absensi", path: "/admin/laporan", icon: ChartLineUp, roles: ["owner"] },
+    ],
+  },
+];
+
+const ROLE_LABEL: Record<StaffRole, string> = { owner: "Owner", terapis: "Terapis" };
+
+export default function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
+  const user = useStaffUser();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -17,79 +46,83 @@ export default function AdminSidebar() {
     setIsLoggingOut(true);
     try {
       await profileService.logout();
-      window.location.href = "/admin/login";
     } catch (error) {
-      console.error("Gagal logout admin:", error);
-      window.location.href = "/admin/login";
+      console.error("Gagal logout:", error);
     } finally {
-      setIsLoggingOut(false);
+      window.location.href = "/admin/login";
     }
   };
 
-  const menuItems = [
-    { title: "Dashboard Ringkasan", path: "/admin", icon: <ChartBar size={24} /> },
-    { title: "Kelola Slot Jadwal", path: "/admin/jadwal", icon: <CalendarBlank size={24} /> },
-    { title: "List Booking Masuk", path: "/admin/booking", icon: <ClipboardText size={24} /> },
-    { title: "Kelola Data Terapis", path: "/admin/terapis", icon: <Stethoscope size={24} /> },
-    { title: "Kelola Data Pasien", path: "/admin/pasien", icon: <Users size={24} /> },
-  ];
+  const isActive = (path: string) =>
+    path === "/admin" ? pathname === "/admin" : pathname.startsWith(path) || (path === "/admin/booking" && pathname.startsWith("/admin/sesi"));
 
   return (
     <>
-      <aside className="w-[280px] h-screen bg-brand-900 flex flex-col fixed left-0 top-0 text-white shadow-xl z-50">
-        
-        {/* --- Area Logo --- */}
-        <div className="flex items-center gap-3 px-8 py-8 border-b border-white/10">
-          <div className="w-[48px] h-[48px] bg-white rounded-full flex items-center justify-center shrink-0">
-            <Image src="/fisio_nobg.png" alt="Logo Hai Physio" width={32} height={32} className="object-contain w-auto h-auto" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold text-[20px] leading-tight">Hai Physio</span>
-            <span className="text-gray-300 text-[12px]">Admin Management</span>
-          </div>
+      <div className={`fixed inset-0 z-40 bg-zinc-900/20 lg:hidden ${open ? "block" : "hidden"}`} onClick={onClose} aria-hidden />
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-[220px] flex-col border-r border-zinc-200 bg-white transition-transform duration-200 lg:translate-x-0 ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex h-12 items-center justify-between gap-2 px-4">
+          <Link href="/admin" className="flex items-center gap-2" onClick={onClose}>
+            <Image src="/fisio_nobg.png" alt="" width={20} height={20} className="h-5 w-auto object-contain" />
+            <span className="text-[13px] font-semibold text-zinc-900">Hai Physio</span>
+          </Link>
+          <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:text-zinc-900 lg:hidden" aria-label="Tutup menu">
+            <X size={16} />
+          </button>
         </div>
 
-        {/* --- Area Menu Navigasi --- */}
-        <nav className="flex-1 flex flex-col gap-2 px-4 py-8">
-          {menuItems.map((item) => {
-            const isActive = pathname === item.path;
+        <nav className="flex-1 overflow-y-auto px-2 py-3">
+          {NAV.map(({ group, items }) => {
+            const visible = items.filter((item) => item.roles.includes(user.role));
+            if (visible.length === 0) return null;
             return (
-              <Link
-                key={item.path}
-                href={item.path}
-                className={`flex items-center gap-4 px-4 py-3 rounded-xl transition-all duration-200
-                  ${isActive 
-                    ? "bg-brand-950 text-brand-300 font-bold border-l-4 border-brand-300" 
-                    : "text-gray-300 hover:bg-white/5 hover:text-white font-medium border-l-4 border-transparent"}
-                `}
-              >
-                {item.icon}
-                <span className="text-[15px]">{item.title}</span>
-              </Link>
+              <div key={group} className="mb-4">
+                <p className="mb-1 px-2 text-[11px] font-medium text-zinc-400">{group}</p>
+                <ul className="flex flex-col gap-px">
+                  {visible.map(({ title, path, icon: IconEl }) => {
+                    const active = isActive(path);
+                    return (
+                      <li key={path}>
+                        <Link
+                          href={path}
+                          onClick={onClose}
+                          aria-current={active ? "page" : undefined}
+                          className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors ${
+                            active ? "bg-zinc-100 font-medium text-zinc-900" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                          }`}
+                        >
+                          <IconEl size={16} className={active ? "text-zinc-900" : "text-zinc-400"} />
+                          {title}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
             );
           })}
         </nav>
 
-        {/* --- Tombol Keluar (Bawah) --- */}
-        <div className="p-8 border-t border-white/10">
-          <button 
+        <div className="border-t border-zinc-200 p-2">
+          <Link href="/admin/profil" onClick={onClose} className="block rounded-md px-2 py-1.5 hover:bg-zinc-50">
+            <p className="truncate text-[12px] font-medium text-zinc-900">{user.name}</p>
+            <p className="text-[11px] text-zinc-500">{ROLE_LABEL[user.role]}</p>
+          </Link>
+          <button
             onClick={() => setIsLogoutModalOpen(true)}
-            className="flex items-center gap-4 text-red-400 hover:text-red-300 font-bold transition-colors w-full"
+            className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] text-zinc-600 transition-colors hover:bg-zinc-50 hover:text-zinc-900"
           >
-            <SignOut size={24} />
-            <span>Keluar</span>
+            <SignOut size={16} className="text-zinc-400" />
+            Keluar
           </button>
         </div>
-        
       </aside>
 
-      {/* Modal Konfirmasi Logout */}
-      <ModalLogout
-        isOpen={isLogoutModalOpen}
-        onClose={() => setIsLogoutModalOpen(false)}
-        onConfirm={handleLogout}
-        isLoggingOut={isLoggingOut}
-      />
+      <ModalLogout isOpen={isLogoutModalOpen} onClose={() => setIsLogoutModalOpen(false)} onConfirm={handleLogout} isLoggingOut={isLoggingOut} />
     </>
   );
 }

@@ -4,83 +4,87 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { BellRinging, CheckCircle, CalendarX, Checks, BellSlash, ArrowRight } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
+import type { AdminBooking } from "@/types/api.types";
+
+type NotifType = "new" | "done" | "cancel";
+type Tab = "all" | NotifType;
+
+type Notif = {
+  id: number;
+  bookingId: string;
+  type: NotifType;
+  title: string;
+  desc: string;
+  time: string;
+  isRead: boolean;
+};
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "all", label: "Semua" },
+  { id: "new", label: "Booking Baru" },
+  { id: "done", label: "Selesai" },
+  { id: "cancel", label: "Dibatalkan" },
+];
+
+// Booking terbaru → kartu notifikasi (diurutkan dari jadwal terbaru)
+function toNotifs(bookings: AdminBooking[], readIds: number[]): Notif[] {
+  const sorted = [...bookings].sort((a, b) => b.bookingDate.localeCompare(a.bookingDate));
+
+  return sorted.slice(0, 15).map((b, index) => {
+    const status = b.bookingStatus.toLowerCase();
+    const pName = b.patientName || "Pasien";
+    const tName = b.therapistName || "Fisioterapis";
+    const sName = b.focusArea?.name || b.therapistSpecializations[0]?.name || "Fisioterapi";
+    const dateStr = b.bookingDate.substring(0, 10);
+    const timeStr = b.bookingTime.substring(0, 5);
+
+    let type: NotifType = "new";
+    let title = "Booking Baru Masuk!";
+    let desc = `Pasien ${pName} mengajukan reservasi untuk ${sName} pada ${dateStr}${timeStr ? ` pukul ${timeStr} WIB` : ""} bersama ${tName}.`;
+
+    if (status === "selesai") {
+      type = "done";
+      title = "Sesi Terapi Selesai";
+      desc = `${tName} telah menyelesaikan sesi ${sName} bersama pasien ${pName}.`;
+    } else if (status === "dibatalkan") {
+      type = "cancel";
+      title = "Booking Dibatalkan oleh Pasien";
+      desc = `Pasien ${pName} telah membatalkan jadwal sesi ${sName} pada ${dateStr}${timeStr ? ` pukul ${timeStr} WIB` : ""}.`;
+    }
+
+    const notifId = index + 1;
+    return {
+      id: notifId,
+      bookingId: b.id,
+      type,
+      title,
+      desc,
+      time: dateStr && timeStr ? `${dateStr} • ${timeStr} WIB` : dateStr || "Aktivitas Terkini",
+      isRead: readIds.includes(notifId),
+    };
+  });
+}
 
 export default function NotifikasiPage() {
-  const [notifs, setNotifs] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState<"all" | "new" | "done" | "cancel">("all");
+  const [notifs, setNotifs] = useState<Notif[]>([]);
+  const [activeTab, setActiveTab] = useState<Tab>("all");
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchNotifications = async () => {
-    try {
-      const res = await adminService.getBookings();
-      const bookings = res.data.bookings || [];
-
-      const readIds: number[] = JSON.parse(localStorage.getItem("admin_read_notifs") || "[]");
-
-      // Format timestamp nyata dari data booking
-      const formatTimestamp = (b: any): string => {
-        const rawDate = b.bookingDate || b.slotDate || b.slot_date || "";
-        const dateStr = rawDate.substring(0, 10);
-        const timeStr = (b.bookingTime || b.startTime || b.start_time || "").substring(0, 5);
-        if (dateStr && timeStr) return `${dateStr} • ${timeStr} WIB`;
-        if (dateStr) return dateStr;
-        return "Aktivitas Terkini";
-      };
-
-      // Sort dari terbaru ke terlama sebelum dipetakan ke notifikasi
-      const sorted = [...bookings].sort((a: any, b: any) => {
-        const dateA = a.bookingDate || a.slotDate || "";
-        const dateB = b.bookingDate || b.slotDate || "";
-        return dateB.localeCompare(dateA);
-      });
-
-      const mapped = sorted.slice(0, 15).map((b: any, index: number) => {
-        const status = (b.bookingStatus || b.status || "").toLowerCase();
-        const pName = b.patientName || b.patient_name || "Pasien";
-        const tName = b.therapistName || b.therapist_name || "Fisioterapis";
-        const sName = (b.focusArea?.name || b.therapistSpecializations?.[0]?.name) || b.serviceName || b.service_name || "Fisioterapi";
-        const rawDate = b.bookingDate || b.slotDate || b.slot_date || "Terjadwal";
-        const dateStr = rawDate.substring(0, 10);
-        const timeStr = (b.bookingTime || b.startTime || b.start_time || "").substring(0, 5);
-
-        let type = "new";
-        let title = "Booking Baru Masuk!";
-        let desc = `Pasien ${pName} mengajukan reservasi untuk ${sName} pada ${dateStr}${timeStr ? ` pukul ${timeStr} WIB` : ""} bersama ${tName}.`;
-
-        if (status === "selesai") {
-          type = "done";
-          title = "Sesi Terapi Selesai";
-          desc = `${tName} telah menyelesaikan sesi ${sName} bersama pasien ${pName}.`;
-        } else if (status === "dibatalkan") {
-          type = "cancel";
-          title = "Booking Dibatalkan oleh Pasien";
-          desc = `Pasien ${pName} telah membatalkan jadwal sesi ${sName} pada ${dateStr}${timeStr ? ` pukul ${timeStr} WIB` : ""}.`;
-        }
-
-        const notifId = index + 1;
-        return {
-          id: notifId,
-          bookingId: b.id,
-          type,
-          title,
-          desc,
-          time: formatTimestamp(b),
-          isRead: readIds.includes(notifId),
-        };
-      });
-
-      setNotifs(mapped);
-    } catch (error) {
-      console.error("Gagal memuat notifikasi:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchNotifications();
+    const load = () =>
+      adminService
+        // 15 booking yang terakhir dibuat/berubah cukup untuk daftar notifikasi
+        .getBookings({ sort: "recent", limit: 15 })
+        .then((res) => {
+          const readIds: number[] = JSON.parse(localStorage.getItem("admin_read_notifs") || "[]");
+          setNotifs(toNotifs(res.data.bookings || [], readIds));
+        })
+        .catch((error) => console.error("Gagal memuat notifikasi:", error))
+        .finally(() => setIsLoading(false));
+
+    load();
     // Auto-refresh setiap 30 detik
-    const interval = setInterval(fetchNotifications, 30000);
+    const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -113,8 +117,8 @@ export default function NotifikasiPage() {
       {/* --- Header Halaman --- */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-[28px] font-bold text-brand-900">Notifikasi</h2>
-          <p className="text-[#585858] text-[15px]">
+          <h2 className="text-[20px] font-bold text-brand-900">Notifikasi</h2>
+          <p className="text-[#585858] text-[13px]">
             Pantau pembaruan aktivitas booking masuk, penyelesaian sesi, dan pembatalan jadwal secara real-time.
           </p>
         </div>
@@ -122,7 +126,7 @@ export default function NotifikasiPage() {
         {/* Tombol Tandai Semua Sudah Dibaca */}
         <button 
           onClick={handleMarkAllRead}
-          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-brand-900 font-bold text-[14px] rounded-xl transition-all shadow-sm shrink-0"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-brand-900 font-bold text-[13px] rounded-xl transition-all shadow-sm shrink-0"
         >
           <Checks size={20} weight="bold" className="text-gold-700" />
           Tandai semua sudah dibaca
@@ -131,16 +135,11 @@ export default function NotifikasiPage() {
 
       {/* --- Filter Tabs --- */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-gray-100">
-        {[
-          { id: "all", label: "Semua" },
-          { id: "new", label: "Booking Baru" },
-          { id: "done", label: "Selesai" },
-          { id: "cancel", label: "Dibatalkan" },
-        ].map(tab => (
+        {TABS.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`px-5 py-2 rounded-xl text-[14px] font-bold transition-all shrink-0 ${
+            onClick={() => setActiveTab(tab.id)}
+            className={`px-5 py-2 rounded-xl text-[13px] font-bold transition-all shrink-0 ${
               activeTab === tab.id
                 ? "bg-brand-900 text-white shadow-sm"
                 : "bg-white text-gray-500 border border-gray-100 hover:bg-gray-50"
@@ -161,8 +160,8 @@ export default function NotifikasiPage() {
           <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
             <BellSlash size={32} />
           </div>
-          <h4 className="text-[17px] font-bold text-brand-900 mb-1">Tidak Ada Notifikasi</h4>
-          <p className="text-[14px] text-gray-500 max-w-sm">
+          <h4 className="text-[14px] font-bold text-brand-900 mb-1">Tidak Ada Notifikasi</h4>
+          <p className="text-[13px] text-gray-500 max-w-sm">
             Saat ini belum ada aktivitas notifikasi pada kategori ini.
           </p>
         </div>
@@ -191,14 +190,14 @@ export default function NotifikasiPage() {
                 {/* Konten Notif */}
                 <div className="flex flex-col gap-1.5 w-full">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-1">
-                    <h3 className={`font-bold text-[16px] md:text-[17px] group-hover:text-gold-700 transition-colors ${notif.isRead ? "text-gray-600" : "text-brand-900"}`}>
+                    <h3 className={`font-bold text-[14px] md:text-[14px] group-hover:text-gold-700 transition-colors ${notif.isRead ? "text-gray-600" : "text-brand-900"}`}>
                       {notif.title}
                     </h3>
                     <span className="text-[12px] font-medium text-gray-400 whitespace-nowrap">
                       {notif.time}
                     </span>
                   </div>
-                  <p className={`text-[14px] leading-relaxed ${notif.isRead ? "text-gray-400" : "text-[#585858]"}`}>
+                  <p className={`text-[13px] leading-relaxed ${notif.isRead ? "text-gray-400" : "text-[#585858]"}`}>
                     {notif.desc}
                   </p>
                 </div>

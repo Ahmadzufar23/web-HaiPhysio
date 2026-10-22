@@ -1,81 +1,97 @@
-"use client";
+import type { Icon } from "@phosphor-icons/react";
+import { Clock, EnvelopeSimple, InstagramLogo, MapPin, NavigationArrow, Star, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import OpenStatus from "@/components/home/OpenStatus";
+import { mk, SectionTitle } from "@/components/marketing/ui";
+import { CLINIC, MAPS_EMBED_URL, MAPS_PLACE_URL } from "@/constants/clinic";
 
-import type { ReactNode } from "react";
-import { Clock, WhatsappLogo, EnvelopeSimple, InstagramLogo, ArrowUpRight } from "@phosphor-icons/react";
-import Reveal from "@/components/motion/Reveal";
-import SpotlightCard from "@/components/motion/SpotlightCard";
-import SectionHeading from "@/components/shared/SectionHeading";
-
-// Mendefinisikan Props untuk kustomisasi teks dan elemen tambahan (children)
 interface ContactSectionProps {
   title?: string;
-  accent?: string;
-  subtitle?: string;
-  children?: ReactNode;
+  lead?: string;
+  /** Halaman Kontak: judul section disembunyikan karena sudah ada PageIntro */
+  hideHeading?: boolean;
+  className?: string;
 }
 
-const channels = [
-  { icon: WhatsappLogo, label: "WhatsApp", value: "+62 898-3050-149", note: "Chat langsung, respon cepat", href: "https://wa.me/628983050149" },
-  { icon: EnvelopeSimple, label: "Email", value: "haiphysio@gmail.com", note: "Pertanyaan lebih detail", href: "mailto:haiphysio@gmail.com" },
-  { icon: InstagramLogo, label: "Instagram", value: "@fisioterapi_jakarta_timur", note: "Info terbaru klinik", href: "https://instagram.com/fisioterapi_jakarta_timur" },
-  { icon: Clock, label: "Jam operasional", value: "Senin – Sabtu, 08.00 – 16.00", note: "Hari Minggu tutup", href: null },
+type Row = { icon: Icon; label: string; value: string; note?: string; href?: string };
+
+const rows: Row[] = [
+  { icon: WhatsappLogo, label: "WhatsApp", value: CLINIC.whatsapp.label, note: "Balasan cepat pada jam operasional", href: CLINIC.whatsapp.href },
+  { icon: EnvelopeSimple, label: "Email", value: CLINIC.email.label, href: CLINIC.email.href },
+  { icon: InstagramLogo, label: "Instagram", value: CLINIC.instagram.label, href: CLINIC.instagram.href },
+  { icon: MapPin, label: "Alamat", value: CLINIC.name, note: CLINIC.address },
+  { icon: Clock, label: "Jam operasional", value: CLINIC.hours, note: CLINIC.hoursNote },
 ];
 
+/** Kontak + lokasi klinik: daftar kontak di kiri, peta di kanan. */
 export default function ContactSection({
-  title = "Hubungi",
-  accent = "kami",
-  subtitle = "Punya pertanyaan atau ingin berkonsultasi? Silakan hubungi kami.",
-  children,
+  title = "Kunjungi atau hubungi kami",
+  lead = "Ada pertanyaan sebelum booking? Chat kami lewat WhatsApp pada jam operasional.",
+  hideHeading = false,
+  className = "bg-white",
 }: ContactSectionProps) {
   return (
-    <section className="w-full bg-white py-24 md:py-32">
-      <div className="mx-auto flex w-full max-w-[1440px] flex-col gap-14 px-5 md:px-8 lg:px-10 xl:px-[80px]">
-        <SectionHeading align="center" eyebrow="Kontak" title={title} accent={accent} subtitle={subtitle} />
+    <section className={`${mk.section} ${className}`}>
+      <div className={`${mk.container} flex flex-col gap-10`}>
+        {!hideHeading && <SectionTitle eyebrow="Kontak & lokasi" title={title} lead={lead} />}
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {channels.map(({ icon: Icon, label, value, note, href }, i) => {
-            const external = href?.startsWith("http");
-            const body = (
-              <>
-                <div className="flex items-center justify-between">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-gold-700 transition-colors duration-500 group-hover:bg-brand-600 group-hover:text-brand-950">
-                    <Icon size={24} weight="fill" />
-                  </span>
-                  {href && (
-                    <ArrowUpRight size={20} weight="bold" className="text-brand-900/25 transition-all duration-500 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-gold-700" />
-                  )}
-                </div>
-                <div className="mt-8 flex flex-col gap-1">
-                  <span className="text-[12px] font-semibold uppercase tracking-[0.14em] text-brand-900/50">{label}</span>
-                  <span className="break-words text-[17px] font-semibold text-brand-900">{value}</span>
-                  <span className="text-[14px] text-brand-900/60">{note}</span>
-                </div>
-              </>
-            );
-            const cardClass =
-              "group flex h-full flex-col rounded-[24px] border border-brand-900/[0.07] bg-white p-6 transition-[transform,box-shadow,border-color] duration-500 hover:-translate-y-1.5 hover:border-brand-200 hover:shadow-[0_30px_60px_-30px_rgb(26_24_20/0.35)]";
+        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className={`${mk.card} flex flex-col`}>
+            <div className="flex items-center justify-between gap-3 border-b border-zinc-100 px-5 py-4 text-[13px] text-zinc-600">
+              <OpenStatus />
+            </div>
+            <ul className="flex flex-1 flex-col divide-y divide-zinc-100">
+              {rows.map(({ icon: RowIcon, label, value, note, href }) => {
+                const external = href?.startsWith("http");
+                const content = (
+                  <>
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600">
+                      <RowIcon size={16} />
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block text-[11px] uppercase tracking-wide text-zinc-400">{label}</span>
+                      <span className="block break-words text-[14px] font-medium text-zinc-900 underline-offset-4 group-hover:underline">{value}</span>
+                      {note && <span className="block text-[13px] leading-relaxed text-zinc-500">{note}</span>}
+                    </span>
+                  </>
+                );
+                return (
+                  <li key={label}>
+                    {href ? (
+                      <a href={href} target={external ? "_blank" : undefined} rel={external ? "noopener noreferrer" : undefined} className="group flex items-start gap-3 px-5 py-4 hover:bg-zinc-50">
+                        {content}
+                      </a>
+                    ) : (
+                      <div className="flex items-start gap-3 px-5 py-4">{content}</div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="flex flex-wrap gap-2 border-t border-zinc-100 p-5">
+              <a href={MAPS_PLACE_URL} target="_blank" rel="noopener noreferrer" className={mk.btnPrimary}>
+                <NavigationArrow size={15} weight="fill" />
+                Petunjuk arah
+              </a>
+              <a href={MAPS_PLACE_URL} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
+                <Star size={15} weight="fill" className="text-brand-600" />
+                Ulasan di Google Maps
+              </a>
+            </div>
+          </div>
 
-            return (
-              <Reveal key={label} delay={i * 110} className="h-full">
-                {href ? (
-                  <SpotlightCard className={cardClass}>
-                    <a
-                      href={href}
-                      target={external ? "_blank" : undefined}
-                      rel={external ? "noopener noreferrer" : undefined}
-                      className="absolute inset-0 z-10 rounded-[24px]"
-                      aria-label={`${label}: ${value}`}
-                    />
-                    {body}
-                  </SpotlightCard>
-                ) : (
-                  <SpotlightCard className={cardClass}>{body}</SpotlightCard>
-                )}
-              </Reveal>
-            );
-          })}
+          <div className="min-h-[360px] overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100">
+            <iframe
+              title="Peta lokasi Klinik Hai Physio"
+              src={MAPS_EMBED_URL}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-full min-h-[360px] w-full grayscale-[30%]"
+            />
+          </div>
         </div>
-        {children}
       </div>
     </section>
   );

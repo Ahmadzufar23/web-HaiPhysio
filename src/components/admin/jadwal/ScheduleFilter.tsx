@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import { CaretDown, CalendarBlank, ArrowRight } from "@phosphor-icons/react";
+import type { AdminTherapist } from "@/types/api.types";
+import { todayWib, wibDateFromToday } from "@/lib/format";
 
 interface ScheduleFilterProps {
-  therapists: any[];
+  therapists: AdminTherapist[];
   selectedTherapistId: string;
   onTherapistChange: (id: string) => void;
   dateFrom: string;
@@ -22,15 +24,12 @@ export default function ScheduleFilter({
   onDateFromChange,
   onDateToChange,
 }: ScheduleFilterProps) {
-  const todayStr = () => new Date().toISOString().split("T")[0];
+  const todayStr = todayWib;
 
+  // Rentang relatif terhadap hari ini di kalender WIB
   const setRange = (offsetStart: number, offsetEnd: number) => {
-    const s = new Date();
-    const e = new Date();
-    s.setDate(s.getDate() + offsetStart);
-    e.setDate(e.getDate() + offsetEnd);
-    onDateFromChange(s.toISOString().split("T")[0]);
-    onDateToChange(e.toISOString().split("T")[0]);
+    onDateFromChange(wibDateFromToday(offsetStart));
+    onDateToChange(wibDateFromToday(offsetEnd));
   };
 
   // Hitung berapa hari di rentang yang aktif
@@ -67,12 +66,12 @@ export default function ScheduleFilter({
             <select
               value={selectedTherapistId}
               onChange={(e) => onTherapistChange(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
+              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-3 pl-4 pr-10 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             >
               <option value="">Semua Fisioterapis</option>
               {therapists.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.fullName || t.full_name || t.name || "Fisioterapis"}
+                  {t.fullName}
                 </option>
               ))}
             </select>
@@ -99,7 +98,7 @@ export default function ScheduleFilter({
                 onDateFromChange(e.target.value);
                 if (e.target.value > dateTo) onDateToChange(e.target.value);
               }}
-              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
+              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             />
             <ArrowRight size={16} className="text-gray-400 shrink-0" />
             <input
@@ -107,7 +106,7 @@ export default function ScheduleFilter({
               value={dateTo}
               min={dateFrom}
               onChange={(e) => onDateToChange(e.target.value)}
-              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[14px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
+              className="flex-1 bg-white border border-gray-200 text-brand-900 text-[13px] font-semibold py-3 px-3 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer"
             />
           </div>
         </div>

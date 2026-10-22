@@ -1,15 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { profileService } from "@/services/profileService";
+import type { StaffRole } from "@/types/api.types";
 
-// Penjaga semua halaman /admin/(dashboard): wajib login DAN role === "admin".
+export interface StaffUser {
+  id: string;
+  name: string;
+  email: string;
+  role: StaffRole;
+}
+
+const StaffUserContext = createContext<StaffUser | null>(null);
+
+/** Akun staf yang sedang login (owner / terapis). Hanya dipakai di dalam AdminGuard. */
+export function useStaffUser(): StaffUser {
+  const user = useContext(StaffUserContext);
+  if (!user) throw new Error("useStaffUser harus dipakai di dalam AdminGuard");
+  return user;
+}
+
+// Penjaga semua halaman /admin/(dashboard): wajib login sebagai owner atau terapis.
 // Backend tetap jadi pengaman utama (403 FORBIDDEN_ROLE), guard ini cuma
 // mencegah pasien / tamu melihat UI admin yang isinya gagal semua.
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [allowed, setAllowed] = useState(false);
+  const [user, setUser] = useState<StaffUser | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -18,8 +35,9 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
       .getProfile()
       .then((res) => {
         if (cancelled) return;
-        if (res?.data?.user?.role === "admin") {
-          setAllowed(true);
+        const u = res?.data?.user;
+        if (u?.role === "owner" || u?.role === "terapis") {
+          setUser({ id: u.id, name: u.full_name || u.name || "Staf", email: u.email, role: u.role });
         } else {
           router.replace("/admin/login");
         }
@@ -33,13 +51,13 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
     };
   }, [router]);
 
-  if (!allowed) {
+  if (!user) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F8F9FA] text-[14px] font-medium text-[#585858]">
-        Memverifikasi akses admin...
+      <div className="flex min-h-screen items-center justify-center bg-surface text-[13px] text-brand-900/60">
+        Memeriksa akses…
       </div>
     );
   }
 
-  return <>{children}</>;
+  return <StaffUserContext.Provider value={user}>{children}</StaffUserContext.Provider>;
 }

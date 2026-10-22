@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { CalendarBlank, Trash, CheckCircle, CalendarX, Sparkle, WarningCircle, CheckSquare, Square, ToggleLeft, Power } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
+import type { AdminSlot } from "@/types/api.types";
 
 interface ScheduleGridProps {
-  slots: any[];
+  slots: AdminSlot[];
   isLoading: boolean;
   onRefresh: () => void;
   onOpenGenerateModal: () => void;
@@ -97,8 +98,8 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
       await adminService.toggleSlot(String(slotId), targetStatus);
       showNotification(`Status slot berhasil ${targetStatus ? "diaktifkan" : "dinonaktifkan"}`);
       onRefresh();
-    } catch (error: any) {
-      console.error("Gagal toggle status slot:", error.response?.data || error);
+    } catch (error) {
+      console.error("Gagal toggle status slot:", error);
       showNotification("Gagal mengubah status slot", "error");
       onRefresh();
     } finally {
@@ -131,7 +132,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
   if (isLoading) {
     return (
       <div className="w-full py-20 flex flex-col items-center justify-center text-center">
-        <div className="text-[16px] font-bold text-brand-900 animate-pulse">
+        <div className="text-[14px] font-bold text-brand-900 animate-pulse">
           Memuat data slot jadwal...
         </div>
       </div>
@@ -144,13 +145,13 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
         <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mb-3 border border-gray-100">
           <CalendarX size={32} />
         </div>
-        <h4 className="text-[18px] font-bold text-brand-900 mb-1">Belum Ada Slot Jadwal</h4>
-        <p className="text-[14px] text-gray-500 max-w-md mb-6">
+        <h4 className="text-[15px] font-bold text-brand-900 mb-1">Belum Ada Slot Jadwal</h4>
+        <p className="text-[13px] text-gray-500 max-w-md mb-6">
           Belum ada slot waktu yang dibuat untuk terapis dan tanggal ini. Anda dapat membuat slot otomatis untuk 1 pekan ke depan.
         </p>
         <button
           onClick={onOpenGenerateModal}
-          className="px-6 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[14px] rounded-xl flex items-center gap-2 transition-colors shadow-sm"
+          className="px-6 py-3 bg-brand-900 hover:bg-brand-950 text-white font-bold text-[13px] rounded-xl flex items-center gap-2 transition-colors shadow-sm"
         >
           <Sparkle size={18} weight="fill" className="text-gold-700" />
           Generate Slot 1 Pekan Otomatis
@@ -201,7 +202,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
                   <button
                     onClick={() => handleBulkToggle(true)}
                     disabled={isBulkProcessing}
-                    className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-bold text-white bg-[#22c55e] hover:bg-green-600 rounded-xl transition-colors shadow-sm disabled:opacity-50"
+                    className="flex items-center gap-1.5 px-4 py-2 text-[13px] font-bold text-white bg-[#3f3f46] hover:bg-green-600 rounded-xl transition-colors shadow-sm disabled:opacity-50"
                   >
                     <Power size={16} weight="bold" />
                     Aktifkan
@@ -238,15 +239,14 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
 
       {/* === GRID KARTU SLOT === */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 relative z-0">
-        {slots.map((slot: any) => {
-          const isBooked = (slot.bookedCount ?? 0) > 0 || slot.is_booked || slot.isBooked;
-          // Backend mengembalikan status: "aktif" | "nonaktif"
-          const isActive = slot.status === "aktif" || (slot.status === undefined && slot.isActive !== false && slot.is_active !== false);
+        {slots.map((slot) => {
+          const isBooked = slot.bookedCount > 0;
+          const isActive = slot.status === "aktif";
           const slotIdStr = String(slot.id);
           const isSelected = selectedIds.has(slotIdStr);
 
-          const timeDisplay = slot.time || `${(slot.startTime || slot.start_time || "").substring(0, 5)} - ${(slot.endTime || slot.end_time || "").substring(0, 5)}`;
-          const therapistName = slot.therapistName || slot.therapist?.name;
+          const timeDisplay = `${slot.startTime.substring(0, 5)} - ${slot.endTime.substring(0, 5)}`;
+          const therapistName = slot.therapistName;
 
           let statusLabel = "Tersedia";
           let badgeStyle = "bg-green-50 text-green-600 border border-green-100";
@@ -316,10 +316,10 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
                     onClick={(e) => { e.stopPropagation(); !isBooked && !isToggling && handleToggle(slot.id, isActive); }}
                     className={`flex items-center gap-2 ${isBooked ? "cursor-not-allowed opacity-50" : "cursor-pointer group"}`}
                   >
-                    <div className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center ${isActive ? 'bg-[#22c55e]' : 'bg-gray-300'}`}>
+                    <div className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center ${isActive ? 'bg-[#3f3f46]' : 'bg-gray-300'}`}>
                       <div className={`w-4 h-4 bg-white rounded-full shadow-md transition-transform ${isActive ? 'translate-x-4' : 'translate-x-0'}`}></div>
                     </div>
-                    <span className={`text-[13px] font-bold ${isActive ? 'text-[#22c55e]' : 'text-gray-400'}`}>
+                    <span className={`text-[13px] font-bold ${isActive ? 'text-[#3f3f46]' : 'text-gray-400'}`}>
                       {isActive ? 'Aktif' : 'Off'}
                     </span>
                   </div>
@@ -345,11 +345,11 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
       {isDeleteModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-[2px]">
           <div className="bg-white rounded-3xl p-8 max-w-[400px] w-full flex flex-col items-center text-center shadow-2xl animate-in zoom-in-95 duration-200">
-            <h3 className="text-[20px] font-bold text-brand-900 mb-2">Hapus Slot Jadwal?</h3>
-            <p className="text-[14px] text-gray-500 mb-8">Slot jadwal ini akan dihapus permanen dari sistem.</p>
+            <h3 className="text-[16px] font-bold text-brand-900 mb-2">Hapus Slot Jadwal?</h3>
+            <p className="text-[13px] text-gray-500 mb-8">Slot jadwal ini akan dihapus permanen dari sistem.</p>
             <div className="flex gap-4 w-full">
               <button onClick={() => setIsDeleteModalOpen(false)} className="flex-1 py-3 rounded-xl font-bold text-[#585858] bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors">Batal</button>
-              <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-[#e02424] hover:bg-red-700 transition-colors shadow-md shadow-red-500/20">Hapus</button>
+              <button onClick={confirmDelete} className="flex-1 py-3 rounded-xl font-bold text-white bg-[#dc2626] hover:bg-red-700 transition-colors shadow-md shadow-red-500/20">Hapus</button>
             </div>
           </div>
         </div>
@@ -362,8 +362,8 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
             <div className="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mb-4">
               <Trash size={28} weight="fill" className="text-red-500" />
             </div>
-            <h3 className="text-[20px] font-bold text-brand-900 mb-2">Hapus {selectedIds.size} Slot?</h3>
-            <p className="text-[14px] text-gray-500 mb-8">Seluruh slot yang dipilih akan dihapus permanen dan tidak dapat dikembalikan.</p>
+            <h3 className="text-[16px] font-bold text-brand-900 mb-2">Hapus {selectedIds.size} Slot?</h3>
+            <p className="text-[13px] text-gray-500 mb-8">Seluruh slot yang dipilih akan dihapus permanen dan tidak dapat dikembalikan.</p>
             <div className="flex gap-4 w-full">
               <button
                 onClick={() => setIsBulkDeleteModalOpen(false)}
@@ -375,7 +375,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
               <button
                 onClick={handleBulkDelete}
                 disabled={isBulkProcessing}
-                className="flex-1 py-3 rounded-xl font-bold text-white bg-[#e02424] hover:bg-red-700 transition-colors shadow-md shadow-red-500/20 disabled:opacity-50"
+                className="flex-1 py-3 rounded-xl font-bold text-white bg-[#dc2626] hover:bg-red-700 transition-colors shadow-md shadow-red-500/20 disabled:opacity-50"
               >
                 {isBulkProcessing ? "Menghapus..." : `Hapus ${selectedIds.size} Slot`}
               </button>
@@ -388,15 +388,15 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
       {toast && (
         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-50 animate-in slide-in-from-bottom-5 duration-300 border
           ${toast.type === "success"
-            ? "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"
+            ? "bg-[#f4f4f5] border-[#e4e4e7] text-[#3f3f46]"
             : toast.type === "warning"
             ? "bg-amber-50 border-amber-200 text-amber-700"
-            : "bg-[#fef3f2] border-[#fecdca] text-[#b42318]"
+            : "bg-[#fef3f2] border-[#fecdca] text-[#b91c1c]"
           }`}
         >
           {toast.type === "success" && <CheckCircle size={20} weight="fill" />}
           {(toast.type === "warning" || toast.type === "error") && <WarningCircle size={20} weight="fill" />}
-          <span className="text-[14px] font-bold">{toast.message}</span>
+          <span className="text-[13px] font-bold">{toast.message}</span>
         </div>
       )}
     </>

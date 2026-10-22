@@ -44,13 +44,12 @@ function RescheduleContent() {
         }
 
         const [bookingsRes, therapistsRes] = await Promise.all([
-          adminService.getBookings(),
+          adminService.getBookings({ booking_id: bookingId }),
           adminService.getTherapists(),
         ]);
 
-        const allBookings = bookingsRes.data?.bookings || [];
         // Tidak ada fallback ke booking lain: kalau ID tidak cocok, halaman menolak.
-        const targetBooking = allBookings.find((b) => String(b.id) === String(bookingId)) || null;
+        const targetBooking = bookingsRes.data?.bookings?.[0] ?? null;
         setBooking(targetBooking);
         if (!targetBooking) return;
 
@@ -173,10 +172,10 @@ function RescheduleContent() {
   if (!booking || booking.bookingStatus !== "Terkonfirmasi") {
     return (
       <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
-        <span className="text-brand-900 font-bold text-[18px]">
+        <span className="text-brand-900 font-bold text-[15px]">
           {!booking ? "Data booking tidak ditemukan." : `Booking ini berstatus ${booking.bookingStatus} dan tidak bisa di-reschedule.`}
         </span>
-        <Link href="/admin/booking" className="px-6 py-3 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700">
+        <Link href="/admin/booking" className="px-6 py-3 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700">
           Kembali ke List Booking
         </Link>
       </div>
@@ -199,19 +198,19 @@ function RescheduleContent() {
           <CaretRight size={14} />
           <span className="text-brand-900 font-bold">Reschedule</span>
         </div>
-        <h2 className="text-[28px] font-bold text-brand-900">Reschedule Jadwal Pasien</h2>
-        <p className="text-[#585858] text-[15px]">Sesuaikan kembali waktu konsultasi atau sesi fisioterapi pasien secara fleksibel.</p>
+        <h2 className="text-[20px] font-bold text-brand-900">Reschedule Jadwal Pasien</h2>
+        <p className="text-[#585858] text-[13px]">Sesuaikan kembali waktu konsultasi atau sesi fisioterapi pasien secara fleksibel.</p>
       </div>
 
       {/* --- KARTU INFO PASIEN (DINAMIS DARI DATABASE) --- */}
       <div className="w-full bg-white border border-gray-200 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-full bg-brand-900 text-white font-bold flex items-center justify-center text-[16px]">
+          <div className="w-12 h-12 rounded-full bg-brand-900 text-white font-bold flex items-center justify-center text-[14px]">
             {patientInitials}
           </div>
           <div className="flex flex-col">
             <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Pasien</span>
-            <span className="text-[16px] font-bold text-brand-900">{patientName}</span>
+            <span className="text-[14px] font-bold text-brand-900">{patientName}</span>
           </div>
         </div>
         
@@ -219,14 +218,14 @@ function RescheduleContent() {
         
         <div className="flex flex-col">
           <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">ID Reservasi</span>
-          <span className="text-[16px] font-bold text-brand-900">{refCode}</span>
+          <span className="text-[14px] font-bold text-brand-900">{refCode}</span>
         </div>
 
         <div className="hidden md:block w-[1px] h-10 bg-gray-200"></div>
 
         <div className="flex flex-col">
           <span className="text-[12px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Jadwal Saat Ini</span>
-          <div className="flex items-center gap-2 text-brand-900 font-bold text-[15px]">
+          <div className="flex items-center gap-2 text-brand-900 font-bold text-[13px]">
             <CalendarBlank size={18} className="text-gold-700" />
             {currentSchedule}
           </div>
@@ -248,14 +247,14 @@ function RescheduleContent() {
         
         {/* Kiri: Pilih Tanggal Baru */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <h4 className="text-[15px] font-bold text-brand-900">1. Pilih Tanggal Baru</h4>
+          <h4 className="text-[13px] font-bold text-brand-900">1. Pilih Tanggal Baru</h4>
           <div className="flex flex-col gap-2">
             <label className="text-[13px] font-semibold text-gray-500">Tanggal Pengganti</label>
             <input 
               type="date" 
               value={selectedDate}
               onChange={(e) => changeDate(e.target.value)}
-              className="w-full p-3.5 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[14px] text-brand-900 font-semibold"
+              className="w-full p-3.5 rounded-xl border border-gray-200 outline-none focus:border-gold-600 text-[13px] text-brand-900 font-semibold"
             />
           </div>
           <div className="bg-brand-50/60 border border-brand-100 p-4 rounded-xl text-[13px] text-brand-900 leading-relaxed">
@@ -265,7 +264,7 @@ function RescheduleContent() {
 
         {/* Kanan: Pilih Fisioterapis & Slot Waktu */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <h4 className="text-[15px] font-bold text-brand-900">2. Pilih Fisioterapis & Slot Jam</h4>
+          <h4 className="text-[13px] font-bold text-brand-900">2. Pilih Fisioterapis & Slot Jam</h4>
           
           {/* List Terapis */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -344,14 +343,14 @@ function RescheduleContent() {
         <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
           <div className="flex items-center gap-2">
             <NotePencil size={20} className="text-gold-700" />
-            <h4 className="text-[15px] font-bold text-brand-900">Alasan Ubah Jadwal <span className="text-red-500">*</span></h4>
+            <h4 className="text-[13px] font-bold text-brand-900">Alasan Ubah Jadwal <span className="text-red-500">*</span></h4>
           </div>
           <textarea 
             rows={3}
             value={reason}
             onChange={(e) => setReason(e.target.value)}
             placeholder="Contoh: Pasien meminta pengunduran jadwal karena urusan pekerjaan mendadak."
-            className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] resize-none text-brand-900"
+            className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[13px] resize-none text-brand-900"
           ></textarea>
         </div>
 
@@ -366,7 +365,7 @@ function RescheduleContent() {
           <button 
             onClick={handleSave}
             disabled={isSaving || !selectedSlotId || !reason.trim()}
-            className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm"
+            className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 disabled:opacity-50 transition-colors shadow-sm"
           >
             {isSaving ? "Memproses..." : "Simpan Perubahan"}
             <CaretRightIcon size={18} />
@@ -376,9 +375,9 @@ function RescheduleContent() {
 
       {/* --- TOAST SUKSES --- */}
       {showToast && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#ecfdf3] border border-[#a6f4c5] text-[#027a48] px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(2,122,72,0.1)] z-50 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-[#f4f4f5] border border-[#e4e4e7] text-[#3f3f46] px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(2,122,72,0.1)] z-50 animate-in slide-in-from-bottom-5 duration-300">
           <CheckCircle size={20} weight="fill" />
-          <span className="text-[14px] font-bold">Jadwal Pasien Berhasil Diubah</span>
+          <span className="text-[13px] font-bold">Jadwal Pasien Berhasil Diubah</span>
         </div>
       )}
 

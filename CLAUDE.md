@@ -13,7 +13,7 @@
 - **Ink (teks/judul/sidebar):** `brand-900` #1a1814
 - **Teks aksen di latar terang:** `gold-700` #8a6500
 - **Tint:** `brand-50` #fffbe6 / `brand-100` #fff3bf
-- **Ciri khas:** `<LogoWatermark />`, `.mark-swoosh` (stabilo judul), `.bg-logo-pattern`
+- **Prinsip:** tampilan publik tenang, tanpa hiasan; info klinik dari `src/constants/clinic.ts`
 - **Gray Text:** `#585858` / `#9ca3af`
 - Detail: [docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)
 

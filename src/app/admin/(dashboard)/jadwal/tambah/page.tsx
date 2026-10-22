@@ -5,14 +5,17 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CaretRight, CaretDown, Info, Clock, CheckCircle, WarningCircle } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
+import { getApiErrorCode, getApiErrorMessage } from "@/app/utils/api";
+import type { AdminTherapist } from "@/types/api.types";
+import { todayWib } from "@/lib/format";
 
 export default function TambahJadwalPage() {
   const router = useRouter();
 
-  const [therapists, setTherapists] = useState<any[]>([]);
+  const [therapists, setTherapists] = useState<AdminTherapist[]>([]);
   const [selectedTherapistId, setSelectedTherapistId] = useState("");
 
-  const [tanggal, setTanggal] = useState(() => new Date().toISOString().split("T")[0]);
+  const [tanggal, setTanggal] = useState(todayWib);
   const [jamMulai, setJamMulai] = useState("08:00");
   const [jamSelesai, setJamSelesai] = useState("09:00");
 
@@ -66,14 +69,12 @@ export default function TambahJadwalPage() {
       showNotification("Slot Jadwal Berhasil Ditambahkan!", "success");
       setIsSubmitting(false);
       setTimeout(() => router.push("/admin/jadwal"), 1200);
-    } catch (error: any) {
-      console.error("Detail Error Backend:", error.response?.data);
-      const beError = error.response?.data?.error;
-      if (beError?.code === "SLOT_DATE_TIME_CONFLICT") {
+    } catch (error) {
+      console.error("Gagal menambahkan slot:", error);
+      if (getApiErrorCode(error) === "SLOT_DATE_TIME_CONFLICT") {
         showNotification("Slot untuk fisioterapis di tanggal & jam ini sudah terdaftar.", "warning");
       } else {
-        const msg = beError?.message || error.response?.data?.message || "Gagal menambahkan slot jadwal.";
-        showNotification(msg, "error");
+        showNotification(getApiErrorMessage(error, "Gagal menambahkan slot jadwal."), "error");
       }
       setIsSubmitting(false);
     }
@@ -91,8 +92,8 @@ export default function TambahJadwalPage() {
           <CaretRight size={14} />
           <span className="text-brand-900 font-bold">Tambah Slot</span>
         </div>
-        <h2 className="text-[28px] font-bold text-brand-900">Tambah Slot Jadwal Baru</h2>
-        <p className="text-[#585858] text-[15px]">Tambahkan satu slot praktek untuk tanggal dan jam tertentu.</p>
+        <h2 className="text-[20px] font-bold text-brand-900">Tambah Slot Jadwal Baru</h2>
+        <p className="text-[#585858] text-[13px]">Tambahkan satu slot praktek untuk tanggal dan jam tertentu.</p>
       </div>
 
       {/* --- FORM UTAMA --- */}
@@ -100,18 +101,18 @@ export default function TambahJadwalPage() {
 
         {/* 1. Pilih Fisioterapis */}
         <div className="flex flex-col gap-2">
-          <label className="text-[14px] font-bold text-brand-900">Nama Fisioterapis</label>
+          <label className="text-[13px] font-bold text-brand-900">Nama Fisioterapis</label>
           <div className="relative">
             <select
               value={selectedTherapistId}
               onChange={(e) => setSelectedTherapistId(e.target.value)}
-              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 text-[14px] p-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer font-medium"
+              className="w-full appearance-none bg-white border border-gray-200 text-brand-900 text-[13px] p-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer font-medium"
             >
               <option value="" disabled hidden>Pilih Fisioterapis</option>
               {therapists.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.fullName || t.full_name || t.name || `Terapis #${t.id}`}
-                  {t.specialization ? ` — ${t.specialization}` : ""}
+                  {t.fullName}
+                  {t.specializations.length > 0 ? ` (${t.specializations.map((sp) => sp.name).join(", ")})` : ""}
                 </option>
               ))}
             </select>
@@ -123,12 +124,12 @@ export default function TambahJadwalPage() {
 
         {/* 2. Tanggal Praktek (single date) */}
         <div className="flex flex-col gap-2">
-          <label className="text-[14px] font-bold text-brand-900">Tanggal Praktek</label>
+          <label className="text-[13px] font-bold text-brand-900">Tanggal Praktek</label>
           <input
             type="date"
             value={tanggal}
             onChange={(e) => setTanggal(e.target.value)}
-            className="w-full bg-white border border-gray-200 text-brand-900 text-[14px] p-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer font-medium"
+            className="w-full bg-white border border-gray-200 text-brand-900 text-[13px] p-4 rounded-xl outline-none focus:border-gold-600 transition-colors cursor-pointer font-medium"
           />
           <span className="text-[12px] text-gray-400">Pilih satu tanggal untuk slot ini. Untuk buat banyak sekaligus, gunakan fitur Generate Otomatis.</span>
         </div>
@@ -137,7 +138,7 @@ export default function TambahJadwalPage() {
 
         {/* 3. Jam Mulai & Jam Selesai */}
         <div className="flex flex-col gap-3">
-          <label className="text-[14px] font-bold text-brand-900 flex items-center gap-1.5">
+          <label className="text-[13px] font-bold text-brand-900 flex items-center gap-1.5">
             <Clock size={16} weight="bold" />
             Waktu Sesi
           </label>
@@ -149,17 +150,17 @@ export default function TambahJadwalPage() {
                 type="time"
                 value={jamMulai}
                 onChange={(e) => setJamMulai(e.target.value)}
-                className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900 font-medium"
+                className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[13px] text-brand-900 font-medium"
               />
             </div>
-            <div className="hidden md:flex items-center justify-center mt-6 text-gray-400 font-bold text-[16px]">—</div>
+            <div className="hidden md:flex items-center justify-center mt-6 text-gray-400 font-bold text-[14px]">s/d</div>
             <div className="flex flex-col gap-1.5">
               <span className="text-[12px] font-semibold text-gray-400 uppercase tracking-wide">Jam Selesai</span>
               <input
                 type="time"
                 value={jamSelesai}
                 onChange={(e) => setJamSelesai(e.target.value)}
-                className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[14px] text-brand-900 font-medium"
+                className="w-full p-4 rounded-xl border border-gray-200 outline-none focus:border-gold-600 transition-colors text-[13px] text-brand-900 font-medium"
               />
             </div>
           </div>
@@ -181,7 +182,7 @@ export default function TambahJadwalPage() {
                     : "text-brand-900 bg-gray-100 hover:bg-brand-50 hover:text-gold-800 border-transparent hover:border-brand-600/30"
                 }`}
               >
-                {s}–{e}
+                {s} s/d {e}
               </button>
             ))}
           </div>
@@ -193,7 +194,7 @@ export default function TambahJadwalPage() {
         <div className="bg-brand-50 border border-brand-100 rounded-xl p-5 flex items-start gap-4">
           <Info size={22} weight="fill" className="text-gold-700 shrink-0 mt-0.5" />
           <div className="flex flex-col gap-1">
-            <h4 className="text-[14px] font-bold text-brand-900">Catatan</h4>
+            <h4 className="text-[13px] font-bold text-brand-900">Catatan</h4>
             <p className="text-[13px] text-[#585858] leading-relaxed">
               Slot dengan fisioterapis, tanggal, dan jam yang sama persis tidak dapat dibuat dua kali.
               Untuk membuat banyak slot sekaligus, gunakan fitur <strong>Generate Otomatis</strong>.
@@ -213,7 +214,7 @@ export default function TambahJadwalPage() {
             type="button"
             onClick={handleSave}
             disabled={isSubmitting}
-            className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 py-4 flex items-center justify-center gap-2 rounded-xl font-bold text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (
               <>
@@ -229,13 +230,13 @@ export default function TambahJadwalPage() {
       {/* --- TOAST NOTIFIKASI --- */}
       {toast && (
         <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-2 px-6 py-3 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] z-50 animate-in slide-in-from-bottom-5 duration-300 border
-          ${toast.type === "success" ? "bg-[#ecfdf3] border-[#a6f4c5] text-[#027a48]"
+          ${toast.type === "success" ? "bg-[#f4f4f5] border-[#e4e4e7] text-[#3f3f46]"
           : toast.type === "warning" ? "bg-amber-50 border-amber-200 text-amber-700"
-          : "bg-[#fef3f2] border-[#fecdca] text-[#b42318]"}`}
+          : "bg-[#fef3f2] border-[#fecdca] text-[#b91c1c]"}`}
         >
           {toast.type === "success" && <CheckCircle size={20} weight="fill" />}
           {(toast.type === "warning" || toast.type === "error") && <WarningCircle size={20} weight="fill" />}
-          <span className="text-[14px] font-bold">{toast.message}</span>
+          <span className="text-[13px] font-bold">{toast.message}</span>
         </div>
       )}
 

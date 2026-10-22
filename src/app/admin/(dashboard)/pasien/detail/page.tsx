@@ -1,309 +1,386 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import {
-  User, ClipboardText, CalendarBlank, Barbell, Brain, Bandaids, CaretRight, CheckCircle, ClockCounterClockwise
-} from "@phosphor-icons/react";
+import { ArrowLeft, CaretRight, Printer } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
-import type { AdminBooking, AdminPatient } from "@/types/api.types";
+import { clinicService } from "@/services/clinicService";
+import type { AdminBooking, AdminPatient, MedicalRecord, MedicalRecordRevision, ProgressPoint } from "@/types/api.types";
+import BodyMap from "@/components/bodymap/BodyMap";
+import { regionLabel } from "@/constants/bodyRegions";
+import ProgramManager from "@/components/admin/video/ProgramManager";
+import { EmptyState, Panel, StatusBadge, btn, inputClass, tableHead } from "@/components/admin/shared/AdminUI";
+import ProgressPanel from "@/components/shared/ProgressChart";
+import { GENDER_OPTIONS, genderLabel } from "@/constants/patient";
+import { useStaffUser } from "@/components/admin/layout/AdminGuard";
+import { getApiErrorMessage } from "@/app/utils/api";
+import { formatDate, formatDateOf, formatDateTime, formatSlotTime } from "@/lib/format";
 
-// Format tanggal dari BE (ISO / "YYYY-MM-DD") ke tampilan Indonesia; tanggal disimpan sebagai UTC 00:00
-const formatTanggal = (value?: string | null) => {
-  if (!value) return "-";
-  return new Date(value).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+type Detail = {
+  patient: AdminPatient | null;
+  bookings: AdminBooking[];
+  record: MedicalRecord | null;
+  progress: ProgressPoint[];
+  revisions: MedicalRecordRevision[];
 };
 
-function DetailPasienContent() {
-  const searchParams = useSearchParams();
-  const patientId = searchParams.get("id") || "";
-
-  const [patient, setPatient] = useState<AdminPatient | null>(null);
-  const [patientBookings, setPatientBookings] = useState<AdminBooking[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        if (!patientId) {
-          setPatient(null);
-          return;
-        }
-
-        const [patientsRes, bookingsRes] = await Promise.all([
-          adminService.getPatients(),
-          adminService.getBookings(),
-        ]);
-
-        const allPatients = patientsRes.data?.patients || [];
-        const allBookings = bookingsRes.data?.bookings || [];
-
-        // Hanya cocok lewat ID akun atau kode pasien — tidak ada fallback ke pasien lain
-        const target = String(patientId).toLowerCase();
-        const targetPatient =
-          allPatients.find((p) => String(p.id) === patientId || String(p.patientCode).toLowerCase() === target) || null;
-
-        setPatient(targetPatient);
-        // Booking dicocokkan lewat patientId (bukan nama/telepon yang bisa sama)
-        setPatientBookings(targetPatient ? allBookings.filter((b) => b.patientId === targetPatient.id) : []);
-      } catch (error) {
-        console.error("Gagal memuat data detail pasien:", error);
-        setPatient(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [patientId]);
-
-  const renderLayananIcon = (layanan: string) => {
-    if (!layanan) return <Bandaids size={14} weight="bold" />;
-    if (layanan.toLowerCase().includes("neuro")) return <Brain size={14} weight="bold" />;
-    if (layanan.toLowerCase().includes("olahraga")) return <Barbell size={14} weight="bold" />;
-    return <Bandaids size={14} weight="bold" />;
-  };
-
-  // Status BE: "Terkonfirmasi" | "Selesai" | "Dibatalkan"
-  const renderStatus = (status: string) => {
-    let colorClass = "border-green-500 text-green-600 bg-green-50/40";
-    if (status === "Selesai") colorClass = "border-gray-300 text-gray-500 bg-gray-50";
-    else if (status === "Dibatalkan") colorClass = "border-red-300 text-red-500 bg-red-50/40";
-
-    return (
-      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[12px] font-bold ${colorClass}`}>
-        <CheckCircle size={14} weight="fill" />
-        <span>{status || "-"}</span>
-      </div>
-    );
-  };
-
-  const serviceLabel = (b: AdminBooking) => (b?.focusArea?.name ? `Fisioterapi ${b.focusArea.name}` : "-");
-
-  if (isLoading) {
-    return (
-      <div className="w-full py-24 text-center text-brand-900 font-bold animate-pulse">
-        Memuat detail riwayat pasien...
-      </div>
-    );
-  }
-
-  if (!patient) {
-    return (
-      <div className="w-full py-24 flex flex-col items-center gap-4 text-center">
-        <span className="text-brand-900 font-bold text-[18px]">Data pasien tidak ditemukan.</span>
-        <Link href="/admin/pasien" className="px-6 py-3 rounded-xl font-bold text-brand-950 bg-brand-600 hover:bg-brand-700">
-          Kembali ke Kelola Data Pasien
-        </Link>
-      </div>
-    );
-  }
-
-  const patientName = patient.fullName || "-";
-  const initials = patientName.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase();
-
-  // Sesi Terkonfirmasi terdekat (list admin sudah urut jadwal terdekat dulu)
-  const upcomingSession = patientBookings.find((b) => b.bookingStatus === "Terkonfirmasi") || null;
-  const completedCount = patientBookings.filter((b) => b.bookingStatus === "Selesai").length;
-  const activeBookings = patientBookings.filter((b) => b.bookingStatus !== "Dibatalkan");
-  const progressPercent = activeBookings.length > 0 ? Math.round((completedCount / activeBookings.length) * 100) : 0;
-  const mainService = patient.lastService || "-";
-
+function Row({ label, value }: { label: string; value: string | null | undefined }) {
   return (
-    <div className="w-full flex flex-col gap-6 pb-12 max-w-[1100px] mx-auto animate-in fade-in duration-300">
-
-      {/* --- BREADCRUMB --- */}
-      <div className="flex items-center gap-2 text-[13px] text-gray-500 font-medium">
-        <Link href="/admin/pasien" className="hover:text-gold-700 transition-colors">Kelola Data Pasien</Link>
-        <span>›</span>
-        <span className="text-brand-900 font-bold">Lihat Detail</span>
-      </div>
-
-      {/* --- HEADER PROFIL --- */}
-      <div className="w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-        <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-full bg-brand-900 text-white font-bold flex items-center justify-center text-[26px] shrink-0 border-4 border-white shadow-sm">
-            {initials}
-          </div>
-          <div className="flex flex-col gap-1">
-            <h2 className="text-[28px] font-bold text-brand-900 leading-tight">{patientName}</h2>
-            <p className="text-[14px] text-gray-500">ID Pasien: <span className="font-bold text-brand-900">{patient.patientCode}</span></p>
-          </div>
-        </div>
-
-        {/* Data kontak pasien read-only: backend tidak mengizinkan email/telepon diubah dari luar akun pasien */}
-        <span className="px-4 py-2 rounded-xl text-[12px] font-medium text-gray-500 bg-gray-50 border border-gray-200 shrink-0">
-          Data kontak dikelola oleh pasien melalui akunnya
-        </span>
-      </div>
-
-      {/* --- 3 KARTU INFORMASI --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-2">
-
-        {/* Kartu 1: Data Pasien */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div className="flex items-center gap-2 font-bold text-brand-900">
-            <User size={20} weight="bold" />
-            <span className="text-[16px]">Data Kontak Pasien</span>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">No Telepon</span>
-              <span className="text-[14px] font-bold text-brand-900">{patient.phone || "-"}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Email</span>
-              <span className="text-[14px] font-bold text-brand-900 truncate">{patient.email || "-"}</span>
-            </div>
-            <div className="flex flex-col gap-1">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Tanggal Lahir</span>
-              <span className="text-[14px] font-bold text-brand-900">{formatTanggal(patient.dateOfBirth)}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Kartu 2: Ringkasan Terapi */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
-          <div className="flex items-center gap-2 font-bold text-brand-900">
-            <ClipboardText size={20} weight="bold" />
-            <span className="text-[16px]">Ringkasan Terapi</span>
-          </div>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Layanan Terakhir</span>
-              <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40 w-max">
-                {renderLayananIcon(mainService)}
-                <span className="text-[12px] font-bold">{mainService}</span>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 mt-1">
-              <div className="flex justify-between items-end">
-                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Progress Terapi</span>
-                <span className="text-[14px] font-bold text-brand-900">{completedCount}/{activeBookings.length} Sesi Selesai</span>
-              </div>
-              <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-brand-600 rounded-full transition-all duration-500"
-                  style={{ width: `${progressPercent}%` }}
-                ></div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-1 mt-1">
-              <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Total Riwayat Booking</span>
-              <span className="text-[14px] font-bold text-brand-900">{patientBookings.length} Booking Tercatat</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Kartu 3: Sesi Mendatang */}
-        <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col">
-          <div className="flex items-center gap-2 font-bold text-brand-900 mb-4">
-            <CalendarBlank size={20} weight="bold" />
-            <span className="text-[16px]">Sesi Mendatang</span>
-          </div>
-
-          {upcomingSession ? (
-            <div className="flex flex-col justify-between flex-1">
-              <div className="border border-brand-600 bg-brand-50 rounded-xl p-4 flex gap-4 items-center">
-                <div className="bg-white border border-gray-200 rounded-lg flex flex-col items-center justify-center w-14 h-14 shrink-0 shadow-sm">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">Tgl</span>
-                  <span className="text-[16px] font-bold text-brand-900 leading-none mt-0.5">
-                    {String(upcomingSession.bookingDate).substring(8, 10)}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[14px] font-bold text-brand-900">{serviceLabel(upcomingSession)}</span>
-                  <span className="text-[12px] text-gray-500">
-                    {formatTanggal(upcomingSession.bookingDate)}, {String(upcomingSession.bookingTime).substring(0, 5)} WIB
-                  </span>
-                  <span className="text-[12px] text-gray-500 font-semibold">
-                    with {upcomingSession.therapistName}
-                  </span>
-                </div>
-              </div>
-
-              <Link
-                href={`/admin/booking/reschedule?id=${upcomingSession.id}`}
-                className="text-gold-700 font-bold text-[14px] hover:text-gold-800 transition-colors mx-auto mt-4 flex items-center gap-1"
-              >
-                <ClockCounterClockwise size={16} weight="bold" />
-                Ubah Jadwal Pasien <CaretRight size={14} weight="bold" />
-              </Link>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center flex-1 py-4 text-center text-gray-400 text-[13px]">
-              Belum ada sesi konsultasi mendatang.
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* --- RIWAYAT SESI TABEL --- */}
-      <div className="w-full bg-white border border-gray-200 rounded-2xl p-6 shadow-sm flex flex-col gap-6 mt-2">
-        <div className="flex items-center justify-between">
-          <h3 className="text-[20px] font-bold text-brand-900">Riwayat Konsultasi & Terapi</h3>
-          <span className="text-[13px] text-gray-500 font-medium">Total {patientBookings.length} Booking</span>
-        </div>
-
-        {patientBookings.length === 0 ? (
-          <div className="py-16 text-center text-gray-400 font-medium">
-            Belum ada riwayat sesi yang tercatat untuk pasien ini.
-          </div>
-        ) : (
-          <div className="w-full overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/50">
-                  <th className="py-4 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">Waktu & Tanggal</th>
-                  <th className="py-4 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">Layanan</th>
-                  <th className="py-4 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">Nama Terapis</th>
-                  <th className="py-4 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider">Kode Reservasi</th>
-                  <th className="py-4 px-4 text-[12px] font-bold text-gray-500 uppercase tracking-wider text-right">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {patientBookings.map((row) => {
-                  const sName = serviceLabel(row);
-                  const timeStr = `${String(row.bookingTime).substring(0, 5)} - ${String(row.bookingEndTime || "").substring(0, 5)} WIB`;
-
-                  return (
-                    <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50/50 bg-white transition-colors">
-                      <td className="py-5 px-4">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-brand-900 text-[14px]">{formatTanggal(row.bookingDate)}</span>
-                          <span className="text-[12px] text-gray-500">{timeStr}</span>
-                        </div>
-                      </td>
-                      <td className="py-5 px-4">
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-brand-600 text-gold-700 bg-brand-50/40">
-                          {renderLayananIcon(sName)}
-                          <span className="text-[11px] font-bold">{sName}</span>
-                        </div>
-                      </td>
-                      <td className="py-5 px-4 text-[14px] font-bold text-brand-900">{row.therapistName}</td>
-                      <td className="py-5 px-4 text-[13px] font-bold text-gray-500">{row.referenceCode}</td>
-                      <td className="py-5 px-4 text-right">
-                        {renderStatus(row.bookingStatus)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
-
+    <div className="flex justify-between gap-4 py-1.5">
+      <dt className="text-zinc-500">{label}</dt>
+      <dd className="text-right text-zinc-900">{value || "—"}</dd>
     </div>
   );
 }
 
-export default function DetailPasienPage() {
+/** Jenis kelamin dikunci; hanya owner yang bisa mengoreksi bila salah input. */
+function GenderRow({ patient, onSaved }: { patient: AdminPatient; onSaved: (p: AdminPatient) => void }) {
+  const isOwner = useStaffUser().role === "owner";
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(patient.gender ?? "");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  const save = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const res = await adminService.updatePatientGender(patient.id, value);
+      onSaved(res.data.patient);
+      setEditing(false);
+    } catch (err) {
+      setError(getApiErrorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (!editing) {
+    return (
+      <div className="flex items-center justify-between gap-4 py-1.5">
+        <dt className="text-zinc-500">Jenis kelamin</dt>
+        <dd className="flex items-center gap-2 text-zinc-900">
+          {genderLabel(patient.gender) ?? "—"}
+          {isOwner && (
+            <button
+              type="button"
+              onClick={() => {
+                setValue(patient.gender ?? "");
+                setEditing(true);
+              }}
+              className="text-[12px] text-zinc-500 underline-offset-2 hover:text-zinc-900 hover:underline"
+            >
+              Koreksi
+            </button>
+          )}
+        </dd>
+      </div>
+    );
+  }
+
   return (
-    <Suspense fallback={<div className="py-24 text-center text-brand-900 font-bold">Memuat detail pasien...</div>}>
-      <DetailPasienContent />
+    <div className="flex flex-col gap-2 py-2">
+      <dt className="text-zinc-500">Jenis kelamin</dt>
+      <dd className="flex flex-col gap-2">
+        <select value={value} onChange={(e) => setValue(e.target.value)} className="h-8 rounded-md border border-zinc-200 bg-white px-2 text-[13px]">
+          <option value="" disabled>
+            Pilih
+          </option>
+          {GENDER_OPTIONS.map((g) => (
+            <option key={g.value} value={g.value}>
+              {g.label}
+            </option>
+          ))}
+        </select>
+        {error && <span className="text-[12px] text-red-600">{error}</span>}
+        <div className="flex justify-end gap-2">
+          <button type="button" className={btn.secondary} onClick={() => setEditing(false)} disabled={busy}>
+            Batal
+          </button>
+          <button type="button" className={btn.primary} onClick={save} disabled={busy || !value || value === patient.gender}>
+            {busy ? "Menyimpan…" : "Simpan"}
+          </button>
+        </div>
+      </dd>
+    </div>
+  );
+}
+
+const ACCOUNT_STATUS_LABEL: Record<AdminPatient["accountStatus"], string> = {
+  aktif: "Aktif",
+  belum_aktivasi: "Menunggu aktivasi",
+  offline: "Offline (belum ada email)",
+};
+
+/** Akun buatan klinik: kirim ulang link aktivasi, atau isi/betulkan email selama belum aktif. */
+function AccountRow({ patient, onSaved }: { patient: AdminPatient; onSaved: (p: AdminPatient) => void }) {
+  const [editing, setEditing] = useState(false);
+  const [email, setEmail] = useState(patient.email ?? "");
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState<{ tone: "info" | "error"; text: string } | null>(null);
+
+  const send = async (newEmail?: string) => {
+    setBusy(true);
+    setMessage(null);
+    try {
+      const res = await adminService.sendActivation(patient.id, newEmail);
+      onSaved(res.data.patient);
+      setEditing(false);
+      setMessage({ tone: "info", text: `Link aktivasi dikirim ke ${res.data.sentTo}.` });
+    } catch (err) {
+      setMessage({ tone: "error", text: getApiErrorMessage(err) });
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-2 py-1.5">
+      <div className="flex items-center justify-between gap-4">
+        <dt className="text-zinc-500">Status akun</dt>
+        <dd className="text-right text-zinc-900">{ACCOUNT_STATUS_LABEL[patient.accountStatus]}</dd>
+      </div>
+      {patient.accountStatus !== "aktif" && !editing && (
+        <dd className="flex flex-wrap justify-end gap-2">
+          {patient.accountStatus === "belum_aktivasi" && (
+            <button type="button" className={btn.secondary} onClick={() => send()} disabled={busy}>
+              {busy ? "Mengirim…" : "Kirim ulang link"}
+            </button>
+          )}
+          <button
+            type="button"
+            className={btn.secondary}
+            onClick={() => {
+              setEmail(patient.email ?? "");
+              setEditing(true);
+              setMessage(null);
+            }}
+          >
+            {patient.email ? "Ubah email" : "Isi email"}
+          </button>
+        </dd>
+      )}
+      {editing && (
+        <dd className="flex flex-col gap-2">
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="email@pasien.com" className={`${inputClass} h-8`} />
+          <div className="flex justify-end gap-2">
+            <button type="button" className={btn.secondary} onClick={() => setEditing(false)} disabled={busy}>
+              Batal
+            </button>
+            <button type="button" className={btn.primary} onClick={() => send(email.trim())} disabled={busy || !email.trim()}>
+              {busy ? "Mengirim…" : "Simpan & kirim link"}
+            </button>
+          </div>
+        </dd>
+      )}
+      {message && <p className={`text-[12px] ${message.tone === "error" ? "text-red-600" : "text-zinc-600"}`}>{message.text}</p>}
+    </div>
+  );
+}
+
+function RecordField({ label, value }: { label: string; value: string | null }) {
+  return (
+    <div>
+      <p className="text-[11px] font-medium text-zinc-500">{label}</p>
+      <p className={`mt-0.5 whitespace-pre-line leading-relaxed ${value ? "text-zinc-900" : "text-zinc-400"}`}>{value || "Belum diisi"}</p>
+    </div>
+  );
+}
+
+function PatientDetail() {
+  const patientId = useSearchParams().get("id") ?? "";
+  const [data, setData] = useState<Detail | null>(null);
+
+  useEffect(() => {
+    if (!patientId) return;
+    // Semua disaring di server per pasien (tidak lagi menarik seluruh pasien & booking)
+    Promise.all([
+      adminService.getPatient(patientId),
+      adminService.getBookings({ patient_id: patientId }),
+      clinicService.getPatientMedicalRecord(patientId).catch(() => null),
+      clinicService.getPatientProgress(patientId).catch(() => null),
+      clinicService.getMedicalRecordHistory(patientId).catch(() => null),
+    ])
+      .then(([patientRes, bookingsRes, recordRes, progressRes, historyRes]) =>
+        setData({
+          patient: patientRes.data.patient,
+          // Terbaru dulu
+          bookings: [...bookingsRes.data.bookings].reverse(),
+          record: recordRes?.data.medicalRecord ?? null,
+          progress: progressRes?.data.progress ?? [],
+          revisions: historyRes?.data.revisions ?? [],
+        })
+      )
+      .catch((error) => {
+        console.error("Gagal memuat detail pasien:", error);
+        setData({ patient: null, bookings: [], record: null, progress: [], revisions: [] });
+      });
+  }, [patientId]);
+
+  const back = (
+    <Link href="/admin/pasien" className="inline-flex w-fit items-center gap-1 text-[12px] text-zinc-500 hover:text-zinc-900">
+      <ArrowLeft size={12} />
+      Pasien
+    </Link>
+  );
+
+  if (!patientId || (data && !data.patient)) {
+    return (
+      <div className="flex flex-col gap-4">
+        {back}
+        <Panel>
+          <EmptyState title="Pasien tidak ditemukan" />
+        </Panel>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="h-64 animate-pulse rounded-lg bg-white" />;
+  }
+
+  const { patient, bookings, record, progress, revisions } = data;
+  const p = patient!;
+  const patientIds = record?.bodyPoints.filter((b) => b.source === "patient").map((b) => b.regionId) ?? [];
+  const therapistIds = record?.bodyPoints.filter((b) => b.source === "therapist").map((b) => b.regionId) ?? [];
+
+  return (
+    <div className="flex flex-col gap-4">
+      {back}
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-[17px] font-semibold text-zinc-900">{p.fullName}</h1>
+          <p className="text-[12px] text-zinc-500">{p.patientCode}</p>
+        </div>
+        <Link href={`/admin/pasien/cetak?id=${p.id}`} className={btn.secondary}>
+          <Printer size={13} />
+          Cetak rekam medis (PDF)
+        </Link>
+      </div>
+
+      <div className="grid items-start gap-4 lg:grid-cols-[280px_1fr]">
+        <Panel title="Data pasien" bodyClassName="px-4 py-2">
+          <dl className="divide-y divide-zinc-100">
+            <Row label="Telepon" value={p.phone} />
+            <Row label="Email" value={p.email ?? "Belum ada"} />
+            <Row label="Tanggal lahir" value={p.dateOfBirth ? formatDate(p.dateOfBirth) : null} />
+            <GenderRow patient={p} onSaved={(updated) => setData((d) => (d ? { ...d, patient: updated } : d))} />
+            <Row label="Pekerjaan" value={p.occupation} />
+            <Row label="Alamat" value={p.address} />
+            <AccountRow patient={p} onSaved={(updated) => setData((d) => (d ? { ...d, patient: updated } : d))} />
+            <Row label="Terdaftar" value={formatDateOf(p.registeredAt)} />
+            <Row label="Total booking" value={String(p.totalBookings)} />
+            <Row label="Sesi selesai" value={String(p.totalSessions)} />
+          </dl>
+        </Panel>
+
+        <Panel title="Rekam medis" description={record?.updatedAt ? `Terakhir diubah ${formatDateTime(record.updatedAt)}` : "Belum pernah diisi. Isi dari halaman Detail Sesi."}>
+          {record?.updatedAt ? (
+            <div className="grid gap-5 p-4 md:grid-cols-[200px_1fr]">
+              <div>
+                <div className="grid grid-cols-2 gap-2">
+                  <BodyMap view="front" selected={patientIds} marked={therapistIds} dots="none" className="w-full" />
+                  <BodyMap view="back" selected={patientIds} marked={therapistIds} dots="none" className="w-full" />
+                </div>
+                {record.bodyPoints.length > 0 && <p className="mt-2 text-[12px] text-zinc-600">{record.bodyPoints.map((b) => regionLabel(b.regionId)).join(", ")}</p>}
+              </div>
+              <div className="flex flex-col gap-3">
+                <RecordField label="Nama penyakit / diagnosis" value={record.diagnosis} />
+                <RecordField label="Obat & penanganan" value={record.medications} />
+                <RecordField label="Catatan terapi" value={record.notes} />
+                <RecordField label="Latihan pemulihan di rumah" value={record.homeExercise} />
+              </div>
+            </div>
+          ) : (
+            <EmptyState title="Belum ada rekam medis" />
+          )}
+        </Panel>
+      </div>
+
+      <Panel title="Progres pasien" description="Dari asesmen klinis tiap sesi (nyeri VAS & ROM)" bodyClassName="p-4">
+        <ProgressPanel points={progress} />
+      </Panel>
+
+      <Panel bodyClassName="p-4">
+        <ProgramManager patientId={p.id} />
+      </Panel>
+
+      <Panel title="Riwayat perubahan rekam medis" description="Setiap simpan tercatat: siapa, kapan, dan isinya. Tidak bisa diubah atau dihapus.">
+        {revisions.length === 0 ? (
+          <EmptyState title="Belum ada perubahan tercatat" />
+        ) : (
+          <ol className="divide-y divide-zinc-100">
+            {revisions.map((r) => (
+              <li key={r.id}>
+                <details className="group px-4 py-2.5">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-[12px]">
+                    <span className="text-zinc-900">
+                      {formatDateTime(r.editedAt)} <span className="text-zinc-500">· {r.editedByName ?? "Sistem"}</span>
+                    </span>
+                    <CaretRight size={12} className="text-zinc-400 transition-transform group-open:rotate-90" />
+                  </summary>
+                  <div className="mt-2 grid gap-2 md:grid-cols-2">
+                    <RecordField label="Diagnosis" value={r.diagnosis} />
+                    <RecordField label="Obat & penanganan" value={r.medications} />
+                    <RecordField label="Catatan terapi" value={r.notes} />
+                    <RecordField label="Latihan di rumah" value={r.homeExercise} />
+                  </div>
+                </details>
+              </li>
+            ))}
+          </ol>
+        )}
+      </Panel>
+
+      <Panel title="Riwayat sesi" description={`${bookings.length} booking`}>
+        {bookings.length === 0 ? (
+          <EmptyState title="Belum ada booking" />
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px] text-left text-[13px]">
+              <thead>
+                <tr className={tableHead}>
+                  <th className="px-4 py-2 font-medium">Jadwal</th>
+                  <th className="px-4 py-2 font-medium">Paket</th>
+                  <th className="px-4 py-2 font-medium">Terapis terjadwal</th>
+                  <th className="px-4 py-2 font-medium">Kode</th>
+                  <th className="px-4 py-2 font-medium">Status</th>
+                  <th className="w-10" />
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map((b) => (
+                  <tr key={b.id} className="group border-b border-zinc-100 last:border-0 hover:bg-zinc-50">
+                    <td className="px-4 py-2.5 tabular-nums text-zinc-900">
+                      {formatDate(b.bookingDate)}, {formatSlotTime(b.bookingTime)}
+                    </td>
+                    <td className="px-4 py-2.5 text-zinc-600">{b.packageName ?? "—"}</td>
+                    <td className="px-4 py-2.5 text-zinc-600">{b.therapistName}</td>
+                    <td className="px-4 py-2.5 text-zinc-500">{b.referenceCode}</td>
+                    <td className="px-4 py-2.5">
+                      <StatusBadge status={b.bookingStatus} />
+                    </td>
+                    <td className="pr-3 text-right">
+                      <Link href={`/admin/sesi/${b.id}`} aria-label="Buka sesi" className="inline-flex p-1 text-zinc-300 group-hover:text-zinc-600">
+                        <CaretRight size={14} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+export default function PatientDetailPage() {
+  return (
+    <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-white" />}>
+      <PatientDetail />
     </Suspense>
   );
 }

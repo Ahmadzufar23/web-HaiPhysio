@@ -59,6 +59,9 @@ bookingApi.interceptors.request.use(attachAuthToken, (error) => Promise.reject(e
 // --- Helper response/error ---
 // Semua endpoint backend balikin { success, data } / { success: false, error: { code, message, fields? } }.
 
+export const getApiErrorStatus = (error: unknown): number | undefined =>
+  (error as ApiErrorLike | undefined)?.response?.status;
+
 export const getApiErrorCode = (error: unknown): string | undefined =>
   (error as ApiErrorLike | undefined)?.response?.data?.error?.code;
 

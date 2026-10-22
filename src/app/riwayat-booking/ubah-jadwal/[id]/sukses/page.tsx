@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Copy, FileText, CheckCircle } from "@phosphor-icons/react";
 import { bookingService } from "@/services/bookingService";
+import type { BookingDetail } from "@/types/api.types";
 import { CLINIC_LOCATION } from "@/constants/data";
 
 export default function SuksesUbahJadwalPage() {
@@ -12,7 +13,7 @@ export default function SuksesUbahJadwalPage() {
   const router = useRouter();
   const bookingId = params.id as string;
 
-  const [booking, setBooking] = useState<any>(null);
+  const [booking, setBooking] = useState<BookingDetail | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -4,17 +4,18 @@ import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { bookingService } from "@/services/bookingService";
-import GridKalender from "@/components/shared/GridKalender";
+import GridKalender, { type CalendarSlot } from "@/components/shared/GridKalender";
 import { UserCircle, CaretLeft, CaretRight, Stethoscope } from "@phosphor-icons/react";
+import type { ApiSuccess, BookingDetail, PublicTherapist, ScheduleGridCell } from "@/types/api.types";
 
 export default function UbahJadwalPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
 
   // State penyimpan data dari database
-  const [bookingData, setBookingData] = useState<any>(null);
-  const [therapists, setTherapists] = useState<any[]>([]);
-  const [slots, setSlots] = useState<any[]>([]);
+  const [bookingData, setBookingData] = useState<BookingDetail | null>(null);
+  const [therapists, setTherapists] = useState<PublicTherapist[]>([]);
+  const [slots, setSlots] = useState<CalendarSlot[]>([]);
 
   // State untuk nyimpen pilihan dan inputan user
   const [selectedTerapis, setSelectedTerapis] = useState<string[]>([]);
@@ -52,7 +53,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
-    let startOffset = firstDay === 0 ? 6 : firstDay - 1;
+    const startOffset = firstDay === 0 ? 6 : firstDay - 1;
 
     const days = [];
     for (let i = startOffset - 1; i >= 0; i--) {
@@ -90,67 +91,40 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
     const fetchInitialData = async () => {
       setIsLoading(true);
       try {
-        const bookingRes = await bookingService.getDetailBooking(id);
-        const booking = bookingRes.data?.booking || bookingRes.booking;
+        const bookingRes: ApiSuccess<{ booking: BookingDetail }> = await bookingService.getDetailBooking(id);
+        const booking = bookingRes.data.booking;
         setBookingData(booking);
 
         // Layanan yang dipesan ada di booking.focusArea (bukan spesialisasi pertama terapis,
         // karena terapis bisa punya lebih dari satu spesialisasi)
-        const focusId = booking?.focusArea?.id || booking?.therapistSpecializations?.[0]?.id;
+        const focusId = booking.focusArea?.id || booking.therapistSpecializations[0]?.id;
 
         if (focusId) {
-          const therapistsRes = await bookingService.getTherapists(focusId);
-          const rawTherapists = therapistsRes.data?.therapists || therapistsRes.therapists || therapistsRes.data || [];
+          const therapistsRes: ApiSuccess<{ therapists: PublicTherapist[] }> = await bookingService.getTherapists(focusId);
+          const therapistList = therapistsRes.data.therapists;
+          setTherapists(therapistList);
 
-          const normalizedTherapists = rawTherapists.map((t: any) => ({
-            ...t,
-            id: t.id || t.therapist_id || t.therapistId,
-            fullName: t.fullName || t.full_name || t.name,
-            totalPatientsLabel: t.totalPatientsLabel || t.total_patients_label || "Fisioterapis"
-          }));
-
-          setTherapists(normalizedTherapists);
-
-          const therapistIds = normalizedTherapists.map((t: any) => t.id);
+          const therapistIds = therapistList.map((t) => t.id);
           setSelectedTerapis(therapistIds);
 
+          // Grid per terapis; sel dari API tidak membawa therapistId, jadi ditambahkan di sini
           const mondayDateString = currentWeekDays[0].fullDate;
-          const slotsPromises = therapistIds.map(async (tId: string) => {
-            const res = await bookingService.getScheduleGrid(tId, mondayDateString);
-            return { res, currentTherapistId: tId };
-          });
-
-          const slotsResponses = await Promise.all(slotsPromises);
-
-          let allSlots: any[] = [];
-          slotsResponses.forEach(({ res, currentTherapistId }) => {
-            const rawSlots = res.data?.slots || res.slots || res.data || [];
-            if (Array.isArray(rawSlots)) {
-              const mappedSlots = rawSlots.map((s: any) => {
-                const rawDate = s.slotDate || s.slot_date || s.date;
-                const rawTime = s.startTime || s.start_time || s.time || "";
-                const finalTherapistId = s.therapistId || s.therapist_id || currentTherapistId;
-                const rawStatus = s.cellStatus || s.cell_status || s.status || "Tersedia";
-                const dateObj = new Date(rawDate);
-                const dayStr = String(dateObj.getDate()).padStart(2, "0");
-                const timeStr = String(rawTime).substring(0, 5);
-
-                return {
-                  ...s,
-                  id: s.id || s.slotId || s.slot_id,
-                  slotDate: rawDate,
-                  startTime: rawTime,
-                  therapistId: finalTherapistId,
-                  date: dayStr,
-                  time: timeStr,
-                  // BE: cellStatus "Tersedia" | "Penuh" | "Tidak Praktik" + flag isPast (jam sudah lewat -> ditolak saat booking)
-                  status: s.isPast ? "lewat" : String(rawStatus).toLowerCase().replace(/\s+/g, "_")
-                };
-              });
-              allSlots = [...allSlots, ...mappedSlots];
-            }
-          });
-          setSlots(allSlots);
+          const grids = await Promise.all(
+            therapistIds.map(async (therapistId) => {
+              const res: ApiSuccess<{ slots: ScheduleGridCell[] }> = await bookingService.getScheduleGrid(therapistId, mondayDateString);
+              return res.data.slots.map(
+                (cell): CalendarSlot => ({
+                  id: cell.id,
+                  therapistId,
+                  slotDate: cell.slotDate,
+                  startTime: cell.startTime,
+                  // cellStatus "Tersedia" | "Penuh" | "Tidak Praktik"; jam lewat atau < H-1 tidak bisa dipilih
+                  status: cell.isPast || !cell.isBookable ? "lewat" : cell.cellStatus.toLowerCase().replace(/\s+/g, "_"),
+                })
+              );
+            })
+          );
+          setSlots(grids.flat());
         }
       } catch (error) {
         console.error("Gagal menarik data jadwal:", error);

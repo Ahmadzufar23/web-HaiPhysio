@@ -15,7 +15,7 @@ import {
 } from "@phosphor-icons/react";
 
 // Alamat klinik — satu sumber untuk konfirmasi booking, reschedule, & profil admin
-export const CLINIC_LOCATION = "Hai Physio – Klinik Pratama Condet Jaya, Jl. Condet Raya No. 18, Batu Ampar, Kramat Jati, Jakarta Timur 13520";
+export const CLINIC_LOCATION = "Hai Physio, Klinik Pratama Condet Jaya, Jl. Condet Raya No. 18, Batu Ampar, Kramat Jati, Jakarta Timur 13520";
 
 // 1. Data Fokus Layanan Kami (Dipakai di Beranda & Layanan)
 export const servicesData = [
@@ -55,21 +55,21 @@ export const servicesData = [
 export const reasonsData = [
   {
     id: "pemeriksaan",
-    title: "Pemeriksaan Detail & Personal",
-    desc: "Kami melakukan pencatatan data pemeriksaan yang menyeluruh, baik secara subjektif maupun objektif, untuk memahami akar masalah Anda secara tepat.",
-    imgSrc: "/reason-1.png" 
+    title: "Diperiksa dulu sebelum diterapi",
+    desc: "Terapis mencatat keluhan yang Anda rasakan dan hasil pemeriksaan gerak tubuh, supaya penanganan sesuai dengan penyebabnya.",
+    imgSrc: "/reason-1.png"
   },
   {
     id: "progres",
-    title: "Progres Terapi Terukur",
-    desc: "Evaluasi pemeriksaan terapi dilakukan berkala, sehingga kemajuan terapi Anda benar-benar terpantau dari waktu ke waktu.",
-    imgSrc: "/reason-2.png" 
+    title: "Perkembangan dicatat tiap sesi",
+    desc: "Hasil terapi dievaluasi berkala, jadi Anda dan terapis bisa melihat kemajuan dari sesi ke sesi.",
+    imgSrc: "/reason-2.png"
   },
   {
     id: "profesional",
-    title: "Ditangani Tenaga Profesional",
-    desc: "Terapis kami memiliki sertifikasi resmi dan berpengalaman dalam menangani berbagai kasus gangguan gerak serta fungsi tubuh dengan metode yang aman.",
-    imgSrc: "/reason-3.png" 
+    title: "Ditangani fisioterapis bersertifikat",
+    desc: "Terapis kami bersertifikasi resmi dan berpengalaman menangani gangguan gerak dan fungsi tubuh.",
+    imgSrc: "/reason-3.png"
   }
 ];
 

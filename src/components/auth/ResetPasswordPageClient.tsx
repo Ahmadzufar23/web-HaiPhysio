@@ -1,9 +1,10 @@
 "use client";
 
-import { authApi } from "@/app/utils/api";
+import { authApi, getApiErrorMessage } from "@/app/utils/api";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
@@ -20,27 +21,24 @@ type ResetErrors = {
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ResetPasswordPageClient() {
-  const [step, setStep] = useState<ResetStep>("request");
+  // ?token=xxx dari link di email → langsung tampilkan form sandi baru
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+  // ?aktivasi=1 = link dari email aktivasi akun yang dibuatkan klinik (walk-in)
+  const isActivation = Boolean(token) && searchParams.get("aktivasi") === "1";
+
+  const [step, setStep] = useState<ResetStep>(token ? "new-password" : "request");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState<ResetErrors>({});
 
-  // Deteksi token dari URL: jika ada ?token=xxx, langsung tampilkan form sandi baru
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token");
-      if (token) {
-        setStep("new-password");
-      }
-    }
-  }, []);
-
   const isCentered = step === "sent" || step === "success";
   
   // LOGIKA HEADLINE & DESCRIPTION (Otomatis berubah menyesuaikan step)
-  const headline = step === "new-password" 
+  const headline = isActivation
+    ? "Selamat Datang di Hai Physio"
+    : step === "new-password"
     ? "Kembali Amankan Akun Anda" 
     : "Atur Ulang Akses Akun Anda";
     
@@ -64,11 +62,10 @@ export default function ResetPasswordPageClient() {
       // Nembak API Lupa Password
       await authApi.post("/forgot-password", { email });
       setStep("sent");
-    } catch (error: any) {
+    } catch (error) {
       console.error("Gagal request reset password:", error);
       // Backend Hai Physio selalu sukses balik 200 demi keamanan, tapi jika error koneksi/rate limit:
-      const msg = error.response?.data?.error?.message || "Gagal mengirim permintaan. Coba lagi nanti.";
-      setErrors({ email: msg });
+      setErrors({ email: getApiErrorMessage(error, "Gagal mengirim permintaan. Coba lagi nanti.") });
     }
   }
 
@@ -93,9 +90,6 @@ export default function ResetPasswordPageClient() {
     }
     setErrors({});
     try {
-      // Ambil token dari query params URL jika user klik link dari email
-      const urlParams = new URLSearchParams(window.location.search);
-      const token = urlParams.get("token");
       if (!token) {
         setErrors({ password: "Tautan atur ulang tidak valid. Silakan minta tautan baru." });
         return;
@@ -106,9 +100,8 @@ export default function ResetPasswordPageClient() {
         newPasswordConfirmation: confirmPassword
       });
       setStep("success");
-    } catch (error: any) {
-      const msg = error.response?.data?.error?.message || "Gagal memperbarui kata sandi. Token mungkin sudah kedaluwarsa.";
-      setErrors({ password: msg });
+    } catch (error) {
+      setErrors({ password: getApiErrorMessage(error, "Gagal memperbarui kata sandi. Token mungkin sudah kedaluwarsa.") });
     }
   }
 
@@ -177,7 +170,12 @@ export default function ResetPasswordPageClient() {
         <>
           {/* PERBAIKAN: Potongan '<div classname=' yang salah sudah dihapus dari sini */}
           <div className="mb-7 space-y-2">
-            <h2 className="text-[28px] font-bold text-brand-900">Buat Kata Sandi Baru</h2>
+            <h2 className="text-[28px] font-bold text-brand-900">{isActivation ? "Aktifkan Akun Kamu" : "Buat Kata Sandi Baru"}</h2>
+            {isActivation && (
+              <p className="text-[15px] leading-6 text-slate-500">
+                Klinik sudah membuatkan akun untuk kamu. Buat kata sandi untuk masuk dan melihat riwayat terapi.
+              </p>
+            )}
           </div>
 
           <form className="space-y-5" noValidate onSubmit={submitNewPassword}>
@@ -204,7 +202,7 @@ export default function ResetPasswordPageClient() {
               onChange={(event) => setConfirmPassword(event.target.value)}
               error={errors.confirmPassword}
             />
-            <AuthButton>Konfirmasi Kata Sandi Baru</AuthButton>
+            <AuthButton>{isActivation ? "Aktifkan Akun" : "Konfirmasi Kata Sandi Baru"}</AuthButton>
           </form>
         </>
       ) : null}
@@ -214,10 +212,12 @@ export default function ResetPasswordPageClient() {
           <div className="h-36 w-36 rounded-[8px] bg-slate-200" aria-hidden="true" />
           <div className="space-y-3">
             <h2 className="text-[26px] font-bold leading-tight text-gold-700">
-              Sandi Baru Anda Berhasil Disimpan!
+              {isActivation ? "Akun Kamu Sudah Aktif!" : "Sandi Baru Anda Berhasil Disimpan!"}
             </h2>
             <p className="text-[15px] leading-7 text-[#707070]">
-              Sandi Anda sudah kami perbarui. Silakan login kembali dengan sandi baru Anda.
+              {isActivation
+                ? "Silakan masuk dengan email dan kata sandi yang baru kamu buat."
+                : "Sandi Anda sudah kami perbarui. Silakan login kembali dengan sandi baru Anda."}
             </p>
           </div>
           <Link

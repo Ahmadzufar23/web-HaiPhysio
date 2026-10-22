@@ -2,42 +2,39 @@
 
 import { useAuthStatus } from "@/hooks/useAuthStatus";
 import HomeHero from "@/components/home/HomeHero";
-import ConditionsMarquee from "@/components/home/ConditionsMarquee";
-import AboutSection from "@/components/home/AboutSection";
 import FokusLayanan from "@/components/home/FokusLayanan";
+import BrandStory from "@/components/marketing/BrandStory";
+import TerapisSection from "@/components/home/TerapisSection";
+import DigitalCare from "@/components/marketing/DigitalCare";
+import PricingSection from "@/components/marketing/PricingSection";
 import ProcessSection from "@/components/home/ProcessSection";
-import CtaBand from "@/components/home/CtaBand";
+import FaqSection from "@/components/home/FaqSection";
 import ContactSection from "@/components/home/ContactSection";
-import LocationMap from "@/components/home/LocationMap";
+import CtaBand from "@/components/home/CtaBand";
 
 export default function Beranda() {
   const { appointmentHref } = useAuthStatus();
 
   return (
     <div className="flex w-full flex-col">
-      {/* 1. HERO */}
+      {/* 1. Siapa kami + pita fakta klinik */}
       <HomeHero appointmentHref={appointmentHref} />
-
-      {/* 2. PITA KELUHAN YANG DITANGANI */}
-      <ConditionsMarquee />
-
-      {/* 3. KENAPA PILIH HAI PHYSIO */}
-      <AboutSection showMoreLink />
-
-      {/* 4. FOKUS LAYANAN */}
-      <FokusLayanan className="bg-brand-50/40 py-24 md:py-32" />
-
-      {/* 5. CARA BUAT JANJI */}
-      <ProcessSection />
-
-      {/* 6. AJAKAN */}
+      {/* 2. Layanan dengan foto */}
+      <FokusLayanan />
+      {/* 3. Identitas: logo, motto Efektif & Progresif */}
+      <BrandStory showMoreLink className="bg-zinc-50" />
+      {/* 4. Tim terapis (data asli dari backend) */}
+      <TerapisSection appointmentHref={appointmentHref} className="bg-white" />
+      {/* 5. Nilai tambah: pendampingan digital (mockup HP) */}
+      <DigitalCare appointmentHref={appointmentHref} />
+      {/* 6. Harga paket dari owner */}
+      <PricingSection appointmentHref={appointmentHref} />
+      {/* 7. Perjalanan pemulihan */}
+      <ProcessSection className="bg-zinc-50" />
+      {/* 8. FAQ, kontak, ajakan */}
+      <FaqSection />
+      <ContactSection className="bg-zinc-50" />
       <CtaBand appointmentHref={appointmentHref} />
-
-      {/* 7. HUBUNGI KAMI */}
-      <ContactSection subtitle="Jangan ragu untuk menghubungi kami jika ada pertanyaan lebih lanjut." />
-
-      {/* 8. LOKASI KLINIK */}
-      <LocationMap />
     </div>
   );
 }

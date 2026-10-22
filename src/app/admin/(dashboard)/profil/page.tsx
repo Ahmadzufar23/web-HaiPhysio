@@ -12,7 +12,7 @@ export default function AdminProfilePage() {
           <span>›</span>
           <span className="text-brand-900 font-medium">Profil</span>
         </div>
-        <h2 className="text-[28px] font-bold text-brand-900">Edit Profil Anda</h2>
+        <h2 className="text-[20px] font-bold text-brand-900">Edit Profil Anda</h2>
       </div>
 
       {/* --- Render Komponen Form yang Barusan Kita Bikin --- */}

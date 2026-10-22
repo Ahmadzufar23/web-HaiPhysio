@@ -14,6 +14,9 @@ const navItems = [
   { label: "Kontak Kami", path: "/kontak" },
 ];
 
+// Menu khusus pasien yang sudah login
+const memberNavItems = [{ label: "Video Terapi", path: "/video-terapi" }];
+
 export default function Navbar() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -60,23 +63,19 @@ export default function Navbar() {
 
   const solid = isScrolled || isMobileMenuOpen;
   const firstName = fullName?.split(" ")[0];
+  const items = isLoggedIn ? [...navItems, ...memberNavItems] : navItems;
+  const activeOf = (path: string) => (path === "/" ? pathname === "/" : pathname === path || pathname.startsWith(`${path}/`));
 
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-[background-color,box-shadow,backdrop-filter] duration-500 ${
-        solid
-          ? "bg-white/80 backdrop-blur-xl shadow-[0_1px_0_rgb(26_24_20/0.06),0_12px_32px_-18px_rgb(26_24_20/0.25)]"
-          : "bg-white"
-      }`}
-    >
+    <header className="sticky top-0 z-50 w-full px-3 pt-3 md:px-5 print:hidden">
       <nav
         aria-label="Navigasi utama"
-        className={`mx-auto flex w-full max-w-[1440px] items-center justify-between px-5 md:px-8 lg:px-10 xl:px-[80px] transition-[height] duration-500 ${
-          isScrolled ? "h-[72px] md:h-[78px]" : "h-[84px] md:h-[96px]"
+        className={`mx-auto flex h-[64px] w-full max-w-[1200px] items-center justify-between rounded-full border border-surface-2 bg-white/85 pl-5 pr-2.5 backdrop-blur-md transition-shadow duration-300 md:pl-6 ${
+          solid ? "shadow-[0_12px_32px_-16px_rgb(20_21_24/0.25)]" : ""
         }`}
       >
         {/* LOGO */}
-        <Link href="/" aria-label="Hai Physio — Beranda" className="relative flex w-[104px] md:w-[118px] items-center transition-transform duration-500 hover:scale-[1.03]">
+        <Link href="/" aria-label="Hai Physio, Beranda" className="relative flex w-[78px] items-center">
           <Image
             src="/fisio_nobg.png"
             alt="Logo Hai Physio"
@@ -88,16 +87,16 @@ export default function Navbar() {
         </Link>
 
         {/* MENU NAVIGASI DESKTOP */}
-        <ul className="hidden lg:flex items-center gap-1 rounded-full border border-brand-900/[0.07] bg-white/60 p-1.5">
-          {navItems.map((item) => {
-            const isActive = pathname === item.path;
+        <ul className="hidden lg:flex items-center gap-8">
+          {items.map((item) => {
+            const isActive = activeOf(item.path);
             return (
               <li key={item.path}>
                 <Link
                   href={item.path}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative block rounded-full px-5 py-2.5 text-[14.5px] font-medium transition-colors duration-300 ${
-                    isActive ? "bg-brand-900 text-white" : "text-brand-900/70 hover:bg-brand-50 hover:text-brand-900"
+                  className={`block py-2 text-[14px] transition-colors ${
+                    isActive ? "font-semibold text-brand-900" : "font-medium text-brand-900/60 hover:text-brand-900"
                   }`}
                 >
                   {item.label}
@@ -155,7 +154,7 @@ export default function Navbar() {
 
           <Link href={appointmentHref} className="btn btn-primary btn-sm">
             Buat Janji Temu
-            <ArrowRight size={16} weight="bold" className="btn-arrow" />
+            <ArrowRight size={16} weight="bold" />
           </Link>
         </div>
 
@@ -166,7 +165,7 @@ export default function Navbar() {
           aria-expanded={isMobileMenuOpen}
           aria-controls="mobile-menu"
           aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
-          className="flex h-11 w-11 items-center justify-center rounded-full border border-brand-900/10 text-brand-900 transition-colors hover:bg-brand-50 lg:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-surface text-brand-900 transition-colors hover:bg-surface-2 lg:hidden"
         >
           {isMobileMenuOpen ? <X size={22} weight="bold" /> : <List size={22} weight="bold" />}
         </button>
@@ -176,7 +175,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div
           id="mobile-menu"
-          className="absolute left-0 top-full z-50 flex max-h-[calc(100dvh-72px)] w-full flex-col overflow-y-auto border-t border-brand-900/[0.06] bg-white px-5 pb-8 pt-4 shadow-[0_24px_48px_-16px_rgb(26_24_20/0.3)] lg:hidden"
+          className="absolute inset-x-3 top-full z-50 mt-2 flex max-h-[calc(100dvh-96px)] flex-col overflow-y-auto rounded-[28px] border border-surface-2 bg-white px-5 pb-6 pt-4 shadow-[0_24px_48px_-16px_rgb(20_21_24/0.3)] md:inset-x-5 lg:hidden"
         >
           {isLoggedIn && (
             <div className="animate-menu-in mb-4 flex items-center gap-3 rounded-2xl border border-brand-100 bg-brand-50 p-3.5">
@@ -191,8 +190,8 @@ export default function Navbar() {
           )}
 
           <ul className="flex flex-col">
-            {navItems.map((item, i) => {
-              const isActive = pathname === item.path;
+            {items.map((item, i) => {
+              const isActive = activeOf(item.path);
               return (
                 <li key={item.path} className="animate-menu-in" style={{ animationDelay: `${60 + i * 50}ms` }}>
                   <Link
@@ -200,7 +199,7 @@ export default function Navbar() {
                     aria-current={isActive ? "page" : undefined}
                     className="flex items-center justify-between border-b border-brand-900/[0.06] py-4"
                   >
-                    <span className={`font-display text-[28px] leading-none ${isActive ? "italic text-gold-700" : "text-brand-900"}`}>
+                    <span className={`text-[17px] ${isActive ? "font-semibold text-gold-700" : "font-medium text-brand-900"}`}>
                       {item.label}
                     </span>
                     <ArrowRight size={18} className={isActive ? "text-gold-700" : "text-brand-900/30"} />
@@ -223,7 +222,7 @@ export default function Navbar() {
 
           <Link href={appointmentHref} className="animate-menu-in btn btn-primary mt-6 w-full" style={{ animationDelay: "320ms" }}>
             Buat Janji Temu
-            <ArrowRight size={18} weight="bold" className="btn-arrow" />
+            <ArrowRight size={18} weight="bold" />
           </Link>
         </div>
       )}
