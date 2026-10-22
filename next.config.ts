@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const isDev = process.env.NODE_ENV !== "production";
 const apiOrigin = new URL(process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").origin;
+// Supabase Storage (video terapi saat deploy): unggah langsung + putar lewat URL bertanda tangan
+const storageOrigin = process.env.NEXT_PUBLIC_STORAGE_URL ? new URL(process.env.NEXT_PUBLIC_STORAGE_URL).origin : "";
 
 // Content-Security-Policy: membatasi dari mana skrip, gambar, video, dan iframe
 // boleh dimuat. Token sesi tersimpan di localStorage, jadi CSP ini lapisan
@@ -14,8 +16,8 @@ const csp = [
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: blob: https://i.ytimg.com https://ui-avatars.com ${apiOrigin}`,
   "font-src 'self' data:",
-  `connect-src 'self' ${apiOrigin}${isDev ? " ws: http://localhost:*" : ""}`,
-  `media-src 'self' blob: ${apiOrigin}`,
+  `connect-src 'self' ${apiOrigin} ${storageOrigin}${isDev ? " ws: http://localhost:*" : ""}`,
+  `media-src 'self' blob: ${apiOrigin} ${storageOrigin}`,
   "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://maps.google.com https://www.google.com",
   "object-src 'none'",
   "base-uri 'self'",

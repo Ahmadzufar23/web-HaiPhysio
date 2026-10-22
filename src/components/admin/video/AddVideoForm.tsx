@@ -7,7 +7,9 @@ import type { StaffVideoFolder } from "@/types/api.types";
 import { formatDuration } from "@/components/video/VideoPlayer";
 import { btn, inputClass, Notice } from "@/components/admin/shared/AdminUI";
 
-const MAX_BYTES = 300 * 1024 * 1024;
+// Deploy (Supabase Storage free) dibatasi 50 MB per file; lokal 300 MB
+const MAX_MB = Number(process.env.NEXT_PUBLIC_VIDEO_MAX_MB) || 300;
+const MAX_BYTES = MAX_MB * 1024 * 1024;
 const ACCEPT = ["video/mp4", "video/webm"];
 
 // Sama dengan parseYoutubeId di backend (validators/videos.validator.ts)
@@ -113,7 +115,7 @@ export default function AddVideoForm({
     setError("");
     if (!f) return setFile(null);
     if (!ACCEPT.includes(f.type)) return setError("Format video harus MP4 atau WebM.");
-    if (f.size > MAX_BYTES) return setError("Ukuran video maksimal 300 MB.");
+    if (f.size > MAX_BYTES) return setError(`Ukuran video maksimal ${MAX_MB} MB.`);
     setFile({ file: f, ...(await readVideoMeta(f)) });
     if (!title) setTitle(f.name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " "));
   };
@@ -211,7 +213,7 @@ export default function AddVideoForm({
             ) : (
               <>
                 <span className="text-[13px] font-medium text-zinc-700">Pilih file video</span>
-                <span className="text-[11px] text-zinc-400">MP4 atau WebM, maksimal 300 MB</span>
+                <span className="text-[11px] text-zinc-400">MP4 atau WebM, maksimal {MAX_MB} MB</span>
               </>
             )}
           </label>
