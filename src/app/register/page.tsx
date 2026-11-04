@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import AuthShell from "@/components/auth/AuthShell";
 import RegisterForm from "@/components/auth/RegisterForm";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 export default function RegisterPage() {
+  const clinic = useClinic();
   return (
     <AuthShell
       headline="Pemulihan Tepat, Terapi Tanpa Ribet"
@@ -12,7 +15,7 @@ export default function RegisterPage() {
       <div className="mb-7 space-y-2">
         <h2 className="text-[28px] font-bold text-brand-900">Daftar Pasien</h2>
         <p className="text-[15px] leading-6 text-slate-500">
-          Lengkapi data berikut untuk membuat akun {CLINIC.brand}.
+          Lengkapi data berikut untuk membuat akun {clinic.brand}.
         </p>
       </div>
 

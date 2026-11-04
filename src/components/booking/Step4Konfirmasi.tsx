@@ -4,7 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { Check, Copy, WhatsappLogo } from "@phosphor-icons/react";
 import { bookingService, type CreateBookingPayload } from "@/services/bookingService";
-import { CLINIC_LOCATION } from "@/constants/data";
+import { clinicLocation } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 import { getApiErrorMessage } from "@/app/utils/api";
 import type { CreateBookingResult } from "@/types/api.types";
 import BodyMap from "@/components/bodymap/BodyMap";
@@ -29,6 +30,7 @@ const EditButton = ({ onClick }: { onClick: () => void }) => (
 );
 
 export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4Props) {
+  const clinic = useClinic();
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [created, setCreated] = useState<CreateBookingResult | null>(null);
@@ -100,7 +102,7 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
         )}
         {quotaLabel(draft) && <p className="mt-1 text-[12px] text-zinc-500">{quotaLabel(draft)}</p>}
       </InfoRow>
-      <InfoRow label="Lokasi">{draft.isHomeVisit ? patient?.address || "—" : CLINIC_LOCATION}</InfoRow>
+      <InfoRow label="Lokasi">{draft.isHomeVisit ? patient?.address || "—" : clinicLocation(clinic)}</InfoRow>
     </dl>
   );
 
@@ -117,7 +119,7 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
           complaint: formatPainNotes({ points: painPoints, text: patient?.complaint ?? "" }),
           schedules: draft.slots.map(slotLabel),
           referenceCodes: created.bookings.map((b) => b.bookingReferenceCode),
-        })
+        }, clinic.homeVisitWhatsapp)
       : null;
     return (
       <div className="flex flex-col gap-4">

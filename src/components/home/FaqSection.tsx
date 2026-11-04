@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import { CaretDown, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { mk, SectionTitle } from "@/components/marketing/ui";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 // Hanya jawaban yang faktanya sudah pasti (alur di sistem & info klinik).
 const faqs = [
@@ -22,10 +24,11 @@ const faqs = [
   { q: "Bisakah saya mengubah atau membatalkan jadwal?", a: "Bisa, paling lambat H-2 (dua hari sebelum jadwal) lewat menu Riwayat di akun Anda. Sesi yang dibatalkan kembali ke sisa paket. Booking baru bisa dibuat paling cepat H-1." },
   { q: "Apa itu program video dan check-in harian?", a: "Setelah sesi, terapis bisa mengirim video latihan beserta dosisnya ke akun Anda. Setiap kali video ditonton sampai habis, check-in hari itu tercatat dan terapis bisa melihat konsistensi latihan Anda." },
   { q: "Saya belum yakin keluhan saya termasuk layanan yang mana.", a: "Ceritakan keluhan Anda lewat WhatsApp pada jam operasional. Kami bantu arahkan ke layanan yang sesuai sebelum Anda booking." },
-  { q: "Kapan klinik buka?", a: `${CLINIC.hours}. ${CLINIC.hoursNote}. Alamat: ${CLINIC.address}.` },
 ];
 
 export default function FaqSection({ className = "bg-white" }: { className?: string }) {
+  const clinic = useClinic();
+  const allFaqs = [...faqs, { q: "Kapan klinik buka?", a: `${clinic.hours}. ${clinic.hoursNote}. Alamat: ${clinic.address}.` }];
   return (
     <section className={`${mk.section} ${className}`}>
       <div className={`${mk.container} grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16`}>
@@ -34,7 +37,7 @@ export default function FaqSection({ className = "bg-white" }: { className?: str
           <div className={`${mk.card} flex flex-col items-start gap-3 p-5`}>
             <p className="text-[14px] font-semibold text-zinc-900">Pertanyaan Anda tidak ada di sini?</p>
             <p className="text-[13px] text-zinc-500">Tim kami membalas WhatsApp pada jam operasional.</p>
-            <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
+            <a href={clinic.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
               <WhatsappLogo size={16} weight="fill" className="text-emerald-600" />
               Chat via WhatsApp
             </a>
@@ -42,7 +45,7 @@ export default function FaqSection({ className = "bg-white" }: { className?: str
         </div>
 
         <ul className="divide-y divide-zinc-200 border-y border-zinc-200">
-          {faqs.map(({ q, a }) => (
+          {allFaqs.map(({ q, a }) => (
             <li key={q}>
               <details className="group [&_summary::-webkit-details-marker]:hidden">
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-[15px] font-medium text-zinc-900">

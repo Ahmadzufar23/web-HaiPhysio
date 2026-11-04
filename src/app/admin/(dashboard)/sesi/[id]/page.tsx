@@ -4,7 +4,10 @@ import { use, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "@phosphor-icons/react";
 import { clinicService } from "@/services/clinicService";
-import { getApiErrorMessage } from "@/app/utils/api";
+import SessionPaymentPanel from "@/components/admin/sesi/SessionPaymentPanel";
+
+const PAYMENT_POLL_MS = 5000;
+import { getApiErrorCode, getApiErrorMessage } from "@/app/utils/api";
 import type { BodyPoint, SessionDetail } from "@/types/api.types";
 import { parsePainNotes } from "@/lib/painNotes";
 import { formatRupiah } from "@/lib/format";
@@ -29,6 +32,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [cashOnly, setCashOnly] = useState(false);
 
   const load = useCallback(
     () =>
@@ -65,14 +69,37 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  // Pembayaran masuk lewat webhook, jadi halaman mengecek statusnya berkala selagi menunggu
+  const isWaitingPayment = data?.session.status === "Berlangsung" && data.session.payment?.status === "pending";
+  useEffect(() => {
+    if (!isWaitingPayment) return;
+    const timer = setInterval(() => void load(), PAYMENT_POLL_MS);
+    return () => clearInterval(timer);
+  }, [isWaitingPayment, load]);
+
   const handleStart = (therapistId: string) =>
     run(async () => {
       await clinicService.startSession(id, therapistId);
       return { tone: "ok", text: "Sesi dimulai. Absensi tercatat setelah sesi Selesai." };
     });
 
+  // Selesai = minta pembayaran online. Bila tidak bisa, opsi tunai tetap muncul.
   const handleFinish = () =>
     run(async () => {
+      setCashOnly(false);
+      try {
+        await clinicService.createSessionPayment(id);
+      } catch (error) {
+        const code = getApiErrorCode(error);
+        if (code === "PAYMENT_AMOUNT_MISSING" || code === "PAYMENT_GATEWAY_ERROR") setCashOnly(true);
+        throw error;
+      }
+      return { tone: "ok", text: "Link pembayaran siap. Minta pasien membayar untuk menyelesaikan sesi." };
+    });
+
+  const handlePayCash = () =>
+    run(async () => {
+      setCashOnly(false);
       const res = await clinicService.finishSession(id);
       const { recordedAmount, priceMissing } = res.data.session;
       // Terapis tidak menerima nominal dari backend
@@ -154,6 +181,11 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
             showPrices={user.role === "owner"}
             currentUserId={user.id}
           />
+
+          {data.session.status === "Berlangsung" && (isWaitingPayment || cashOnly) && (
+            <SessionPaymentPanel payment={data.session.payment} busy={busy} onPayCash={handlePayCash} />
+          )}
+          {data.session.status === "Selesai" && data.session.payment?.status === "paid" && <Notice tone="info">Pembayaran online diterima.</Notice>}
 
           <AssessmentEditor
             key={`${data.session.status}-${data.assessment?.updatedAt ?? "baru"}`}

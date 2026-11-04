@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Check, House, WhatsappLogo } from "@phosphor-icons/react";
 import { clinicService } from "@/services/clinicService";
 import { formatRupiah } from "@/lib/format";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 import type { TherapyPackage } from "@/types/api.types";
 import { mk, SectionTitle } from "./ui";
 
@@ -14,6 +14,7 @@ const INCLUDED = ["Asesmen & evaluasi tiap sesi", "Rekam medis digital per kunju
 
 /** Harga paket sesuai tarif yang diatur owner (GET /api/packages). Harga kosong = belum diumumkan. */
 export default function PricingSection({ appointmentHref, className = "bg-white" }: { appointmentHref: string; className?: string }) {
+  const clinic = useClinic();
   const [packages, setPackages] = useState<TherapyPackage[] | null>(null);
 
   useEffect(() => {
@@ -115,7 +116,7 @@ export default function PricingSection({ appointmentHref, className = "bg-white"
                   <p className="text-[15px] font-semibold text-zinc-900">
                     {homecare.pricePerSession !== null ? `Mulai ${formatRupiah(homecare.pricePerSession)} / sesi` : "Menyesuaikan jarak"}
                   </p>
-                  <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
+                  <a href={clinic.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
                     <WhatsappLogo size={16} weight="fill" className="text-emerald-600" />
                     Tanya jadwal homecare
                   </a>

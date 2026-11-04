@@ -1,7 +1,7 @@
 "use client";
 
 import { X } from "@phosphor-icons/react";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 type AuthPolicyModalProps = {
   title: string;
@@ -14,6 +14,7 @@ export default function AuthPolicyModal({
   open,
   onClose,
 }: AuthPolicyModalProps) {
+  const clinic = useClinic();
   if (!open) {
     return null;
   }
@@ -63,7 +64,7 @@ export default function AuthPolicyModal({
             <>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">1. Layanan & Reservasi Janji Temu</h4>
-                <p>{CLINIC.brand} menyediakan layanan fisioterapi profesional. Reservasi janji temu wajib dilakukan dengan memilih jadwal slot terapis yang tersedia secara akurat.</p>
+                <p>{clinic.brand} menyediakan layanan fisioterapi profesional. Reservasi janji temu wajib dilakukan dengan memilih jadwal slot terapis yang tersedia secara akurat.</p>
               </div>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">2. Ketentuan Perubahan & Pembatalan Jadwal</h4>
@@ -82,7 +83,7 @@ export default function AuthPolicyModal({
             <>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">1. Pengumpulan Informasi</h4>
-                <p>Kami mengumpulkan data pribadi Anda seperti nama, nomor telepon, email, tanggal lahir, dan catatan keluhan medis saat Anda mendaftar dan melakukan reservasi di {CLINIC.brand}.</p>
+                <p>Kami mengumpulkan data pribadi Anda seperti nama, nomor telepon, email, tanggal lahir, dan catatan keluhan medis saat Anda mendaftar dan melakukan reservasi di {clinic.brand}.</p>
               </div>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">2. Penggunaan Data Pribadi</h4>
@@ -94,7 +95,7 @@ export default function AuthPolicyModal({
               </div>
               <div>
                 <h4 className="font-bold text-brand-900 mb-1">4. Hak Pasien</h4>
-                <p>Anda berhak memperbarui data profil Anda kapan saja atau meminta penghapusan akun melalui kontak layanan bantuan resmi {CLINIC.brand}.</p>
+                <p>Anda berhak memperbarui data profil Anda kapan saja atau meminta penghapusan akun melalui kontak layanan bantuan resmi {clinic.brand}.</p>
               </div>
             </>
           )}

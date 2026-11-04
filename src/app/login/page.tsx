@@ -1,13 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 export default function LoginPage() {
+  const clinic = useClinic();
   return (
     <AuthShell
       headline="Kembali Bergerak Bebas Tanpa Nyeri"
-      description={`Masuk untuk melihat jadwal terapi, riwayat kunjungan, dan perkembangan pemulihan Anda bersama ${CLINIC.brand}.`}
+      description={`Masuk untuk melihat jadwal terapi, riwayat kunjungan, dan perkembangan pemulihan Anda${clinic.brand ? ` bersama ${clinic.brand}` : ""}.`}
     >
       <div className="mb-7 space-y-2">
         <h2 className="text-[28px] font-bold text-brand-900">Selamat Datang</h2>

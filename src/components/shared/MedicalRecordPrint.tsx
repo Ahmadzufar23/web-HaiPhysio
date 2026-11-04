@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Printer } from "@phosphor-icons/react";
 import type { MedicalRecordReport } from "@/types/api.types";
 import BodyMap from "@/components/bodymap/BodyMap";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 import { PLATFORM } from "@/constants/platform";
 import { genderLabel } from "@/constants/patient";
 import { painLabel } from "@/constants/painScale";
@@ -45,6 +45,7 @@ const ageOf = (dob: string | null) => {
  * "Simpan sebagai PDF" untuk berkas PDF. Kerangka halaman (navbar, sidebar) disembunyikan saat cetak.
  */
 export default function MedicalRecordPrint({ report }: { report: MedicalRecordReport }) {
+  const clinic = useClinic();
   const { patient, medicalRecord: record, visits, progress } = report;
   const age = ageOf(patient.dateOfBirth);
   const patientPoints = record.bodyPoints.filter((b) => b.source === "patient").map((b) => b.regionId);
@@ -69,9 +70,9 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
           <div className="flex items-center gap-3">
             <Image src="/fisio_nobg.png" alt="" width={44} height={44} className="h-11 w-11 object-contain" />
             <div>
-              <p className="text-[16px] font-bold tracking-tight">{CLINIC.brand}</p>
-              <p className="text-[11px] text-zinc-600">{CLINIC.name}</p>
-              <p className="max-w-[360px] text-[11px] text-zinc-600">{CLINIC.address}</p>
+              <p className="text-[16px] font-bold tracking-tight">{clinic.brand}</p>
+              <p className="text-[11px] text-zinc-600">{clinic.name}</p>
+              <p className="max-w-[360px] text-[11px] text-zinc-600">{clinic.address}</p>
             </div>
           </div>
           <div className="text-right">

@@ -56,6 +56,35 @@ const attachAuthToken = (config: InternalAxiosRequestConfig) => {
 authApi.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
 bookingApi.interceptors.request.use(attachAuthToken, (error) => Promise.reject(error));
 
+// --- Klinik aktif ---
+// Disimpan saat pengunjung membuka link /k/<slug>. Backend memakainya untuk route publik;
+// akun yang login tetap memakai klinik akunnya sendiri, apa pun isi header ini.
+const CLINIC_SLUG_KEY = "clinic_slug";
+
+export const getClinicSlug = () => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem(CLINIC_SLUG_KEY);
+};
+
+export const setClinicSlug = (slug: string) => {
+  if (typeof window !== "undefined") localStorage.setItem(CLINIC_SLUG_KEY, slug);
+};
+
+export const clearClinicSlug = () => {
+  if (typeof window !== "undefined") localStorage.removeItem(CLINIC_SLUG_KEY);
+};
+
+const attachClinicSlug = (config: InternalAxiosRequestConfig) => {
+  const slug = getClinicSlug();
+  if (slug) {
+    config.headers["X-Clinic-Slug"] = slug;
+  }
+  return config;
+};
+
+authApi.interceptors.request.use(attachClinicSlug, (error) => Promise.reject(error));
+bookingApi.interceptors.request.use(attachClinicSlug, (error) => Promise.reject(error));
+
 // --- Helper response/error ---
 // Semua endpoint backend balikin { success, data } / { success: false, error: { code, message, fields? } }.
 

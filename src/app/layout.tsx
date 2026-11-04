@@ -3,7 +3,8 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { CLINIC } from "@/constants/clinic";
+import ClinicProvider from "@/components/shared/ClinicProvider";
+import { PLATFORM } from "@/constants/platform";
 
 // Plus Jakarta Sans: satu-satunya huruf (dirancang di Jakarta, sangat terbaca untuk semua usia).
 const jakarta = Plus_Jakarta_Sans({
@@ -13,11 +14,10 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: `${CLINIC.brand} | Klinik Fisioterapi Efektif & Progresif`,
-  description: `Klinik Fisioterapi ${CLINIC.brand} terpercaya di Jakarta Timur. Melayani fisioterapi muskuloskeletal, neuro, dan olahraga untuk pemulihan yang efektif dan progresif.`,
-  icons: {
-    icon: "/fisio_nobg.png", // Ini bakal ngubah ikon bola dunia bawaan Vercel jadi logo klinik
-  },
+  // Nama klinik dipasang ClinicProvider setelah kliniknya diketahui
+  title: `Klinik Fisioterapi | ${PLATFORM.name}`,
+  description: "Booking fisioterapi, rekam medis, dan program latihan dalam satu tempat.",
+  icons: { icon: PLATFORM.logo },
 };
 
 export const viewport: Viewport = {
@@ -32,11 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
       </head>
       <body className="flex flex-col h-full min-h-[100dvh] overflow-x-hidden bg-white font-sans text-brand-900">
-        <Navbar />
-        <main className="flex-1 flex flex-col w-full">
-          {children}
-        </main>
-        <Footer />
+        <ClinicProvider>
+          <Navbar />
+          <main className="flex-1 flex flex-col w-full">
+            {children}
+          </main>
+          <Footer />
+        </ClinicProvider>
       </body>
     </html>
   );

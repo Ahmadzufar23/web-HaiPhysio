@@ -1,9 +1,11 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "@phosphor-icons/react/dist/ssr";
 import BodyMap from "@/components/bodymap/BodyMap";
 import { Eyebrow, mk } from "./ui";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 // Fitur di sini semuanya sudah berjalan di sistem. Mockup HP meniru langkah peta nyeri di /booking.
 const POINTS = [
@@ -21,6 +23,7 @@ const PAIN_LABELS = ["Bahu kanan", "Punggung bawah kanan", "Lutut kiri"];
  * saat booking. Ilustrasi statis memakai komponen BodyMap yang sama dengan sistem.
  */
 function PhoneMockup() {
+  const clinic = useClinic();
   return (
     <div className="relative mx-auto h-[600px] w-[292px] sm:h-[640px] sm:w-[311px]" aria-hidden>
       {/* Tombol samping */}
@@ -52,7 +55,7 @@ function PhoneMockup() {
             {/* Header aplikasi */}
             <div className="flex items-center gap-2 px-5 pb-3 pt-1">
               <Image src="/brand/logo-mark.png" alt="" width={18} height={20} className="h-auto w-[15px]" />
-              <span className="text-[12px] font-semibold text-zinc-900">{CLINIC.brand}</span>
+              <span className="text-[12px] font-semibold text-zinc-900">{clinic.brand}</span>
               <span className="ml-auto text-[10px] text-zinc-400">Langkah 3 dari 4</span>
             </div>
             <div className="px-5">
@@ -103,6 +106,7 @@ function PhoneMockup() {
 
 /** Nilai tambah sistem digital, diringkas dalam satu section (company profile tetap fokus ke klinik). */
 export default function DigitalCare({ appointmentHref }: { appointmentHref: string }) {
+  const clinic = useClinic();
   return (
     <section className={`${mk.section} relative overflow-hidden bg-zinc-950`}>
       <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-brand-500/10 blur-3xl" aria-hidden />
@@ -112,7 +116,7 @@ export default function DigitalCare({ appointmentHref }: { appointmentHref: stri
             <Eyebrow tone="dark">Pendampingan digital</Eyebrow>
             <h2 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.025em] text-white md:text-[36px]">Terapis Anda tetap mendampingi, bahkan saat Anda di rumah.</h2>
             <p className="max-w-[520px] text-[15px] leading-relaxed text-white/60">
-              Pasien {CLINIC.brand} mendapat akun pribadi. Jadwal, catatan terapi, dan program latihan tersimpan di satu tempat, jadi pemulihan tidak berhenti di ruang praktik.
+              Pasien {clinic.brand} mendapat akun pribadi. Jadwal, catatan terapi, dan program latihan tersimpan di satu tempat, jadi pemulihan tidak berhenti di ruang praktik.
             </p>
           </div>
 

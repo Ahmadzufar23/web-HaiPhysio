@@ -239,9 +239,17 @@ export interface MedicalRecordReport {
 }
 
 // GET /api/admin/sessions/:id
+export interface SessionPayment {
+  status: "pending" | "paid" | "expired" | "cancelled";
+  invoiceUrl: string | null;
+  /** Hanya untuk owner; terapis tidak melihat nominal */
+  amount: number | null;
+}
+
 export interface SessionDetail {
   session: {
     id: string;
+    payment: SessionPayment | null;
     referenceCode: string;
     status: BookingStatus;
     date: string;
@@ -355,10 +363,10 @@ export interface VideoFolder {
 }
 
 export interface StaffVideoFolder extends Omit<VideoFolder, "videoCount" | "coverUrl"> {
-  videos: (TherapyVideo & { fileSize: number | null; activePatients: number })[];
+  videos: (TherapyVideo & { addedByName: string | null; activePatients: number })[];
 }
 
-export type VideoPlayback = { type: "youtube"; youtubeId: string } | { type: "file"; url: string; mimeType: string | null };
+export type VideoPlayback = { type: "youtube"; youtubeId: string };
 
 export interface VideoDetail {
   video: TherapyVideo;

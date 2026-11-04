@@ -1,4 +1,3 @@
-import axios from "axios";
 import { bookingApi } from "@/app/utils/api";
 import type { ApiSuccess, StaffVideoFolder, StaffVideoProgram, TherapyVideo, VideoDetail, VideoFolder, VideoProgram } from "@/types/api.types";
 
@@ -32,30 +31,10 @@ export const videoService = {
   updateFolder: async (id: string, data: { name?: string; description?: string }) => (await bookingApi.patch(`/admin/video-folders/${id}`, data)).data,
   deleteFolder: async (id: string) => (await bookingApi.delete(`/admin/video-folders/${id}`)).data,
 
-  createVideo: async (
-    data: { folder_id: string; title: string; description?: string } & ({ source: "youtube"; youtube_url: string } | { source: "upload"; duration_seconds?: number; poster?: string })
-  ): Promise<ApiSuccess<{ video: TherapyVideo }>> => (await bookingApi.post("/admin/videos", data)).data,
+  createVideo: async (data: { folder_id: string; title: string; description?: string; youtube_url: string }): Promise<ApiSuccess<{ video: TherapyVideo }>> =>
+    (await bookingApi.post("/admin/videos", data)).data,
 
-  // Server memilih cara unggah: langsung ke Supabase Storage (deploy) atau body mentah ke API (lokal).
-  // Body mentah supaya file besar tidak perlu di-encode; progres untuk bar unggah.
-  uploadVideoFile: async (id: string, file: File, onProgress: (ratio: number) => void): Promise<ApiSuccess<{ video: TherapyVideo }>> => {
-    const progress = { timeout: 0, onUploadProgress: (e: { loaded: number; total?: number }) => e.total && onProgress(e.loaded / e.total) };
-    const { upload } = (
-      await bookingApi.post<ApiSuccess<{ upload: { mode: "direct" | "server"; uploadUrl?: string; fileName?: string } }>>(`/admin/videos/${id}/upload`, {
-        mime_type: file.type,
-        size: file.size,
-      })
-    ).data.data;
-
-    if (upload.mode === "server") {
-      return (await bookingApi.put(`/admin/videos/${id}/file`, file, { headers: { "Content-Type": file.type }, ...progress })).data;
-    }
-    // axios polos: URL bertanda tangan Storage tidak boleh ikut membawa token sesi API
-    await axios.put(upload.uploadUrl!, file, { headers: { "Content-Type": file.type, "x-upsert": "false" }, ...progress });
-    return (await bookingApi.post(`/admin/videos/${id}/upload/complete`, { file_name: upload.fileName })).data;
-  },
-
-  updateVideo: async (id: string, data: { folder_id?: string; title?: string; description?: string; is_active?: boolean }) =>
+  updateVideo: async (id: string, data: { folder_id?: string; title?: string; description?: string; is_active?: boolean; youtube_url?: string }) =>
     (await bookingApi.patch(`/admin/videos/${id}`, data)).data,
 
   deleteVideo: async (id: string): Promise<ApiSuccess<{ deleted: boolean; deactivated: boolean }>> => (await bookingApi.delete(`/admin/videos/${id}`)).data,

@@ -1,10 +1,12 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, MapPin, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import OpenStatus from "@/components/home/OpenStatus";
 import LogoWatermark from "@/components/shared/LogoWatermark";
 import { BrandPhoto, mk } from "@/components/marketing/ui";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 const FACTS = [
   { value: "1985", label: "Berdiri sebagai Klinik Pratama Condet Jaya" },
@@ -14,6 +16,7 @@ const FACTS = [
 ];
 
 export default function HomeHero({ appointmentHref }: { appointmentHref: string }) {
+  const clinic = useClinic();
   return (
     <section className="relative w-full overflow-hidden bg-white">
       <LogoWatermark className="-left-28 -top-10 w-[460px]" opacity={0.05} rotate={-12} />
@@ -27,7 +30,7 @@ export default function HomeHero({ appointmentHref }: { appointmentHref: string 
             Efektif & Progresif
           </span>
 
-          <h1 className="text-balance text-[40px] font-semibold leading-[1.06] tracking-[-0.035em] text-zinc-900 sm:text-[50px] lg:text-[58px]">Bergerak lagi tanpa nyeri, bersama {CLINIC.brand}.</h1>
+          <h1 className="text-balance text-[40px] font-semibold leading-[1.06] tracking-[-0.035em] text-zinc-900 sm:text-[50px] lg:text-[58px]">Bergerak lagi tanpa nyeri, bersama {clinic.brand}.</h1>
 
           <p className="max-w-[500px] text-[16px] leading-relaxed text-zinc-500 md:text-[17px]">
             Klinik fisioterapi di Condet, Jakarta Timur, untuk nyeri otot dan sendi, gangguan saraf seperti pasca stroke, serta cedera olahraga. Ditangani fisioterapis bersertifikat, dipantau dari sesi ke sesi.
@@ -38,7 +41,7 @@ export default function HomeHero({ appointmentHref }: { appointmentHref: string 
               Buat janji temu
               <ArrowRight size={15} weight="bold" />
             </Link>
-            <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
+            <a href={clinic.whatsapp.href} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
               <WhatsappLogo size={16} weight="fill" className="text-emerald-600" />
               Konsultasi via WhatsApp
             </a>
@@ -48,20 +51,20 @@ export default function HomeHero({ appointmentHref }: { appointmentHref: string 
             <OpenStatus />
             <span className="flex items-start gap-2">
               <MapPin size={15} className="mt-0.5 shrink-0 text-zinc-400" />
-              {CLINIC.address}
+              {clinic.address}
             </span>
           </div>
         </div>
 
         <div className="relative mr-4 sm:mr-5">
-          <BrandPhoto src="/hero-bg.png" alt={`Fisioterapis ${CLINIC.brand} menjelaskan hasil pemeriksaan kepada pasien`} ratio="aspect-[5/4]" priority />
+          <BrandPhoto src="/hero-bg.png" alt={`Fisioterapis ${clinic.brand} menjelaskan hasil pemeriksaan kepada pasien`} ratio="aspect-[5/4]" priority />
           <div className="absolute -left-3 bottom-8 flex items-center gap-3 rounded-2xl bg-white py-3 pl-3 pr-5 shadow-[0_20px_40px_-20px_rgb(24_24_27/0.35)] sm:-left-8">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950">
               <Image src="/brand/logo-mark.png" alt="" width={24} height={27} className="h-auto w-[22px]" />
             </span>
             <span>
               <span className="block text-[14px] font-semibold text-zinc-900">Sejak 1985</span>
-              <span className="block text-[12px] text-zinc-500">Bagian dari {CLINIC.name}</span>
+              <span className="block text-[12px] text-zinc-500">Bagian dari {clinic.name}</span>
             </span>
           </div>
         </div>

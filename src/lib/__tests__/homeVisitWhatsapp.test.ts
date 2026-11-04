@@ -30,7 +30,7 @@ describe("homeVisitWhatsapp", () => {
   });
 
   it("mengarah ke nomor WhatsApp Homecare dengan pesan ter-encode", () => {
-    const url = new URL(homeVisitWhatsappUrl(message));
+    const url = new URL(homeVisitWhatsappUrl(message, "6281292197787"));
     expect(url.origin + url.pathname).toBe("https://wa.me/6281292197787");
     expect(url.searchParams.get("text")).toBe(homeVisitMessage(message));
   });

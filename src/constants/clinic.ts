@@ -1,20 +1,75 @@
-// Info kontak & lokasi klinik — satu sumber untuk Beranda, Kontak, dan Footer.
-export const CLINIC = {
-  // Nama yang dilihat pasien (merek klinik). Nama sistem ada di constants/platform.ts.
-  brand: "Hai Physio",
-  name: "Klinik Pratama Condet Jaya",
-  address: "Jl. Condet Raya No. 18, Batu Ampar, Kramat Jati, Jakarta Timur 13520",
-  hours: "Senin sampai Sabtu, 08.00 sampai 16.00 WIB",
-  hoursNote: "Minggu tutup",
-  whatsapp: { label: "+62 898-3050-149", href: "https://wa.me/628983050149" },
-  // Tujuan WhatsApp setelah booking Homecare (harga & jadwal kunjungan dibahas di sana).
-  // Format internasional tanpa "+", dipakai di https://wa.me/<nomor>.
-  homeVisitWhatsapp: "6281292197787",
-  email: { label: "haiphysio@gmail.com", href: "mailto:haiphysio@gmail.com" },
-  instagram: { label: "@fisioterapi_jakarta_timur", href: "https://instagram.com/fisioterapi_jakarta_timur" },
+// Identitas klinik datang dari API (GET /api/clinics/:slug) dan dipakai lewat useClinic().
+// Nama sistem ada di constants/platform.ts.
+export type PublicClinic = {
+  slug: string;
+  brand: string;
+  name: string;
+  address: string | null;
+  hours: string | null;
+  hoursNote: string | null;
+  whatsapp: string | null;
+  homeVisitWhatsapp: string | null;
+  email: string | null;
+  instagram: string | null;
 };
 
-const MAPS_QUERY = "Klinik%20Fisioterapi%20Hai%20Physio";
-export const MAPS_EMBED_URL = `https://maps.google.com/maps?q=${MAPS_QUERY}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-// Halaman tempat di Google Maps: petunjuk arah sekaligus ulasan pasien
-export const MAPS_PLACE_URL = `https://www.google.com/maps/search/?api=1&query=${MAPS_QUERY}`;
+type ContactLink = { label: string; href: string };
+
+export type ClinicView = {
+  slug: string;
+  brand: string;
+  name: string;
+  address: string;
+  hours: string;
+  hoursNote: string;
+  homeVisitWhatsapp: string;
+  whatsapp: ContactLink;
+  email: ContactLink;
+  instagram: ContactLink;
+  mapsEmbedUrl: string;
+  mapsPlaceUrl: string;
+};
+
+// Nilai sementara selama data klinik dimuat
+export const EMPTY_CLINIC: ClinicView = {
+  slug: "",
+  brand: "",
+  name: "",
+  address: "",
+  hours: "",
+  hoursNote: "",
+  homeVisitWhatsapp: "",
+  whatsapp: { label: "", href: "#" },
+  email: { label: "", href: "#" },
+  instagram: { label: "", href: "#" },
+  mapsEmbedUrl: "",
+  mapsPlaceUrl: "#",
+};
+
+// 628983050149 -> +62 898-3050-149
+export function formatWhatsappLabel(number: string) {
+  const match = number.match(/^62(\d{3})(\d{4})(\d+)$/);
+  return match ? `+62 ${match[1]}-${match[2]}-${match[3]}` : `+${number}`;
+}
+
+export function toClinicView(clinic: PublicClinic): ClinicView {
+  const mapsQuery = encodeURIComponent(`Klinik Fisioterapi ${clinic.brand}`);
+  return {
+    slug: clinic.slug,
+    brand: clinic.brand,
+    name: clinic.name,
+    address: clinic.address ?? "",
+    hours: clinic.hours ?? "",
+    hoursNote: clinic.hoursNote ?? "",
+    homeVisitWhatsapp: clinic.homeVisitWhatsapp ?? clinic.whatsapp ?? "",
+    whatsapp: clinic.whatsapp ? { label: formatWhatsappLabel(clinic.whatsapp), href: `https://wa.me/${clinic.whatsapp}` } : EMPTY_CLINIC.whatsapp,
+    email: clinic.email ? { label: clinic.email, href: `mailto:${clinic.email}` } : EMPTY_CLINIC.email,
+    instagram: clinic.instagram ? { label: `@${clinic.instagram}`, href: `https://instagram.com/${clinic.instagram}` } : EMPTY_CLINIC.instagram,
+    mapsEmbedUrl: `https://maps.google.com/maps?q=${mapsQuery}&t=&z=15&ie=UTF8&iwloc=&output=embed`,
+    // Halaman tempat di Google Maps: petunjuk arah sekaligus ulasan pasien
+    mapsPlaceUrl: `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`,
+  };
+}
+
+// Alamat klinik untuk konfirmasi booking dan reschedule
+export const clinicLocation = (clinic: ClinicView) => [clinic.brand, clinic.name, clinic.address].filter(Boolean).join(", ");

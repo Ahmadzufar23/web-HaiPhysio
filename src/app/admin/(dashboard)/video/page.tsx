@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "@phosphor-icons/react";
 import { videoService } from "@/services/videoService";
 import { getApiErrorMessage } from "@/app/utils/api";
 import type { StaffVideoFolder } from "@/types/api.types";
 import { btn, EmptyState, inputClass, Notice, PageHeader, Panel, tableHead } from "@/components/admin/shared/AdminUI";
-import AddVideoForm from "@/components/admin/video/AddVideoForm";
+import AddVideoForm, { youtubeIdOf } from "@/components/admin/video/AddVideoForm";
 import { VideoThumb } from "@/components/video/VideoUI";
 import { formatDuration } from "@/components/video/VideoPlayer";
 
@@ -22,9 +22,9 @@ export default function AdminVideoPage() {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
-  const uploadRef = useRef<HTMLInputElement>(null);
-  const [reuploadId, setReuploadId] = useState<string | null>(null);
-  const [reuploadProgress, setReuploadProgress] = useState<number | null>(null);
+  // Video unggahan lama yang sedang diganti dengan link YouTube
+  const [replacingId, setReplacingId] = useState<string | null>(null);
+  const [replacementUrl, setReplacementUrl] = useState("");
 
   const load = () =>
     videoService
@@ -81,13 +81,14 @@ export default function AdminVideoPage() {
       setInfo(res.data.deactivated ? `"${title}" pernah dikirim ke pasien, jadi hanya dinonaktifkan.` : `"${title}" dihapus.`);
     });
 
-  const reupload = async (file: File | undefined) => {
-    const id = reuploadId;
-    if (!file || !id) return;
-    setReuploadProgress(0);
-    await run(id, () => videoService.uploadVideoFile(id, file, setReuploadProgress), "File video berhasil diunggah.");
-    setReuploadProgress(null);
-    setReuploadId(null);
+  const replaceWithYoutube = async (id: string) => {
+    if (!youtubeIdOf(replacementUrl)) {
+      setError("Link YouTube tidak valid.");
+      return;
+    }
+    await run(id, () => videoService.updateVideo(id, { youtube_url: replacementUrl }), "Video diganti dengan link YouTube.");
+    setReplacingId(null);
+    setReplacementUrl("");
   };
 
   return (
@@ -186,7 +187,6 @@ export default function AdminVideoPage() {
                 setInfo("Video disimpan.");
                 void load();
               }}
-              onRefresh={() => void load()}
               onCancel={() => setAdding(false)}
             />
           )}
@@ -194,7 +194,7 @@ export default function AdminVideoPage() {
           {!selected ? (
             <EmptyState title="Belum ada folder" description="Buat folder dulu, mis. ACL atau Nyeri punggung bawah." />
           ) : selected.videos.length === 0 ? (
-            !adding && <EmptyState title="Folder ini masih kosong" description="Tambah video dengan upload file atau link YouTube." />
+            !adding && <EmptyState title="Folder ini masih kosong" description="Tambah video dengan link YouTube." />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-[13px]">
@@ -221,14 +221,14 @@ export default function AdminVideoPage() {
                         </div>
                       </td>
                       <td className="px-4 py-2.5 text-zinc-600">
-                        {v.source === "youtube" ? "YouTube" : "Upload"}
-                        {v.fileSize ? <span className="block text-[11px] text-zinc-400">{(v.fileSize / 1024 / 1024).toFixed(1)} MB</span> : null}
+                        {v.source === "youtube" ? "YouTube" : "File lama"}
+                        {v.addedByName && <span className="block text-[11px] text-zinc-400">Oleh {v.addedByName}</span>}
                       </td>
                       <td className="px-4 py-2.5 tabular-nums text-zinc-600">{formatDuration(v.durationSeconds) ?? "—"}</td>
                       <td className="px-4 py-2.5 tabular-nums text-zinc-600">{v.activePatients}</td>
                       <td className="px-4 py-2.5">
                         {!v.ready ? (
-                          <span className="text-[12px] text-zinc-500">{reuploadId === v.id && reuploadProgress !== null ? `Mengunggah ${Math.round(reuploadProgress * 100)}%` : "Belum siap"}</span>
+                          <span className="text-[12px] text-amber-700">Perlu link YouTube</span>
                         ) : v.isActive ? (
                           <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-900">
                             <span className="h-1.5 w-1.5 rounded-full bg-zinc-900" /> Tampil
@@ -241,17 +241,36 @@ export default function AdminVideoPage() {
                       </td>
                       <td className="px-4 py-2.5">
                         <div className="flex justify-end gap-1">
-                          {!v.ready && (
+                          {!v.ready && replacingId === v.id && (
+                            <>
+                              <input
+                                value={replacementUrl}
+                                onChange={(e) => setReplacementUrl(e.target.value)}
+                                placeholder="https://youtu.be/…"
+                                aria-label={`Link YouTube untuk ${v.title}`}
+                                className={`${inputClass} w-[180px]`}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => replaceWithYoutube(v.id)}
+                                disabled={busyId === v.id}
+                                className="rounded px-2 py-1 text-[12px] text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
+                              >
+                                Simpan
+                              </button>
+                            </>
+                          )}
+                          {!v.ready && replacingId !== v.id && (
                             <button
                               type="button"
                               onClick={() => {
-                                setReuploadId(v.id);
-                                uploadRef.current?.click();
+                                setReplacingId(v.id);
+                                setReplacementUrl("");
                               }}
                               disabled={busyId === v.id}
                               className="rounded px-2 py-1 text-[12px] text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
                             >
-                              Unggah file
+                              Isi link
                             </button>
                           )}
                           {v.ready && (
@@ -283,10 +302,6 @@ export default function AdminVideoPage() {
         </Panel>
       </div>
 
-      <input ref={uploadRef} type="file" accept="video/mp4,video/webm" className="hidden" onChange={(e) => {
-        void reupload(e.target.files?.[0]);
-        e.target.value = "";
-      }} />
       <p className="text-[12px] text-zinc-400">Video yang pernah dikirim ke pasien tidak dihapus permanen, hanya disembunyikan dari folder supaya riwayat check-in tetap utuh.</p>
     </div>
   );

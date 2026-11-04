@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
 import { getApiErrorMessage } from "@/app/utils/api";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 export default function EditProfileForm() {
+  const clinic = useClinic();
   const [isEditing, setIsEditing] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastType, setToastType] = useState<"success" | "error">("success");
@@ -219,7 +220,7 @@ export default function EditProfileForm() {
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[13px] font-medium text-brand-900">Clinic Address</label>
             <textarea 
-              value={`${CLINIC.name}, ${CLINIC.address}`}
+              value={`${clinic.name}, ${clinic.address}`}
               disabled 
               rows={2}
               className="w-full p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed text-[13px] resize-none"

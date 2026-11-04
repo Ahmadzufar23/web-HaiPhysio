@@ -1,8 +1,10 @@
+"use client";
+
 import type { Icon } from "@phosphor-icons/react";
 import { Clock, EnvelopeSimple, InstagramLogo, MapPin, NavigationArrow, Star, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import OpenStatus from "@/components/home/OpenStatus";
 import { mk, SectionTitle } from "@/components/marketing/ui";
-import { CLINIC, MAPS_EMBED_URL, MAPS_PLACE_URL } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 interface ContactSectionProps {
   title?: string;
@@ -14,14 +16,6 @@ interface ContactSectionProps {
 
 type Row = { icon: Icon; label: string; value: string; note?: string; href?: string };
 
-const rows: Row[] = [
-  { icon: WhatsappLogo, label: "WhatsApp", value: CLINIC.whatsapp.label, note: "Balasan cepat pada jam operasional", href: CLINIC.whatsapp.href },
-  { icon: EnvelopeSimple, label: "Email", value: CLINIC.email.label, href: CLINIC.email.href },
-  { icon: InstagramLogo, label: "Instagram", value: CLINIC.instagram.label, href: CLINIC.instagram.href },
-  { icon: MapPin, label: "Alamat", value: CLINIC.name, note: CLINIC.address },
-  { icon: Clock, label: "Jam operasional", value: CLINIC.hours, note: CLINIC.hoursNote },
-];
-
 /** Kontak + lokasi klinik: daftar kontak di kiri, peta di kanan. */
 export default function ContactSection({
   title = "Kunjungi atau hubungi kami",
@@ -29,6 +23,15 @@ export default function ContactSection({
   hideHeading = false,
   className = "bg-white",
 }: ContactSectionProps) {
+  const clinic = useClinic();
+  const rows: Row[] = [
+    { icon: WhatsappLogo, label: "WhatsApp", value: clinic.whatsapp.label, note: "Balasan cepat pada jam operasional", href: clinic.whatsapp.href },
+    { icon: EnvelopeSimple, label: "Email", value: clinic.email.label, href: clinic.email.href },
+    { icon: InstagramLogo, label: "Instagram", value: clinic.instagram.label, href: clinic.instagram.href },
+    { icon: MapPin, label: "Alamat", value: clinic.name, note: clinic.address },
+    { icon: Clock, label: "Jam operasional", value: clinic.hours, note: clinic.hoursNote },
+  ];
+
   return (
     <section className={`${mk.section} ${className}`}>
       <div className={`${mk.container} flex flex-col gap-10`}>
@@ -68,11 +71,11 @@ export default function ContactSection({
               })}
             </ul>
             <div className="flex flex-wrap gap-2 border-t border-zinc-100 p-5">
-              <a href={MAPS_PLACE_URL} target="_blank" rel="noopener noreferrer" className={mk.btnPrimary}>
+              <a href={clinic.mapsPlaceUrl} target="_blank" rel="noopener noreferrer" className={mk.btnPrimary}>
                 <NavigationArrow size={15} weight="fill" />
                 Petunjuk arah
               </a>
-              <a href={MAPS_PLACE_URL} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
+              <a href={clinic.mapsPlaceUrl} target="_blank" rel="noopener noreferrer" className={mk.btnSecondary}>
                 <Star size={15} weight="fill" className="text-brand-600" />
                 Ulasan di Google Maps
               </a>
@@ -81,8 +84,8 @@ export default function ContactSection({
 
           <div className="min-h-[360px] overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100">
             <iframe
-              title={`Peta lokasi Klinik ${CLINIC.brand}`}
-              src={MAPS_EMBED_URL}
+              title={`Peta lokasi Klinik ${clinic.brand}`}
+              src={clinic.mapsEmbedUrl || undefined}
               width="100%"
               height="100%"
               style={{ border: 0 }}

@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import AdminLoginForm from "@/components/auth/AdminLoginForm";
-import { CLINIC } from "@/constants/clinic";
 import { PLATFORM } from "@/constants/platform";
 
 export const metadata: Metadata = {
@@ -33,7 +32,7 @@ export default function AdminLoginPage() {
 
       <footer className="flex flex-col items-center justify-between gap-2 border-t border-zinc-200 px-6 py-4 text-[12px] text-zinc-500 sm:flex-row">
         <span>
-          © {new Date().getFullYear()} {CLINIC.name} · Ditenagai oleh {PLATFORM.name}
+          © {new Date().getFullYear()} {PLATFORM.name}
         </span>
         <Link href="/" className="transition-colors hover:text-zinc-900">
           Ke situs pasien

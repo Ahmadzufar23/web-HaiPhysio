@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { List, X, UserCircle, ClockCounterClockwise, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 const navItems = [
   { label: "Beranda", path: "/" },
@@ -20,6 +20,7 @@ const memberNavItems = [{ label: "Video Terapi", path: "/video-terapi" }];
 
 export default function Navbar() {
   const pathname = usePathname();
+  const clinic = useClinic();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -60,7 +61,7 @@ export default function Navbar() {
   }, [isProfileDropdownOpen]);
 
   // Early return WAJIB di bawah semua hooks (Rules of Hooks)
-  if (pathname.startsWith("/admin")) return null;
+  if (pathname.startsWith("/admin") || pathname.startsWith("/super-admin")) return null;
 
   const solid = isScrolled || isMobileMenuOpen;
   const firstName = fullName?.split(" ")[0];
@@ -76,10 +77,10 @@ export default function Navbar() {
         }`}
       >
         {/* LOGO */}
-        <Link href="/" aria-label={`${CLINIC.brand}, Beranda`} className="relative flex w-[78px] items-center">
+        <Link href="/" aria-label={`${clinic.brand}, Beranda`} className="relative flex w-[78px] items-center">
           <Image
             src="/fisio_nobg.png"
-            alt={`Logo ${CLINIC.brand}`}
+            alt={`Logo ${clinic.brand}`}
             width={125}
             height={80}
             priority

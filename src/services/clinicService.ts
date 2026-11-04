@@ -13,6 +13,7 @@ import type {
   RomMeasurement,
   SessionAssessment,
   SessionDetail,
+  SessionPayment,
   TherapyPackage,
 } from "@/types/api.types";
 
@@ -49,6 +50,13 @@ export const clinicService = {
   },
 
   // POST /api/admin/sessions/:id/finish — mencatat pendapatan sesuai paket
+  // Selesai dengan pembayaran online: membuat link Xendit, status berubah setelah lunas
+  createSessionPayment: async (id: string): Promise<ApiSuccess<{ payment: SessionPayment }>> => {
+    const response = await bookingApi.post(`/admin/sessions/${id}/payment`);
+    return response.data;
+  },
+
+  // Selesai dengan pembayaran tunai di klinik
   finishSession: async (id: string): Promise<ApiSuccess<{ session: { recordedAmount?: number; priceMissing?: boolean } }>> => {
     const response = await bookingApi.post(`/admin/sessions/${id}/finish`);
     return response.data;

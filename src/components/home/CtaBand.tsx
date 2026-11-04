@@ -1,11 +1,14 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowRight, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 import LogoWatermark from "@/components/shared/LogoWatermark";
 import { mk } from "@/components/marketing/ui";
 
 /** Ajakan penutup halaman: panel kuning brand dengan figur logo. */
 export default function CtaBand({ appointmentHref }: { appointmentHref: string }) {
+  const clinic = useClinic();
   return (
     <section className={`${mk.section} bg-white`}>
       <div className={mk.container}>
@@ -20,7 +23,7 @@ export default function CtaBand({ appointmentHref }: { appointmentHref: string }
                 Buat janji temu
                 <ArrowRight size={15} />
               </Link>
-              <a href={CLINIC.whatsapp.href} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center gap-2 rounded-lg border border-brand-950/20 px-5 text-[14px] font-medium text-brand-950 hover:bg-brand-950/5">
+              <a href={clinic.whatsapp.href} target="_blank" rel="noopener noreferrer" className="inline-flex h-11 items-center gap-2 rounded-lg border border-brand-950/20 px-5 text-[14px] font-medium text-brand-950 hover:bg-brand-950/5">
                 <WhatsappLogo size={16} weight="fill" />
                 WhatsApp
               </a>

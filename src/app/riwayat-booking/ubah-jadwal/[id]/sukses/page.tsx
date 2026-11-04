@@ -6,9 +6,11 @@ import Link from "next/link";
 import { Copy, FileText, CheckCircle } from "@phosphor-icons/react";
 import { bookingService } from "@/services/bookingService";
 import type { BookingDetail } from "@/types/api.types";
-import { CLINIC_LOCATION } from "@/constants/data";
+import { clinicLocation } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 export default function SuksesUbahJadwalPage() {
+  const clinic = useClinic();
   const params = useParams();
   const router = useRouter();
   const bookingId = params.id as string;
@@ -129,7 +131,7 @@ export default function SuksesUbahJadwalPage() {
             </div>
             <div className="flex flex-col sm:flex-row py-2">
               <span className="text-gray-500 sm:w-[150px] font-medium shrink-0">Lokasi Klinik</span>
-              <span className="font-bold text-brand-900">{CLINIC_LOCATION}</span>
+              <span className="font-bold text-brand-900">{clinicLocation(clinic)}</span>
             </div>
           </div>
         </div>

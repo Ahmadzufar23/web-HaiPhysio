@@ -1,5 +1,3 @@
-import { CLINIC } from "@/constants/clinic";
-
 // Setelah booking Homecare, pasien melanjutkan ke WhatsApp klinik untuk membahas harga
 // dan jadwal kunjungan (blueprint pasien/booking §4). Pesannya diisi otomatis supaya
 // klinik langsung tahu siapa pasiennya, alamat, dan keluhannya.
@@ -28,6 +26,6 @@ export function homeVisitMessage({ name, phone, address, complaint, schedules, r
   return lines.join("\n");
 }
 
-export function homeVisitWhatsappUrl(message: HomeVisitMessage, number = CLINIC.homeVisitWhatsapp): string {
+export function homeVisitWhatsappUrl(message: HomeVisitMessage, number: string): string {
   return `https://wa.me/${number}?text=${encodeURIComponent(homeVisitMessage(message))}`;
 }

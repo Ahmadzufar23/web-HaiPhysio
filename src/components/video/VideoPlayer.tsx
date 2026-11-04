@@ -42,7 +42,7 @@ const COMPLETION_RATIO = 0.9;
 export type WatchProgress = { watched: number; duration: number; complete: boolean };
 
 /**
- * Pemutar video terapi (file unggahan atau YouTube).
+ * Pemutar video terapi dari YouTube.
  * onProgress dipanggil berkala; onComplete sekali saat tontonan riil mencapai 90% durasi.
  */
 export default function VideoPlayer({
@@ -59,7 +59,6 @@ export default function VideoPlayer({
   onProgress?: (p: WatchProgress) => void;
   onComplete?: (p: WatchProgress) => void;
 }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
   const ytRef = useRef<HTMLDivElement>(null);
   const watched = useRef(0);
   const last = useRef<number | null>(null);
@@ -130,28 +129,8 @@ export default function VideoPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- tick hanya membaca ref; pemutar cukup dibuat ulang saat video berganti
   }, [playback]);
 
-  if (playback.type === "file") {
-    return (
-      <video
-        ref={videoRef}
-        src={playback.url}
-        controls
-        playsInline
-        preload="metadata"
-        controlsList="nodownload"
-        aria-label={title}
-        className="aspect-video w-full rounded-xl bg-zinc-950"
-        onPlay={(e) => (last.current = e.currentTarget.currentTime)}
-        onSeeking={() => (last.current = null)}
-        onSeeked={(e) => (last.current = e.currentTarget.currentTime)}
-        onTimeUpdate={(e) => tick(e.currentTarget.currentTime, e.currentTarget.duration, !e.currentTarget.paused)}
-        onEnded={(e) => tick(e.currentTarget.currentTime, e.currentTarget.duration, false)}
-      />
-    );
-  }
-
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-zinc-950 [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full">
+    <div aria-label={title} className="relative aspect-video w-full overflow-hidden rounded-xl bg-zinc-950 [&_iframe]:absolute [&_iframe]:inset-0 [&_iframe]:h-full [&_iframe]:w-full">
       <div ref={ytRef} className="h-full w-full" />
       {ytFailed && <p className="absolute inset-0 flex items-center justify-center text-[13px] text-white/70">Video YouTube tidak bisa dimuat. Periksa koneksi lalu muat ulang.</p>}
     </div>

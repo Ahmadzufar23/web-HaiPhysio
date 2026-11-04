@@ -9,7 +9,8 @@ import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
 import AuthShell from "./AuthShell";
-import { CLINIC } from "@/constants/clinic";
+import { useClinic } from "@/components/shared/ClinicProvider";
+import { PLATFORM } from "@/constants/platform";
 
 type ResetStep = "request" | "sent" | "new-password" | "success";
 
@@ -22,6 +23,7 @@ type ResetErrors = {
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ResetPasswordPageClient() {
+  const clinic = useClinic();
   // ?token=xxx dari link di email → langsung tampilkan form sandi baru
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -38,7 +40,7 @@ export default function ResetPasswordPageClient() {
   
   // LOGIKA HEADLINE & DESCRIPTION (Otomatis berubah menyesuaikan step)
   const headline = isActivation
-    ? `Selamat Datang di ${CLINIC.brand}`
+    ? `Selamat Datang di ${clinic.brand || PLATFORM.name}`
     : step === "new-password"
     ? "Kembali Amankan Akun Anda" 
     : "Atur Ulang Akses Akun Anda";
