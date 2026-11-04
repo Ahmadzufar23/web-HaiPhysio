@@ -22,9 +22,12 @@ type Profile = {
   gender: string | null;
   address: string;
   occupation: string;
+  /** String supaya bisa langsung dipakai di input; "" = belum diisi */
+  height: string;
+  weight: string;
   photo: string | null;
 };
-type Draft = Pick<Profile, "fullName" | "gender" | "address" | "occupation">;
+type Draft = Pick<Profile, "fullName" | "gender" | "address" | "occupation" | "height" | "weight">;
 type BookingItem = {
   id: string;
   bookingDate: string;
@@ -44,6 +47,8 @@ const toProfile = (user: Record<string, string | null>): Profile => ({
   gender: user.gender ?? null,
   address: user.address ?? "",
   occupation: user.occupation ?? "",
+  height: user.height_cm != null ? String(user.height_cm) : "",
+  weight: user.weight_kg != null ? String(user.weight_kg) : "",
   photo: user.photo ?? null,
 });
 
@@ -81,7 +86,7 @@ function Avatar({ profile, size }: { profile: Profile; size: "md" | "lg" }) {
 
 export default function PengaturanProfilPage() {
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [draft, setDraft] = useState<Draft>({ fullName: "", gender: null, address: "", occupation: "" });
+  const [draft, setDraft] = useState<Draft>({ fullName: "", gender: null, address: "", occupation: "", height: "", weight: "" });
   const [bookings, setBookings] = useState<BookingItem[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -96,7 +101,7 @@ export default function PengaturanProfilPage() {
   const applyProfile = (user: Record<string, string | null>) => {
     const p = toProfile(user);
     setProfile(p);
-    setDraft({ fullName: p.fullName, gender: p.gender, address: p.address, occupation: p.occupation });
+    setDraft({ fullName: p.fullName, gender: p.gender, address: p.address, occupation: p.occupation, height: p.height, weight: p.weight });
   };
 
   useEffect(() => {
@@ -115,13 +120,24 @@ export default function PengaturanProfilPage() {
 
   const name = draft.fullName.trim();
   const nameError = name.length < 3 ? "Nama minimal 3 karakter." : "";
-  const changes: Record<string, string | null> = {};
+  // Koma desimal ("65,5") lazim di keyboard Indonesia
+  const heightNum = Number(draft.height);
+  const weightNum = Number(draft.weight.replace(",", "."));
+  const heightError = !draft.height
+    ? (profile?.height ? "Tinggi badan wajib diisi." : "")
+    : !Number.isInteger(heightNum) || heightNum < 50 || heightNum > 250 ? "Isi 50–250 cm tanpa koma." : "";
+  const weightError = !draft.weight
+    ? (profile?.weight ? "Berat badan wajib diisi." : "")
+    : Number.isNaN(weightNum) || weightNum < 2 || weightNum > 300 ? "Isi 2–300 kg." : "";
+  const changes: Record<string, string | number | null> = {};
   if (profile) {
     if (name !== profile.fullName) changes.full_name = name;
     // Jenis kelamin hanya bisa diisi sekali (akun lama yang masih kosong)
     if (!profile.gender && draft.gender) changes.gender = draft.gender;
     if (draft.address.trim() !== profile.address) changes.address = draft.address.trim();
     if (draft.occupation.trim() !== profile.occupation) changes.occupation = draft.occupation.trim();
+    if (draft.height && heightNum !== Number(profile.height)) changes.height_cm = heightNum;
+    if (draft.weight && weightNum !== Number(profile.weight)) changes.weight_kg = weightNum;
   }
   const dirty = Object.keys(changes).length > 0;
   const set = (key: keyof Draft) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -130,7 +146,7 @@ export default function PengaturanProfilPage() {
   };
 
   const handleSave = async () => {
-    if (!dirty || nameError) return;
+    if (!dirty || nameError || heightError || weightError) return;
     setSaving(true);
     setSaveError("");
     try {
@@ -325,6 +341,38 @@ export default function PengaturanProfilPage() {
                   <input value={draft.occupation} onChange={set("occupation")} maxLength={100} disabled={!profile} placeholder="Mis. karyawan kantor, guru, atlet" className={`${ui.input} border-zinc-200`} />
                 </label>
 
+                <label className="flex flex-col gap-1.5">
+                  <span className={ui.label}>Tinggi badan (cm)</span>
+                  <input
+                    inputMode="numeric"
+                    value={draft.height}
+                    onChange={(e) => {
+                      setDraft((d) => ({ ...d, height: e.target.value.replace(/\D/g, "") }));
+                      setSaveError("");
+                    }}
+                    disabled={!profile}
+                    placeholder="170"
+                    className={`${ui.input} tabular-nums ${heightError ? "border-red-300" : "border-zinc-200"}`}
+                  />
+                  {heightError && <span className="text-[11px] text-red-600">{heightError}</span>}
+                </label>
+
+                <label className="flex flex-col gap-1.5">
+                  <span className={ui.label}>Berat badan (kg)</span>
+                  <input
+                    inputMode="decimal"
+                    value={draft.weight}
+                    onChange={(e) => {
+                      setDraft((d) => ({ ...d, weight: e.target.value.replace(/[^\d.,]/g, "") }));
+                      setSaveError("");
+                    }}
+                    disabled={!profile}
+                    placeholder="65"
+                    className={`${ui.input} tabular-nums ${weightError ? "border-red-300" : "border-zinc-200"}`}
+                  />
+                  {weightError && <span className="text-[11px] text-red-600">{weightError}</span>}
+                </label>
+
                 <label className="flex flex-col gap-1.5 sm:col-span-2">
                   <span className={ui.label}>Alamat</span>
                   <textarea value={draft.address} onChange={set("address")} maxLength={300} rows={2} disabled={!profile} className={`${ui.input} h-auto border-zinc-200 py-2 leading-relaxed`} />
@@ -344,7 +392,7 @@ export default function PengaturanProfilPage() {
                     <Check size={12} /> Tersimpan
                   </span>
                 )}
-                <button type="button" onClick={handleSave} disabled={!dirty || !!nameError || saving} className={ui.btnPrimary}>
+                <button type="button" onClick={handleSave} disabled={!dirty || !!nameError || !!heightError || !!weightError || saving} className={ui.btnPrimary}>
                   {saving ? "Menyimpan…" : "Simpan"}
                 </button>
               </div>

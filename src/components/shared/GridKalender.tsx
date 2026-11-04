@@ -36,7 +36,7 @@ export default function GridKalender({
 
   // Fungsi penentu warna kotak berdasarkan statusnya
   const getSlotStyle = (status: string, isSelected: boolean) => {
-    if (isSelected) return "bg-zinc-900 text-white border-zinc-900";
+    if (isSelected) return "bg-action text-on-action border-zinc-900";
     if (status === "tersedia") return "bg-white text-zinc-800 border-zinc-200 cursor-pointer hover:border-zinc-400 transition-colors";
     if (status === "penuh") return "bg-zinc-50 text-zinc-400 border-zinc-100 cursor-not-allowed";
     if (status === "tidak_praktik") return "bg-zinc-50 text-zinc-300 border-zinc-100 cursor-not-allowed";

@@ -107,7 +107,7 @@ export default function BodyMapPicker({ selected, onChange, scale = null, onScal
               const cls = dark
                 ? `h-9 rounded-lg text-[13px] font-bold ${active ? "bg-brand-900 text-white" : filled ? "bg-brand-500 text-brand-950" : "bg-white/10 text-white/70 hover:bg-white/20"}`
                 : `flex h-12 flex-col items-center justify-center rounded-lg border ${
-                    active ? "border-zinc-900 bg-zinc-900 text-white" : filled ? "border-zinc-300 bg-zinc-100 text-zinc-700" : scaleError ? "border-red-200 bg-white text-zinc-600 hover:bg-zinc-50" : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
+                    active ? "border-action bg-action text-on-action" : filled ? "border-zinc-300 bg-zinc-100 text-zinc-700" : scaleError ? "border-red-200 bg-white text-zinc-600 hover:bg-zinc-50" : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
                   }`;
               return (
                 <button key={n} type="button" role="radio" aria-checked={active} aria-label={`Tingkat nyeri ${n}, ${levelLabel}`} onClick={() => onScaleChange(active ? null : n)} className={`transition-colors ${cls}`}>
@@ -116,7 +116,7 @@ export default function BodyMapPicker({ selected, onChange, scale = null, onScal
                   ) : (
                     <>
                       <span className="text-[13px] font-semibold">{n}</span>
-                      <span className={`hidden text-[10px] sm:block ${active ? "text-white/70" : "text-zinc-400"}`}>{levelLabel}</span>
+                      <span className={`hidden text-[10px] sm:block ${active ? "text-on-action/70" : "text-zinc-500"}`}>{levelLabel}</span>
                     </>
                   )}
                 </button>

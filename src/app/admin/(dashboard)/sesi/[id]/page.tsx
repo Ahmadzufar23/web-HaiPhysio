@@ -136,7 +136,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="grid items-start gap-6 lg:grid-cols-[280px_1fr]">
-        <PatientCard data={data} />
+        <PatientCard data={data} onPatientUpdated={() => void load()} />
 
         <div className="flex min-w-0 flex-col gap-4">
           {notice && <Notice tone={notice.tone === "error" ? "error" : "info"}>{notice.text}</Notice>}

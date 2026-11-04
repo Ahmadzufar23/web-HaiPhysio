@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, Copy } from "@phosphor-icons/react";
+import { Check, Copy, WhatsappLogo } from "@phosphor-icons/react";
 import { bookingService, type CreateBookingPayload } from "@/services/bookingService";
 import { CLINIC_LOCATION } from "@/constants/data";
 import { getApiErrorMessage } from "@/app/utils/api";
@@ -11,6 +11,7 @@ import BodyMap from "@/components/bodymap/BodyMap";
 import { BODY_REGIONS, regionLabel } from "@/constants/bodyRegions";
 import { formatPainNotes, clearPainDraft } from "@/lib/painNotes";
 import { painLabel } from "@/constants/painScale";
+import { homeVisitWhatsappUrl } from "@/lib/homeVisitWhatsapp";
 import { ErrorNotice, InfoRow, Section, StepNav, ui } from "./BookingUI";
 import { quotaLabel, slotLabel, type BookingDraft } from "./bookingDraft";
 
@@ -99,7 +100,7 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
         )}
         {quotaLabel(draft) && <p className="mt-1 text-[12px] text-zinc-500">{quotaLabel(draft)}</p>}
       </InfoRow>
-      <InfoRow label="Lokasi">{CLINIC_LOCATION}</InfoRow>
+      <InfoRow label="Lokasi">{draft.isHomeVisit ? patient?.address || "—" : CLINIC_LOCATION}</InfoRow>
     </dl>
   );
 
@@ -107,19 +108,41 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
   if (created) {
     const code = created.booking.bookingReferenceCode;
     const remaining = created.patientPackage?.remaining ?? 0;
+    // Homecare: harga & jadwal kunjungan dibahas lewat WhatsApp klinik
+    const whatsappUrl = draft.isHomeVisit
+      ? homeVisitWhatsappUrl({
+          name: patient?.name ?? "",
+          phone: patient?.phone ?? "",
+          address: patient?.address ?? "",
+          complaint: formatPainNotes({ points: painPoints, text: patient?.complaint ?? "" }),
+          schedules: draft.slots.map(slotLabel),
+          referenceCodes: created.bookings.map((b) => b.bookingReferenceCode),
+        })
+      : null;
     return (
       <div className="flex flex-col gap-4">
         <div className={`${ui.card} flex flex-col items-center px-5 py-8 text-center`}>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-900 text-white">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-action text-on-action">
             <Check size={18} weight="bold" />
           </span>
           <h1 className="mt-4 text-[18px] font-semibold tracking-tight text-zinc-900">Janji temu berhasil dibuat</h1>
           <p className="mt-1 max-w-[420px] text-[13px] text-zinc-500">
-            {created.bookings.length > 1
-              ? `${created.bookings.length} jadwal tersimpan. Tunjukkan nomor reservasi tiap sesi saat tiba di klinik.`
-              : "Tunjukkan nomor reservasi ini saat tiba di klinik. Detailnya juga tersimpan di Riwayat Booking."}
+            {draft.isHomeVisit
+              ? "Jadwal yang kamu pilih tersimpan sebagai usulan. Detailnya juga tersimpan di Riwayat Booking."
+              : created.bookings.length > 1
+                ? `${created.bookings.length} jadwal tersimpan. Tunjukkan nomor reservasi tiap sesi saat tiba di klinik.`
+                : "Tunjukkan nomor reservasi ini saat tiba di klinik. Detailnya juga tersimpan di Riwayat Booking."}
             {remaining > 0 && ` Sisa ${remaining} sesi paket bisa dijadwalkan dari Riwayat Booking.`}
           </p>
+          {whatsappUrl && (
+            <div className="mt-5 flex w-full max-w-[420px] flex-col items-center gap-3 rounded-lg border border-zinc-200 bg-zinc-50 px-4 py-4">
+              <p className="text-[13px] text-zinc-600">Langkah berikutnya: lanjutkan di WhatsApp untuk membahas harga dan jadwal kunjungan. Pesannya sudah terisi otomatis.</p>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className={`${ui.btnPrimary} gap-2`}>
+                <WhatsappLogo size={16} weight="fill" />
+                Lanjutkan di WhatsApp
+              </a>
+            </div>
+          )}
 
           {/* Lebih dari satu jadwal: kode tiap sesi tampil di Detail sesi */}
           {created.bookings.length === 1 && (
@@ -161,6 +184,7 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
           <InfoRow label="Nama">{patient?.name || "—"}</InfoRow>
           <InfoRow label="Telepon">{patient?.phone || "—"}</InfoRow>
           <InfoRow label="Email">{patient?.email || "—"}</InfoRow>
+          {draft.isHomeVisit && <InfoRow label="Alamat kunjungan">{patient?.address || "—"}</InfoRow>}
           <InfoRow label="Tingkat nyeri">{painLabel(patient?.painScale)}</InfoRow>
           <InfoRow label="Area nyeri">
             {painPoints.length === 0 ? (
@@ -192,7 +216,11 @@ export default function Step4Konfirmasi({ draft, onBack, onEdit, onDone }: Step4
         </dl>
       </Section>
 
-      <p className="text-[12px] text-zinc-500">Dengan mengonfirmasi, slot ini langsung dipesan atas namamu. Pembayaran dilakukan di klinik.</p>
+      <p className="text-[12px] text-zinc-500">
+        {draft.isHomeVisit
+          ? "Dengan mengonfirmasi, slot ini dipesan atas namamu. Setelah itu kamu diarahkan ke WhatsApp klinik untuk membahas harga dan jadwal kunjungan."
+          : "Dengan mengonfirmasi, slot ini langsung dipesan atas namamu. Pembayaran dilakukan di klinik."}
+      </p>
 
       <StepNav onBack={onBack} onNext={handleConfirm} disabled={isLoading} nextLabel={isLoading ? "Memproses…" : "Konfirmasi booking"} />
     </div>

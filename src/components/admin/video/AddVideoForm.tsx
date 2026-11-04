@@ -188,7 +188,7 @@ export default function AddVideoForm({
               role="tab"
               aria-selected={source === key}
               onClick={() => setSource(key)}
-              className={`h-7 rounded px-3 text-[12px] ${source === key ? "bg-zinc-900 font-medium text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+              className={`h-7 rounded px-3 text-[12px] ${source === key ? "bg-action font-medium text-on-action" : "text-zinc-600 hover:text-zinc-900"}`}
             >
               {label}
             </button>
@@ -236,7 +236,7 @@ export default function AddVideoForm({
             <span className="tabular-nums">{Math.round(progress * 100)}%</span>
           </div>
           <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-zinc-200">
-            <div className="h-full bg-zinc-900 transition-all" style={{ width: `${progress * 100}%` }} />
+            <div className="h-full bg-action transition-all" style={{ width: `${progress * 100}%` }} />
           </div>
         </div>
       )}

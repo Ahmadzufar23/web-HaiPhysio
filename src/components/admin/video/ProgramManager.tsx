@@ -156,7 +156,7 @@ export default function ProgramManager({ patientId }: { patientId: string }) {
                   <div className="mt-1.5 flex items-center gap-2">
                     <div className="flex gap-[3px]" aria-label={`${item.doneDates.length} dari 14 hari terakhir`}>
                       {program.days.map((d) => (
-                        <span key={d} title={`${dayFmt.format(new Date(`${d}T12:00:00Z`))}${done.has(d) ? " · selesai" : ""}`} className={`h-2.5 w-2.5 rounded-sm ${done.has(d) ? "bg-zinc-900" : "bg-zinc-200"}`} />
+                        <span key={d} title={`${dayFmt.format(new Date(`${d}T12:00:00Z`))}${done.has(d) ? " · selesai" : ""}`} className={`h-2.5 w-2.5 rounded-sm ${done.has(d) ? "bg-action" : "bg-zinc-200"}`} />
                       ))}
                     </div>
                     <span className="text-[11px] tabular-nums text-zinc-500">{item.doneDates.length}/14 hari</span>

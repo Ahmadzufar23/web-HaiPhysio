@@ -34,7 +34,7 @@ type PackageChoice = { kind: "owned"; patientPackageId: string } | { kind: "new"
 function StepTitle({ n, children }: { n: number; children: React.ReactNode }) {
   return (
     <span className="flex items-center gap-2">
-      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-zinc-900 text-[11px] font-medium text-white">{n}</span>
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-action text-[11px] font-medium text-on-action">{n}</span>
       {children}
     </span>
   );
@@ -63,12 +63,15 @@ function NewPatientForm({
     email: q.includes("@") ? q : "",
     dateOfBirth: "",
     gender: "",
+    occupation: "",
+    height: "",
+    weight: "",
   });
   const [agreed, setAgreed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const set = (key: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement>) => setForm((f) => ({ ...f, [key]: e.target.value }));
-  const ready = form.fullName.trim().length >= 3 && form.phone.trim() && form.dateOfBirth && form.gender && agreed;
+  const ready = form.fullName.trim().length >= 3 && form.phone.trim() && form.dateOfBirth && form.gender && form.occupation.trim() && form.height && form.weight && agreed;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,6 +84,10 @@ function NewPatientForm({
         phone: form.phone.trim(),
         date_of_birth: form.dateOfBirth,
         gender: form.gender,
+        occupation: form.occupation.trim(),
+        height_cm: Number(form.height),
+        // Koma desimal ("65,5") lazim di keyboard Indonesia
+        weight_kg: Number(form.weight.replace(",", ".")),
         email: form.email.trim() || undefined,
         terms_confirmed: true,
       });
@@ -118,7 +125,7 @@ function NewPatientForm({
                 aria-checked={form.gender === g.value}
                 onClick={() => setForm((f) => ({ ...f, gender: g.value }))}
                 className={`h-8 rounded-md border text-[12px] ${
-                  form.gender === g.value ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
+                  form.gender === g.value ? "border-action bg-action text-on-action" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
                 }`}
               >
                 {g.label}
@@ -130,6 +137,32 @@ function NewPatientForm({
           Email (opsional)
           <input type="email" value={form.email} onChange={set("email")} placeholder="Untuk link aktivasi akun" className={`${inputClass} h-8`} />
         </label>
+        <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+          Pekerjaan *
+          <input value={form.occupation} onChange={set("occupation")} maxLength={100} placeholder="Mis. karyawan kantor, guru" className={`${inputClass} h-8`} />
+        </label>
+        <div className="grid grid-cols-2 gap-3">
+          <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+            Tinggi badan (cm) *
+            <input
+              inputMode="numeric"
+              value={form.height}
+              onChange={(e) => setForm((f) => ({ ...f, height: e.target.value.replace(/\D/g, "") }))}
+              placeholder="170"
+              className={`${inputClass} h-8 tabular-nums`}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+            Berat badan (kg) *
+            <input
+              inputMode="decimal"
+              value={form.weight}
+              onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value.replace(/[^\d.,]/g, "") }))}
+              placeholder="65"
+              className={`${inputClass} h-8 tabular-nums`}
+            />
+          </label>
+        </div>
       </div>
       <p className="text-[12px] text-zinc-500">
         {form.email.trim()
@@ -508,7 +541,7 @@ export default function WalkInPage() {
                         onClick={() => toggleSlot(slot)}
                         className={`flex flex-col items-start rounded-md border px-3 py-2 text-left text-[12px] transition-colors ${
                           on
-                            ? "border-zinc-900 bg-zinc-900 text-white"
+                            ? "border-action bg-action text-on-action"
                             : reason || full
                               ? "cursor-not-allowed border-zinc-200 bg-zinc-50 text-zinc-400"
                               : "border-zinc-200 bg-white text-zinc-900 hover:border-zinc-400"
@@ -551,7 +584,7 @@ export default function WalkInPage() {
                       aria-checked={painLevel === l.value}
                       onClick={() => setPainLevel(l.value)}
                       className={`h-8 rounded-md border px-3 text-[12px] ${
-                        painLevel === l.value ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
+                        painLevel === l.value ? "border-action bg-action text-on-action" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
                       }`}
                     >
                       {l.value} · {l.label}

@@ -9,17 +9,19 @@ import type { PatientDraft } from "./bookingDraft";
 
 interface Step3Props {
   initial: PatientDraft | null;
+  isHomeVisit: boolean;
   onBack: () => void;
   onNext: (data: PatientDraft) => void;
 }
 
-type Errors = Partial<Record<"name" | "phone" | "painScale", string>>;
+type Errors = Partial<Record<"name" | "phone" | "address" | "painScale", string>>;
 
-export default function Step3IsiData({ initial, onBack, onNext }: Step3Props) {
+export default function Step3IsiData({ initial, isHomeVisit, onBack, onNext }: Step3Props) {
   const [form, setForm] = useState({
     name: initial?.name ?? "",
     phone: initial?.phone ?? "",
     email: initial?.email ?? "",
+    address: initial?.address ?? "",
     complaint: initial?.complaint ?? "",
   });
   // Titik nyeri: dari isian sebelumnya, atau dari demo body map di Beranda (sessionStorage)
@@ -40,6 +42,7 @@ export default function Step3IsiData({ initial, onBack, onNext }: Step3Props) {
           name: prev.name || user.full_name || user.name || "",
           phone: prev.phone || user.phone || "",
           email: user.email || prev.email,
+          address: prev.address || user.address || "",
         }));
       })
       .catch(() => {});
@@ -54,13 +57,14 @@ export default function Step3IsiData({ initial, onBack, onNext }: Step3Props) {
     const next: Errors = {};
     if (!form.name.trim()) next.name = "Nama lengkap wajib diisi.";
     if (!/^(\+62|62|0)8[1-9][0-9]{6,10}$/.test(form.phone.trim().replace(/[\s-]/g, ""))) next.phone = "Nomor tidak valid, contoh 081234567890.";
+    if (isHomeVisit && form.address.trim().length < 10) next.address = "Tulis alamat lengkap untuk kunjungan terapis.";
     if (!painScale) next.painScale = "Pilih tingkat nyeri yang kamu rasakan.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
   const handleNext = () => {
-    if (validate()) onNext({ ...form, painPoints, painScale });
+    if (validate()) onNext({ ...form, address: isHomeVisit ? form.address.trim() : "", painPoints, painScale });
   };
 
   return (
@@ -79,6 +83,13 @@ export default function Step3IsiData({ initial, onBack, onNext }: Step3Props) {
           <Field label="Email" hint="Email akunmu. Ubah lewat dukungan klinik bila perlu.">
             <input value={form.email} readOnly type="email" className={`${inputClass()} bg-zinc-50 text-zinc-500`} />
           </Field>
+          {isHomeVisit && (
+            <div className="sm:col-span-2">
+              <Field label="Alamat kunjungan" required error={errors.address} hint="Diambil dari profilmu. Terapis datang ke alamat ini.">
+                <textarea value={form.address} onChange={set("address")} rows={3} autoComplete="street-address" className={`${inputClass(errors.address)} h-auto py-2 leading-relaxed`} />
+              </Field>
+            </div>
+          )}
         </div>
       </Section>
 

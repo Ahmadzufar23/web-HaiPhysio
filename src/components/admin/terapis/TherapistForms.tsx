@@ -70,7 +70,7 @@ export function ProfileFields({ value, onChange }: { value: ProfileDraft; onChan
         <input value={value.phone} onChange={set("phone")} inputMode="tel" placeholder="081234567890" className={inputClass} />
       </Field>
       <Field label="Email kontak">
-        <input value={value.email} onChange={set("email")} type="email" placeholder="nama@haiphysio.com" className={inputClass} />
+        <input value={value.email} onChange={set("email")} type="email" placeholder="nama@klinik.com" className={inputClass} />
       </Field>
       <div className="sm:col-span-2">
         <span className="mb-1 block text-[12px] font-medium text-zinc-700">
@@ -88,7 +88,7 @@ export function AccountFields({ value, onChange }: { value: AccountDraft; onChan
   return (
     <div className="grid gap-4 sm:grid-cols-3">
       <Field label="Email login" required>
-        <input value={value.email} onChange={set("email")} type="email" autoComplete="off" placeholder="nama@haiphysio.dev" className={inputClass} />
+        <input value={value.email} onChange={set("email")} type="email" autoComplete="off" placeholder="nama@klinik.com" className={inputClass} />
       </Field>
       <Field label="Telepon akun" required hint="Harus unik antar akun">
         <input value={value.phone} onChange={set("phone")} inputMode="tel" autoComplete="off" placeholder="081234567890" className={inputClass} />

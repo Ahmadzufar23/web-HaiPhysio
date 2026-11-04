@@ -10,8 +10,8 @@ import { btn, EmptyState, inputClass, MetricStrip, Notice, PageHeader, Panel, ta
 
 function ActiveBadge({ active }: { active: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-1.5 text-[12px] ${active ? "text-zinc-900" : "text-zinc-400"}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-zinc-900" : "border border-zinc-400"}`} aria-hidden />
+    <span className={`inline-flex items-center gap-1.5 text-[12px] ${active ? "text-green-700" : "text-zinc-500"}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${active ? "bg-green-600" : "border border-zinc-400"}`} aria-hidden />
       {active ? "Aktif" : "Nonaktif"}
     </span>
   );

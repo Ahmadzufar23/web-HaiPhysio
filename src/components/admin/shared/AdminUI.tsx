@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import type { BookingStatus } from "@/types/api.types";
 
-// Komponen dasar dashboard admin. Palet netral (putih, abu, hitam), teks kecil,
-// garis tipis tanpa bayangan. Merah hanya untuk aksi/status batal.
+// Komponen dasar panel staf. Dasar netral dengan garis tipis tanpa bayangan; warna hanya
+// bertugas: action (teal) untuk aksi, warna status untuk status.
 
 export function PageHeader({ title, description, actions }: { title: string; description?: string; actions?: ReactNode }) {
   return (
@@ -47,19 +47,19 @@ export function Panel({
   );
 }
 
-// Status dibedakan lewat isian titik (kosong → setengah → penuh), bukan warna.
+// Satu warna untuk satu status di semua tabel; label teks tetap ada supaya tidak bergantung warna saja.
 const STATUS_STYLE: Record<BookingStatus, { label: string; dot: string; text: string }> = {
-  Terkonfirmasi: { label: "Menunggu", dot: "border border-zinc-400 bg-white", text: "text-zinc-600" },
-  Berlangsung: { label: "Berlangsung", dot: "bg-zinc-900 ring-2 ring-zinc-200", text: "text-zinc-900 font-medium" },
-  Selesai: { label: "Selesai", dot: "bg-zinc-400", text: "text-zinc-600" },
-  Dibatalkan: { label: "Dibatalkan", dot: "bg-red-600", text: "text-red-700" },
-  "Tidak Hadir": { label: "Tidak hadir", dot: "bg-red-600", text: "text-red-700" },
+  Terkonfirmasi: { label: "Menunggu", dot: "bg-amber-500", text: "bg-amber-50 text-amber-800" },
+  Berlangsung: { label: "Berlangsung", dot: "bg-blue-600", text: "bg-blue-50 text-blue-700" },
+  Selesai: { label: "Selesai", dot: "bg-green-600", text: "bg-green-50 text-green-700" },
+  Dibatalkan: { label: "Dibatalkan", dot: "bg-red-600", text: "bg-red-50 text-red-700" },
+  "Tidak Hadir": { label: "Tidak hadir", dot: "bg-orange-500", text: "bg-orange-50 text-orange-700" },
 };
 
 export function StatusBadge({ status }: { status: BookingStatus }) {
   const s = STATUS_STYLE[status] ?? STATUS_STYLE.Terkonfirmasi;
   return (
-    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap text-[12px] ${s.text}`}>
+    <span className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-0.5 text-[12px] font-medium ${s.text}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} aria-hidden />
       {s.label}
     </span>
@@ -79,7 +79,7 @@ export function MetricStrip({ items, loading }: { items: { label: string; value:
           <span className="text-[18px] font-semibold tabular-nums tracking-tight text-zinc-900">
             {loading ? <span className="inline-block h-5 w-14 animate-pulse rounded bg-zinc-100" /> : item.value}
           </span>
-          {item.hint && <span className="text-[11px] text-zinc-400">{item.hint}</span>}
+          {item.hint && <span className="text-[11px] text-zinc-500">{item.hint}</span>}
         </div>
       ))}
     </div>
@@ -106,7 +106,7 @@ export function Notice({ tone, children }: { tone: "info" | "error"; children: R
 
 export const btn = {
   primary:
-    "inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-zinc-900 px-3 text-[12px] font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-400",
+    "inline-flex h-8 items-center justify-center gap-1.5 rounded-md bg-action px-3 text-[12px] font-medium text-on-action transition-colors hover:bg-action-hover disabled:cursor-not-allowed disabled:bg-zinc-100 disabled:text-zinc-400",
   secondary:
     "inline-flex h-8 items-center justify-center gap-1.5 rounded-md border border-zinc-200 bg-white px-3 text-[12px] font-medium text-zinc-800 transition-colors hover:bg-zinc-50 disabled:cursor-not-allowed disabled:text-zinc-400 disabled:hover:bg-white",
   danger:
@@ -114,7 +114,7 @@ export const btn = {
 };
 
 export const inputClass =
-  "w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-[13px] text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-100 disabled:bg-zinc-50 disabled:text-zinc-500";
+  "w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-[13px] text-zinc-900 placeholder:text-zinc-400 focus:border-action-line focus:outline-none focus:ring-2 focus:ring-action-line/10 disabled:bg-zinc-50 disabled:text-zinc-500";
 
 export const tableHead = "border-b border-zinc-200 bg-zinc-50/60 text-[11px] font-medium uppercase tracking-wide text-zinc-500";
 export const linkClass = "text-[12px] font-medium text-zinc-600 hover:text-zinc-900";

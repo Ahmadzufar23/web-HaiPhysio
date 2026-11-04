@@ -9,6 +9,7 @@ import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
 import AuthPasswordInput from "./AuthPasswordInput";
 import AuthShell from "./AuthShell";
+import { CLINIC } from "@/constants/clinic";
 
 type ResetStep = "request" | "sent" | "new-password" | "success";
 
@@ -37,7 +38,7 @@ export default function ResetPasswordPageClient() {
   
   // LOGIKA HEADLINE & DESCRIPTION (Otomatis berubah menyesuaikan step)
   const headline = isActivation
-    ? "Selamat Datang di Hai Physio"
+    ? `Selamat Datang di ${CLINIC.brand}`
     : step === "new-password"
     ? "Kembali Amankan Akun Anda" 
     : "Atur Ulang Akses Akun Anda";

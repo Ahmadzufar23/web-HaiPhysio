@@ -162,7 +162,7 @@ export default function AdminLoginForm() {
       <button
         type="submit"
         disabled={isLoading}
-        className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-zinc-900 text-[14px] font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-700"
+        className="flex h-10 w-full items-center justify-center gap-2 rounded-md bg-platform text-[14px] font-medium text-white transition-colors hover:bg-platform-hover disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading && <CircleNotch size={16} className="animate-spin" />}
         {isLoading ? "Memeriksa…" : "Masuk"}

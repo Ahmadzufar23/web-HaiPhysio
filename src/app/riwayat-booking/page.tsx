@@ -34,7 +34,7 @@ function PainTrend({ levels }: { levels: number[] }) {
       {levels.length > 1 && (
       <div className="flex h-7 items-end gap-[3px]" aria-hidden>
         {levels.slice(-10).map((l, i, arr) => (
-          <span key={i} className={`w-[5px] rounded-sm ${i === arr.length - 1 ? "bg-zinc-900" : "bg-zinc-300"}`} style={{ height: `${(l / PAIN_SCALE_MAX) * 100}%` }} />
+          <span key={i} className={`w-[5px] rounded-sm ${i === arr.length - 1 ? "bg-action" : "bg-zinc-300"}`} style={{ height: `${(l / PAIN_SCALE_MAX) * 100}%` }} />
         ))}
       </div>
       )}

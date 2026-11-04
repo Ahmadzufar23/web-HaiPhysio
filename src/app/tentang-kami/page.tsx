@@ -7,6 +7,7 @@ import DigitalCare from "@/components/marketing/DigitalCare";
 import TerapisSection from "@/components/home/TerapisSection";
 import CtaBand from "@/components/home/CtaBand";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
+import { CLINIC } from "@/constants/clinic";
 
 const FACTS = [
   { value: "1985", label: "Klinik Pratama Condet Jaya berdiri" },
@@ -22,7 +23,7 @@ export default function TentangKami() {
       <PageIntro
         crumb="Tentang Kami"
         title="Pengalaman klinik sejak 1985, cara kerja yang modern"
-        lead="Hai Physio adalah layanan fisioterapi di bawah Klinik Pratama Condet Jaya. Kami menangani nyeri dan gangguan gerak dengan pemeriksaan yang teliti, terapi yang terarah, dan pemantauan dari sesi ke sesi."
+        lead={`${CLINIC.brand} adalah layanan fisioterapi di bawah ${CLINIC.name}. Kami menangani nyeri dan gangguan gerak dengan pemeriksaan yang teliti, terapi yang terarah, dan pemantauan dari sesi ke sesi.`}
         image={{ src: "/hero-tentang-kami.png", alt: "Ruang terapi dengan poster anatomi" }}
       >
         <dl className="mt-2 grid max-w-[480px] grid-cols-3 gap-4 border-t border-zinc-200 pt-6">

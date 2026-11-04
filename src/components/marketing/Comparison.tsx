@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Check, Minus } from "@phosphor-icons/react/dist/ssr";
 import { mk, SectionTitle } from "./ui";
+import { CLINIC } from "@/constants/clinic";
 
 const ROWS: { label: string; us: string; usual: string | null }[] = [
   { label: "Membuat janji", us: "Online 24 jam, pilih terapis & jam sendiri", usual: "Telepon atau datang langsung" },
@@ -17,7 +18,7 @@ export default function ComparisonSection({ className = "bg-zinc-50" }: { classN
   return (
     <section id="perbedaan" className={`${mk.section} ${className} scroll-mt-24`}>
       <div className={`${mk.container} flex flex-col gap-10`}>
-        <SectionTitle eyebrow="Perbedaannya" title="Lebih dari sekadar sesi terapi" lead="Perbandingan alur di Hai Physio dengan fisioterapi pada umumnya." />
+        <SectionTitle eyebrow="Perbedaannya" title="Lebih dari sekadar sesi terapi" lead={`Perbandingan alur di ${CLINIC.brand} dengan fisioterapi pada umumnya.`} />
         <div className={`${mk.card} overflow-x-auto`}>
           <table className="w-full min-w-[640px] text-left">
             <thead>
@@ -26,7 +27,7 @@ export default function ComparisonSection({ className = "bg-zinc-50" }: { classN
                 <th className="w-[40%] bg-brand-500 px-5 py-3.5 font-semibold text-brand-950">
                   <span className="inline-flex items-center gap-2">
                     <Image src="/brand/logo-mark.png" alt="" width={16} height={18} className="h-auto w-[14px] brightness-0" />
-                    Hai Physio
+                    {CLINIC.brand}
                   </span>
                 </th>
                 <th className="px-5 py-3.5 font-medium">Pada umumnya</th>

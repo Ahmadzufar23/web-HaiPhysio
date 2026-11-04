@@ -2,20 +2,20 @@
 
 import { ArrowLeft, ArrowRight, Check, WarningCircle } from "@phosphor-icons/react";
 
-// Gaya dasar form booking pasien: putih, abu netral, teks kecil. Warna brand hanya di body map.
+// Gaya dasar form booking pasien: dasar putih dan abu netral, warna klinik untuk aksi dan pilihan aktif.
 export const ui = {
   card: "rounded-xl border border-zinc-200 bg-white",
   label: "text-[12px] font-medium text-zinc-700",
-  hint: "text-[11px] text-zinc-400",
+  hint: "text-[11px] text-zinc-500",
   input:
-    "h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/5",
+    "h-9 w-full rounded-lg border bg-white px-3 text-[13px] text-zinc-900 outline-none transition-colors placeholder:text-zinc-400 focus:border-action-line focus:ring-2 focus:ring-action-line/10",
   btnPrimary:
-    "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400",
+    "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-action px-4 text-[13px] font-medium text-on-action transition-colors hover:bg-action-hover disabled:cursor-not-allowed disabled:bg-zinc-200 disabled:text-zinc-400",
   btnSecondary:
     "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-zinc-200 bg-white px-4 text-[13px] font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-50",
   /** Kartu pilihan (layanan, paket, slot) */
   option: (selected: boolean) =>
-    `rounded-lg border text-left transition-colors ${selected ? "border-zinc-900 bg-zinc-50 ring-1 ring-zinc-900" : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50"}`,
+    `rounded-lg border text-left transition-colors ${selected ? "border-action-line bg-action-soft ring-1 ring-action-line" : "border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50"}`,
 };
 
 export const STEPS = ["Layanan & paket", "Jadwal", "Data & keluhan", "Konfirmasi"] as const;
@@ -30,7 +30,7 @@ export function Stepper({ current }: { current: number }) {
         const active = current === num;
         return (
           <li key={label} className="flex flex-col gap-2" aria-current={active ? "step" : undefined}>
-            <span className={`h-[3px] rounded-full ${done || active ? "bg-zinc-900" : "bg-zinc-200"}`} aria-hidden />
+            <span className={`h-[3px] rounded-full ${done || active ? "bg-action" : "bg-zinc-200"}`} aria-hidden />
             <span className={`flex items-center gap-1 text-[12px] ${active ? "font-medium text-zinc-900" : done ? "text-zinc-600" : "text-zinc-400"}`}>
               {done && <Check size={11} weight="bold" className="shrink-0" />}
               <span className={active ? "" : "hidden sm:inline"}>{label}</span>
@@ -75,8 +75,8 @@ export const inputClass = (error?: string) => `${ui.input} ${error ? "border-red
 /** Indikator radio bulat untuk kartu pilihan */
 export function RadioDot({ checked }: { checked: boolean }) {
   return (
-    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${checked ? "border-zinc-900" : "border-zinc-300"}`} aria-hidden>
-      {checked && <span className="h-2 w-2 rounded-full bg-zinc-900" />}
+    <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${checked ? "border-action-line" : "border-zinc-300"}`} aria-hidden>
+      {checked && <span className="h-2 w-2 rounded-full bg-action" />}
     </span>
   );
 }

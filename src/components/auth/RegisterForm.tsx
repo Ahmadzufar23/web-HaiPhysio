@@ -16,6 +16,9 @@ type RegisterErrors = {
   phone?: string;
   birthDate?: string;
   gender?: string;
+  occupation?: string;
+  height?: string;
+  weight?: string;
   password?: string;
   confirmPassword?: string;
 };
@@ -36,6 +39,9 @@ export default function RegisterForm() {
     phone: "",
     birthDate: "",
     gender: "",
+    occupation: "",
+    height: "",
+    weight: "",
     password: "",
     confirmPassword: "",
   });
@@ -77,6 +83,24 @@ export default function RegisterForm() {
       nextErrors.gender = "Jenis kelamin wajib dipilih.";
     }
 
+    if (!values.occupation.trim()) {
+      nextErrors.occupation = "Pekerjaan wajib diisi.";
+    }
+
+    const height = Number(values.height);
+    if (!values.height) {
+      nextErrors.height = "Tinggi badan wajib diisi.";
+    } else if (!Number.isInteger(height) || height < 50 || height > 250) {
+      nextErrors.height = "Isi tinggi badan 50–250 cm tanpa koma.";
+    }
+
+    const weight = Number(values.weight.replace(",", "."));
+    if (!values.weight) {
+      nextErrors.weight = "Berat badan wajib diisi.";
+    } else if (Number.isNaN(weight) || weight < 2 || weight > 300) {
+      nextErrors.weight = "Isi berat badan 2–300 kg.";
+    }
+
     if (!values.password) {
       nextErrors.password = "Kata sandi wajib diisi.";
     } else if (values.password.length < 8) {
@@ -114,6 +138,10 @@ export default function RegisterForm() {
         phone: values.phone,
         dateOfBirth: values.birthDate,
         gender: values.gender,
+        occupation: values.occupation.trim(),
+        heightCm: Number(values.height),
+        // Koma desimal ("65,5") lazim di keyboard Indonesia
+        weightKg: Number(values.weight.replace(",", ".")),
         password: values.password,
         passwordConfirmation: values.confirmPassword,
         termsAgreement: agreed,
@@ -242,6 +270,39 @@ export default function RegisterForm() {
             <span className="text-[13px] leading-5 text-slate-500">Tidak bisa diubah setelah akun dibuat.</span>
           )}
         </fieldset>
+        <AuthInput
+          label="Pekerjaan"
+          name="occupation"
+          type="text"
+          autoComplete="organization-title"
+          maxLength={100}
+          placeholder="Mis. karyawan kantor, guru, atlet"
+          value={values.occupation}
+          onChange={(event) => updateField("occupation", event.target.value)}
+          error={errors.occupation}
+        />
+        <div className="grid grid-cols-2 gap-3">
+          <AuthInput
+            label="Tinggi Badan (cm)"
+            name="height"
+            type="text"
+            inputMode="numeric"
+            placeholder="170"
+            value={values.height}
+            onChange={(event) => updateField("height", event.target.value.replace(/\D/g, ""))}
+            error={errors.height}
+          />
+          <AuthInput
+            label="Berat Badan (kg)"
+            name="weight"
+            type="text"
+            inputMode="decimal"
+            placeholder="65"
+            value={values.weight}
+            onChange={(event) => updateField("weight", event.target.value.replace(/[^\d.,]/g, ""))}
+            error={errors.weight}
+          />
+        </div>
         <div className="space-y-2">
           <AuthPasswordInput
             label="Kata Sandi"

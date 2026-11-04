@@ -27,7 +27,7 @@ function PeriodFilter({ value, onChange }: { value: DashboardPeriod; onChange: (
           role="tab"
           aria-selected={value === p.value}
           onClick={() => onChange(p.value)}
-          className={`rounded px-3 py-1 text-[12px] font-medium transition-colors ${value === p.value ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+          className={`rounded px-3 py-1 text-[12px] font-medium transition-colors ${value === p.value ? "bg-action text-on-action" : "text-zinc-600 hover:text-zinc-900"}`}
         >
           {p.label}
         </button>

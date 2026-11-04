@@ -13,9 +13,10 @@ import {
   Heartbeat,
   HandHeart
 } from "@phosphor-icons/react";
+import { CLINIC } from "@/constants/clinic";
 
 // Alamat klinik — satu sumber untuk konfirmasi booking, reschedule, & profil admin
-export const CLINIC_LOCATION = "Hai Physio, Klinik Pratama Condet Jaya, Jl. Condet Raya No. 18, Batu Ampar, Kramat Jati, Jakarta Timur 13520";
+export const CLINIC_LOCATION = `${CLINIC.brand}, ${CLINIC.name}, ${CLINIC.address}`;
 
 // 1. Data Fokus Layanan Kami (Dipakai di Beranda & Layanan)
 export const servicesData = [

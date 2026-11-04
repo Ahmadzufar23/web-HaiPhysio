@@ -1,9 +1,14 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import type { SessionDetail } from "@/types/api.types";
-import { StatusBadge } from "@/components/admin/shared/AdminUI";
-import { formatDate, formatSlotTime, initials } from "@/lib/format";
+import { StatusBadge, inputClass } from "@/components/admin/shared/AdminUI";
+import { adminService } from "@/services/adminService";
+import { getApiErrorMessage } from "@/app/utils/api";
+import { formatDate, formatSlotTime } from "@/lib/format";
 import { painLabel } from "@/constants/painScale";
-import { genderLabel } from "@/constants/patient";
+import { bmiOf, genderLabel } from "@/constants/patient";
 
 const ageFrom = (dob: string | null) => {
   if (!dob) return null;
@@ -14,24 +19,127 @@ const ageFrom = (dob: string | null) => {
   return age;
 };
 
-/** Kolom kiri: foto profil, identitas, keluhan saat booking, dan riwayat sesi pasien. */
-export default function PatientCard({ data }: { data: SessionDetail }) {
+/** TB/BB + IMT. Terapis mengukur ulang saat pemeriksaan; simpan = langsung mengubah akun pasien. */
+function BodyMeasurements({ patient, onSaved }: { patient: SessionDetail["patient"]; onSaved: () => void }) {
+  const [editing, setEditing] = useState(false);
+  const [height, setHeight] = useState(patient.heightCm?.toString() ?? "");
+  const [weight, setWeight] = useState(patient.weightKg?.toString() ?? "");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const bmi = bmiOf(patient.heightCm, patient.weightKg);
+
+  const save = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError("");
+    try {
+      await adminService.updatePatientBody(patient.id, {
+        height_cm: Number(height),
+        // Koma desimal ("65,5") lazim di keyboard Indonesia
+        weight_kg: Number(weight.replace(",", ".")),
+      });
+      setEditing(false);
+      onSaved();
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Gagal menyimpan tinggi & berat badan."));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="mt-4 border-t border-surface-2 pt-3">
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-[12px] font-medium text-brand-900/55">Tinggi & berat badan</p>
+        {!editing && (
+          <button type="button" onClick={() => setEditing(true)} className="text-[12px] font-medium text-brand-900/70 hover:text-brand-900">
+            Perbarui
+          </button>
+        )}
+      </div>
+      {editing ? (
+        <form onSubmit={save} className="mt-2 flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2">
+            <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+              Tinggi (cm)
+              <input
+                inputMode="numeric"
+                value={height}
+                onChange={(e) => setHeight(e.target.value.replace(/\D/g, ""))}
+                className={`${inputClass} h-8 tabular-nums`}
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+              Berat (kg)
+              <input
+                inputMode="decimal"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value.replace(/[^\d.,]/g, ""))}
+                className={`${inputClass} h-8 tabular-nums`}
+              />
+            </label>
+          </div>
+          {error && <p className="text-[12px] text-red-700">{error}</p>}
+          <p className="text-[11px] text-zinc-500">Tersimpan langsung ke akun pasien.</p>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setEditing(false);
+                setError("");
+                setHeight(patient.heightCm?.toString() ?? "");
+                setWeight(patient.weightKg?.toString() ?? "");
+              }}
+              className="h-8 rounded-md border border-zinc-200 px-3 text-[12px] text-zinc-700 hover:border-zinc-400"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              disabled={saving || !height || !weight}
+              className="h-8 rounded-md bg-action px-3 text-[12px] font-medium text-on-action disabled:opacity-50"
+            >
+              {saving ? "Menyimpan…" : "Simpan"}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <dl className="mt-2 space-y-2 text-[13px]">
+          <div className="flex justify-between gap-3">
+            <dt className="text-brand-900/55">Tinggi badan</dt>
+            <dd className={patient.heightCm ? "tabular-nums text-brand-900" : "text-brand-900/40"}>{patient.heightCm ? `${patient.heightCm} cm` : "Belum diisi"}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-brand-900/55">Berat badan</dt>
+            <dd className={patient.weightKg ? "tabular-nums text-brand-900" : "text-brand-900/40"}>{patient.weightKg ? `${patient.weightKg} kg` : "Belum diisi"}</dd>
+          </div>
+          <div className="flex justify-between gap-3">
+            <dt className="text-brand-900/55">IMT</dt>
+            {bmi ? (
+              <dd className="text-right">
+                <span className="tabular-nums text-brand-900">{bmi.value}</span>
+                <span className={`ml-1.5 rounded border px-1.5 py-0.5 text-[11px] ${bmi.ideal ? "border-zinc-200 text-zinc-600" : "border-red-200 text-red-700"}`}>
+                  {bmi.label}
+                </span>
+              </dd>
+            ) : (
+              <dd className="text-brand-900/40">—</dd>
+            )}
+          </div>
+        </dl>
+      )}
+    </div>
+  );
+}
+
+/** Kolom kiri: identitas, TB/BB & IMT, keluhan saat booking, dan riwayat sesi pasien. */
+export default function PatientCard({ data, onPatientUpdated }: { data: SessionDetail; onPatientUpdated: () => void }) {
   const { patient, session, history } = data;
   const age = ageFrom(patient.dateOfBirth);
 
   return (
     <div className="flex flex-col gap-4">
       <section className="overflow-hidden rounded-xl border border-surface-2 bg-white">
-        <div className="flex aspect-[4/3] items-center justify-center bg-surface lg:aspect-square">
-          {patient.photoUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- data URL foto profil pasien
-            <img src={patient.photoUrl} alt={`Foto ${patient.fullName}`} className="h-full w-full object-cover" />
-          ) : (
-            <span className="text-[40px] font-semibold text-brand-900/30" aria-label="Belum ada foto">
-              {initials(patient.fullName)}
-            </span>
-          )}
-        </div>
         <div className="px-4 py-4">
           <h1 className="text-[14px] font-semibold text-brand-900">{patient.fullName}</h1>
           {session.source === "walk_in" && (
@@ -48,12 +156,10 @@ export default function PatientCard({ data }: { data: SessionDetail }) {
                 <dd className="text-brand-900">{age} tahun</dd>
               </div>
             )}
-            {patient.occupation && (
-              <div className="flex justify-between gap-3">
-                <dt className="text-brand-900/55">Pekerjaan</dt>
-                <dd className="text-right text-brand-900">{patient.occupation}</dd>
-              </div>
-            )}
+            <div className="flex justify-between gap-3">
+              <dt className="text-brand-900/55">Pekerjaan</dt>
+              <dd className={patient.occupation ? "text-right text-brand-900" : "text-brand-900/40"}>{patient.occupation ?? "Belum diisi"}</dd>
+            </div>
             <div className="flex justify-between gap-3">
               <dt className="text-brand-900/55">Tingkat nyeri</dt>
               <dd className="font-medium text-brand-900">{painLabel(session.painLevel)}</dd>
@@ -73,6 +179,7 @@ export default function PatientCard({ data }: { data: SessionDetail }) {
               </div>
             )}
           </dl>
+          {patient.id && <BodyMeasurements key={`${patient.heightCm}-${patient.weightKg}`} patient={patient} onSaved={onPatientUpdated} />}
           {session.complaintNotes && (
             <div className="mt-4 border-t border-surface-2 pt-3">
               <p className="text-[12px] font-medium text-brand-900/55">Keluhan saat booking</p>

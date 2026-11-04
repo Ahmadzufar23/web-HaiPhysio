@@ -89,6 +89,8 @@ export interface AdminPatient {
   gender: string | null;
   address: string | null;
   occupation: string | null;
+  heightCm: number | null;
+  weightKg: number | null;
   registeredAt: string;
   totalBookings: number;
   totalSessions: number;
@@ -271,7 +273,8 @@ export interface SessionDetail {
     email: string | null;
     phone: string | null;
     dateOfBirth: string | null;
-    photoUrl: string | null;
+    heightCm: number | null;
+    weightKg: number | null;
     gender: string | null;
     address: string | null;
     occupation: string | null;

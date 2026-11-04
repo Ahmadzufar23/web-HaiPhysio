@@ -35,7 +35,7 @@ function VasScale({ label, value, onChange, disabled }: { label: string; value: 
             disabled={disabled}
             onClick={() => onChange(value === v ? null : v)}
             className={`h-7 w-7 rounded-md border text-[12px] tabular-nums transition-colors disabled:cursor-not-allowed ${
-              value === v ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
+              value === v ? "border-action bg-action text-on-action" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
             }`}
           >
             {v}

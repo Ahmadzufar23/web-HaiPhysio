@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { WhatsappLogo, EnvelopeSimple, InstagramLogo, MapPin, Clock } from "@phosphor-icons/react";
 import { CLINIC } from "@/constants/clinic";
+import { PLATFORM } from "@/constants/platform";
 
 const menu = [
   { label: "Beranda", href: "/" },
@@ -32,7 +33,7 @@ export default function Footer() {
           {/* Figur logo kuning asli + nama putih (teks hitam bawaan logo tidak terbaca di latar gelap) */}
           <span className="flex items-center gap-2.5">
             <Image src="/brand/logo-mark.png" alt="" width={64} height={71} className="h-auto w-10" />
-            <span className="text-[22px] font-extrabold tracking-[-0.02em] text-white">Hai Physio</span>
+            <span className="text-[22px] font-extrabold tracking-[-0.02em] text-white">{CLINIC.brand}</span>
           </span>
           <p className="max-w-[300px] text-[14px] leading-relaxed text-white/60">
             Klinik fisioterapi di bawah Klinik Pratama Condet Jaya, Jakarta Timur. Efektif dan progresif.
@@ -91,9 +92,12 @@ export default function Footer() {
       </div>
 
       <div className="border-t border-white/10">
-        <p className="mx-auto w-full max-w-[1200px] px-5 py-5 text-[13px] text-white/40 md:px-8">
-          © {new Date().getFullYear()} Hai Physio, Klinik Pratama Condet Jaya.
-        </p>
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col gap-1 px-5 py-5 text-[13px] text-white/40 sm:flex-row sm:justify-between md:px-8">
+          <p>
+            © {new Date().getFullYear()} {CLINIC.brand}, {CLINIC.name}.
+          </p>
+          <p>Ditenagai oleh {PLATFORM.name}</p>
+        </div>
       </div>
     </footer>
   );

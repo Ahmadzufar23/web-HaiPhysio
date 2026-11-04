@@ -11,7 +11,7 @@ interface ModalGantiPasswordProps {
 }
 
 const inputCls =
-  "h-9 w-full rounded-lg border border-zinc-200 bg-white pl-3 pr-9 text-[13px] text-zinc-900 outline-none transition-colors focus:border-zinc-900 focus:ring-2 focus:ring-zinc-900/5";
+  "h-9 w-full rounded-lg border border-zinc-200 bg-white pl-3 pr-9 text-[13px] text-zinc-900 outline-none transition-colors focus:border-action-line focus:ring-2 focus:ring-action-line/10";
 
 function PasswordField({ label, hint, value, onChange, autoComplete }: { label: string; hint?: string; value: string; onChange: (v: string) => void; autoComplete: string }) {
   const [show, setShow] = useState(false);
@@ -104,21 +104,21 @@ export default function ModalGantiPassword({ isOpen, onClose }: ModalGantiPasswo
               <button type="button" onClick={handleClose} className="inline-flex h-9 items-center rounded-lg border border-zinc-200 bg-white px-4 text-[13px] font-medium text-zinc-700 hover:bg-zinc-50">
                 Batal
               </button>
-              <button type="submit" disabled={isLoading} className="inline-flex h-9 items-center rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white hover:bg-zinc-800 disabled:opacity-60">
+              <button type="submit" disabled={isLoading} className="inline-flex h-9 items-center rounded-lg bg-action px-4 text-[13px] font-medium text-on-action hover:bg-action-hover disabled:opacity-60">
                 {isLoading ? "Menyimpan…" : "Simpan kata sandi"}
               </button>
             </div>
           </form>
         ) : (
           <div className="flex flex-col items-start p-5">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-white">
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-action text-on-action">
               <Check size={14} weight="bold" />
             </span>
             <h3 id="pw-title" className="mt-3 text-[15px] font-semibold text-zinc-900">
               Kata sandi diperbarui
             </h3>
             <p className="mt-1 text-[13px] text-zinc-500">Gunakan kata sandi baru saat login berikutnya. Sesi di perangkat lain sudah keluar.</p>
-            <button onClick={handleClose} className="mt-5 inline-flex h-9 items-center self-end rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white hover:bg-zinc-800">
+            <button onClick={handleClose} className="mt-5 inline-flex h-9 items-center self-end rounded-lg bg-action px-4 text-[13px] font-medium text-on-action hover:bg-action-hover">
               Selesai
             </button>
           </div>

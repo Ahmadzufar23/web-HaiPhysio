@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { CheckCircle } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
 import { getApiErrorMessage } from "@/app/utils/api";
-import { CLINIC_LOCATION } from "@/constants/data";
+import { CLINIC } from "@/constants/clinic";
 
 export default function EditProfileForm() {
   const [isEditing, setIsEditing] = useState(false);
@@ -29,7 +29,7 @@ export default function EditProfileForm() {
         if (user) {
           setFormData((prev) => ({
             ...prev,
-            fullName: user.full_name || user.name || "Admin Hai Physio",
+            fullName: user.full_name || user.name || "Admin",
             email: user.email || "",
             phone: user.phone || "",
           }));
@@ -219,7 +219,7 @@ export default function EditProfileForm() {
           <div className="flex flex-col gap-2 md:col-span-2">
             <label className="text-[13px] font-medium text-brand-900">Clinic Address</label>
             <textarea 
-              value={CLINIC_LOCATION}
+              value={`${CLINIC.name}, ${CLINIC.address}`}
               disabled 
               rows={2}
               className="w-full p-3.5 rounded-xl border border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed text-[13px] resize-none"

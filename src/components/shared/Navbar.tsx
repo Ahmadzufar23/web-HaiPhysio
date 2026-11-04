@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, useRef } from "react";
 import { List, X, UserCircle, ClockCounterClockwise, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
+import { CLINIC } from "@/constants/clinic";
 
 const navItems = [
   { label: "Beranda", path: "/" },
@@ -75,10 +76,10 @@ export default function Navbar() {
         }`}
       >
         {/* LOGO */}
-        <Link href="/" aria-label="Hai Physio, Beranda" className="relative flex w-[78px] items-center">
+        <Link href="/" aria-label={`${CLINIC.brand}, Beranda`} className="relative flex w-[78px] items-center">
           <Image
             src="/fisio_nobg.png"
-            alt="Logo Hai Physio"
+            alt={`Logo ${CLINIC.brand}`}
             width={125}
             height={80}
             priority

@@ -9,7 +9,7 @@ import { formatRupiah } from "@/lib/format";
 import { ErrorNotice, RadioDot, Section, StepNav, ui } from "./BookingUI";
 import type { BookingDraft } from "./bookingDraft";
 
-type Step1Result = Pick<BookingDraft, "serviceId" | "serviceName" | "packageId" | "patientPackageId" | "packageName" | "packagePriceLabel" | "sessionQuota">;
+type Step1Result = Pick<BookingDraft, "serviceId" | "serviceName" | "packageId" | "patientPackageId" | "packageName" | "packagePriceLabel" | "isHomeVisit" | "sessionQuota">;
 
 interface Step1Props {
   initial: BookingDraft;
@@ -55,6 +55,7 @@ export default function Step1PilihLayanan({ initial, onNext }: Step1Props) {
         patientPackageId: ownedPackage.id,
         packageName: ownedPackage.packageName,
         packagePriceLabel: `Sisa ${ownedPackage.remaining} dari ${ownedPackage.totalSessions} sesi`,
+        isHomeVisit: false,
         sessionQuota: ownedPackage.remaining,
       });
       return;
@@ -67,6 +68,7 @@ export default function Step1PilihLayanan({ initial, onNext }: Step1Props) {
       patientPackageId: "",
       packageName: selectedPackage.name,
       packagePriceLabel: priceLabel(selectedPackage),
+      isHomeVisit: selectedPackage.isHomeVisit,
       // Homecare tanpa jumlah sesi dihitung 1 sesi per pemesanan (sama dengan BE)
       sessionQuota: selectedPackage.totalSessions ?? 1,
     });

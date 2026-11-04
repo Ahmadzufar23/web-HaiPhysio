@@ -5,6 +5,8 @@ export type PatientDraft = {
   name: string;
   phone: string;
   email: string;
+  /** Hanya untuk Homecare: alamat kunjungan, diisi otomatis dari profil */
+  address: string;
   complaint: string;
   painPoints: string[];
   painScale: number | null;
@@ -27,6 +29,8 @@ export type BookingDraft = {
   patientPackageId: string;
   packageName: string;
   packagePriceLabel: string;
+  /** Paket Homecare: setelah booking pasien diarahkan ke WhatsApp klinik */
+  isHomeVisit: boolean;
   /** Maksimal jadwal yang bisa dipilih: jumlah sesi paket baru, atau sisa sesi paket lama */
   sessionQuota: number;
   slots: SelectedSlot[];
@@ -40,6 +44,7 @@ export const emptyDraft: BookingDraft = {
   patientPackageId: "",
   packageName: "",
   packagePriceLabel: "",
+  isHomeVisit: false,
   sessionQuota: 0,
   slots: [],
   patientData: null,

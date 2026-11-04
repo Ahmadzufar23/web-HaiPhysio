@@ -15,11 +15,11 @@ const monthShort = new Intl.DateTimeFormat("id-ID", { timeZone: "UTC", month: "s
 const noon = (d: string) => new Date(`${d.slice(0, 10)}T12:00:00Z`);
 
 const STATUS: Record<BookingStatus, { label: string; cls: string; dot?: string }> = {
-  Terkonfirmasi: { label: "Terjadwal", cls: "border-zinc-300 text-zinc-800", dot: "bg-brand-500" },
-  Berlangsung: { label: "Berlangsung", cls: "border-zinc-900 text-zinc-900", dot: "bg-zinc-900 animate-pulse" },
-  Selesai: { label: "Selesai", cls: "border-transparent bg-zinc-100 text-zinc-700" },
-  Dibatalkan: { label: "Dibatalkan", cls: "border-red-200 text-red-700" },
-  "Tidak Hadir": { label: "Tidak hadir", cls: "border-red-200 text-red-700" },
+  Terkonfirmasi: { label: "Terjadwal", cls: "border-amber-200 bg-amber-50 text-amber-800", dot: "bg-amber-500" },
+  Berlangsung: { label: "Berlangsung", cls: "border-blue-200 bg-blue-50 text-blue-700", dot: "bg-blue-600" },
+  Selesai: { label: "Selesai", cls: "border-green-200 bg-green-50 text-green-700" },
+  Dibatalkan: { label: "Dibatalkan", cls: "border-red-200 bg-red-50 text-red-700" },
+  "Tidak Hadir": { label: "Tidak hadir", cls: "border-orange-200 bg-orange-50 text-orange-700" },
 };
 
 export function PatientStatusBadge({ status }: { status: BookingStatus }) {
@@ -35,8 +35,8 @@ export function PatientStatusBadge({ status }: { status: BookingStatus }) {
 /** Blok tanggal di kiri linimasa */
 function DateBlock({ date, muted }: { date: string; muted?: boolean }) {
   return (
-    <div className={`flex w-12 shrink-0 flex-col items-center self-start rounded-lg border py-1.5 ${muted ? "border-zinc-200 bg-white" : "border-zinc-900 bg-zinc-900 text-white"}`}>
-      <span className={`text-[10px] uppercase tracking-wide ${muted ? "text-zinc-400" : "text-white/60"}`}>{monthShort.format(noon(date))}</span>
+    <div className={`flex w-12 shrink-0 flex-col items-center self-start rounded-lg border py-1.5 ${muted ? "border-zinc-200 bg-white" : "border-action bg-action text-on-action"}`}>
+      <span className={`text-[10px] uppercase tracking-wide ${muted ? "text-zinc-400" : "text-on-action/70"}`}>{monthShort.format(noon(date))}</span>
       <span className={`text-[17px] font-semibold leading-tight tabular-nums ${muted ? "text-zinc-900" : ""}`}>{Number(date.slice(8, 10))}</span>
     </div>
   );
@@ -242,7 +242,7 @@ export default function RiwayatBooking({ bookings, onChanged }: { bookings: Pati
                 role="tab"
                 aria-selected={filter === f.key}
                 onClick={() => setFilter(f.key)}
-                className={`h-7 rounded-md px-2.5 text-[12px] transition-colors ${filter === f.key ? "bg-zinc-900 font-medium text-white" : "text-zinc-500 hover:text-zinc-900"}`}
+                className={`h-7 rounded-md px-2.5 text-[12px] transition-colors ${filter === f.key ? "bg-action font-medium text-on-action" : "text-zinc-500 hover:text-zinc-900"}`}
               >
                 {f.label}
               </button>

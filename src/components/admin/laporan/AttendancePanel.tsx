@@ -8,12 +8,12 @@ import { EmptyState, Notice, Panel, btn, inputClass, tableHead } from "@/compone
 import { formatClock, formatDate, formatHours } from "@/lib/format";
 
 const STATUS: Record<AttendanceDayStatus, { label: string; dot: string; text: string }> = {
-  hadir: { label: "Hadir", dot: "bg-zinc-900", text: "text-zinc-900" },
-  hadir_tanpa_pasien: { label: "Hadir · tanpa pasien", dot: "bg-zinc-900", text: "text-zinc-900" },
-  sakit: { label: "Sakit", dot: "bg-zinc-400", text: "text-zinc-600" },
-  izin: { label: "Izin", dot: "bg-zinc-400", text: "text-zinc-600" },
+  hadir: { label: "Hadir", dot: "bg-green-600", text: "text-green-700" },
+  hadir_tanpa_pasien: { label: "Hadir · tanpa pasien", dot: "bg-green-600", text: "text-green-700" },
+  sakit: { label: "Sakit", dot: "bg-orange-500", text: "text-orange-700" },
+  izin: { label: "Izin", dot: "bg-blue-600", text: "text-blue-700" },
   tidak_hadir: { label: "Tidak hadir", dot: "bg-red-600", text: "text-red-700" },
-  belum_ditandai: { label: "Belum ditandai", dot: "border border-zinc-400 bg-white", text: "text-zinc-500" },
+  belum_ditandai: { label: "Belum ditandai", dot: "bg-amber-500", text: "text-amber-800" },
 };
 
 const MARK_OPTIONS: { value: AttendanceMarkStatus; label: string }[] = [
@@ -71,7 +71,7 @@ function MarkForm({ day, onDone, onCancel }: { day: AttendanceDay; onDone: () =>
             aria-checked={status === o.value}
             onClick={() => setStatus(o.value)}
             className={`h-8 rounded-md border px-3 text-[12px] ${
-              status === o.value ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
+              status === o.value ? "border-action bg-action text-on-action" : "border-zinc-200 bg-white text-zinc-700 hover:border-zinc-400"
             }`}
           >
             {o.label}

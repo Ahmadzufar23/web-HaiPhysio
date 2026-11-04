@@ -28,6 +28,19 @@
   --color-surface: #f4f5f7;
   --color-surface-2: #eaecf0;
 
+  /* Warna aksi: tombol utama dan pilihan aktif. Default = warna klinik, panel staf menimpanya
+     di .admin-theme. Untuk white-label cukup ubah enam token ini, termasuk warna teks di atasnya. */
+  --color-action: #f5c900;
+  --color-action-hover: #e0b400;
+  --color-on-action: #0b0b0d;
+  --color-action-soft: #fffbe6;
+  --color-action-line: #b58a00; /* garis pilihan & fokus, minimal 3:1 di atas putih */
+  --color-action-ink: #8a6500;  /* teks dan garis grafik, di atas putih */
+
+  /* Identitas platform (teal logo Hyungtang Care), untuk layar staf di luar .admin-theme */
+  --color-platform: #0f766e;
+  --color-platform-hover: #115e59;
+
   /* Alias lama (kompatibilitas) */
   --color-primary-light: var(--color-brand-50);
   --color-primary: var(--color-brand-600);
@@ -70,61 +83,30 @@ input[type="password"] {
   -moz-appearance: textfield;
 }
 
-/* Tema dashboard admin: netral (putih, abu, hitam). Token kuning & warna status
-   dipetakan ulang HANYA di dalam .admin-theme, halaman publik tetap memakai kuning logo.
-   Kuning asli hanya tersisa di logo dan titik nyeri pasien pada gambar organ. */
+/* Tema panel staf: dasar netral, teal Hyungtang Care untuk aksi, warna status tetap bermakna.
+   Token kuning dipetakan ulang HANYA di dalam .admin-theme, halaman publik tetap memakai warna klinik. */
 .admin-theme {
-  --color-brand-50: #f4f4f5;
-  --color-brand-100: #e4e4e7;
-  --color-brand-200: #d4d4d8;
-  --color-brand-300: #a1a1aa;
+  --color-action: #0f766e;
+  --color-action-hover: #115e59;
+  --color-on-action: #ffffff;
+  --color-action-soft: #f0fdfa;
+  --color-action-line: #0f766e;
+  --color-action-ink: #0f766e;
+
+  --color-brand-50: #f0fdfa;
+  --color-brand-100: #ccfbf1;
+  --color-brand-200: #99f6e4;
+  --color-brand-300: #5eead4;
   --color-brand-400: #3f3f46;
-  --color-brand-600: #18181b;   /* tombol utama: hitam */
-  --color-brand-700: #27272a;
+  --color-brand-600: #0f766e;   /* tombol utama halaman lama */
+  --color-brand-700: #115e59;
   --color-brand-800: #3f3f46;
   --color-brand-900: #18181b;
-  --color-gold-600: #a1a1aa;    /* border fokus */
-  --color-gold-700: #3f3f46;    /* teks aksen → abu gelap */
-  --color-gold-800: #18181b;
+  --color-gold-600: #0f766e;    /* border fokus */
+  --color-gold-700: #0f766e;    /* teks aksen */
+  --color-gold-800: #115e59;
   --color-surface: #fafafa;
   --color-surface-2: #e4e4e7;
-
-  /* Warna status di halaman lama → abu; merah tetap untuk aksi berbahaya */
-  --color-green-50: #f4f4f5;
-  --color-green-100: #e4e4e7;
-  --color-green-200: #e4e4e7;
-  --color-green-300: #d4d4d8;
-  --color-green-400: #a1a1aa;
-  --color-green-500: #52525b;
-  --color-green-600: #3f3f46;
-  --color-green-700: #27272a;
-  --color-emerald-50: #f4f4f5;
-  --color-emerald-200: #e4e4e7;
-  --color-emerald-500: #52525b;
-  --color-emerald-600: #3f3f46;
-  --color-emerald-700: #27272a;
-  --color-emerald-800: #27272a;
-  --color-orange-50: #f4f4f5;
-  --color-orange-100: #e4e4e7;
-  --color-orange-300: #d4d4d8;
-  --color-orange-500: #71717a;
-  --color-orange-600: #52525b;
-  --color-orange-700: #3f3f46;
-  --color-amber-50: #f4f4f5;
-  --color-amber-200: #e4e4e7;
-  --color-amber-500: #71717a;
-  --color-amber-600: #52525b;
-  --color-amber-700: #3f3f46;
-  --color-amber-800: #27272a;
-  --color-sky-50: #f4f4f5;
-  --color-sky-500: #18181b;
-  --color-sky-700: #27272a;
-  --color-sky-800: #18181b;
-  --color-blue-50: #f4f4f5;
-  --color-blue-500: #52525b;
-  --color-blue-600: #3f3f46;
-  --color-red-50: #fef2f2;
-  --color-red-500: #dc2626;
 
   color: var(--color-brand-900);
   background: #fafafa;

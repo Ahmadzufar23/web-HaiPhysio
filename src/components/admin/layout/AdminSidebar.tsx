@@ -9,6 +9,7 @@ import { profileService } from "@/services/profileService";
 import ModalLogout from "@/components/profile/ModalLogout";
 import { useStaffUser } from "./AdminGuard";
 import type { StaffRole } from "@/types/api.types";
+import { PLATFORM } from "@/constants/platform";
 
 type NavItem = { title: string; path: string; icon: Icon; roles: StaffRole[] };
 
@@ -67,8 +68,8 @@ export default function AdminSidebar({ open, onClose }: { open: boolean; onClose
       >
         <div className="flex h-12 items-center justify-between gap-2 px-4">
           <Link href="/admin" className="flex items-center gap-2" onClick={onClose}>
-            <Image src="/fisio_nobg.png" alt="" width={20} height={20} className="h-5 w-auto object-contain" />
-            <span className="text-[13px] font-semibold text-zinc-900">Hai Physio</span>
+            <Image src={PLATFORM.logo} alt="" width={28} height={28} unoptimized className="h-7 w-7" />
+            <span className="text-[14px] font-semibold tracking-tight text-zinc-900">{PLATFORM.name}</span>
           </Link>
           <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:text-zinc-900 lg:hidden" aria-label="Tutup menu">
             <X size={16} />
@@ -81,7 +82,7 @@ export default function AdminSidebar({ open, onClose }: { open: boolean; onClose
             if (visible.length === 0) return null;
             return (
               <div key={group} className="mb-4">
-                <p className="mb-1 px-2 text-[11px] font-medium text-zinc-400">{group}</p>
+                <p className="mb-1 px-2 text-[11px] font-medium text-zinc-500">{group}</p>
                 <ul className="flex flex-col gap-px">
                   {visible.map(({ title, path, icon: IconEl }) => {
                     const active = isActive(path);
@@ -92,10 +93,10 @@ export default function AdminSidebar({ open, onClose }: { open: boolean; onClose
                           onClick={onClose}
                           aria-current={active ? "page" : undefined}
                           className={`flex items-center gap-2.5 rounded-md px-2 py-1.5 text-[13px] transition-colors ${
-                            active ? "bg-zinc-100 font-medium text-zinc-900" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
+                            active ? "bg-action-soft font-medium text-action-ink" : "text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900"
                           }`}
                         >
-                          <IconEl size={16} className={active ? "text-zinc-900" : "text-zinc-400"} />
+                          <IconEl size={16} weight={active ? "fill" : "regular"} className={active ? "text-action-ink" : "text-zinc-500"} />
                           {title}
                         </Link>
                       </li>

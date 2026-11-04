@@ -81,7 +81,7 @@ export default function ContactSection({
 
           <div className="min-h-[360px] overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-100">
             <iframe
-              title="Peta lokasi Klinik Hai Physio"
+              title={`Peta lokasi Klinik ${CLINIC.brand}`}
               src={MAPS_EMBED_URL}
               width="100%"
               height="100%"

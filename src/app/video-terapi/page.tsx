@@ -62,7 +62,7 @@ export default function VideoTerapiPage() {
                     {doneCount} dari {items.length} selesai
                   </p>
                   <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-zinc-100">
-                    <div className="h-full rounded-full bg-zinc-900 transition-all" style={{ width: `${(doneCount / items.length) * 100}%` }} />
+                    <div className="h-full rounded-full bg-action transition-all" style={{ width: `${(doneCount / items.length) * 100}%` }} />
                   </div>
                 </div>
               </header>
@@ -81,7 +81,7 @@ export default function VideoTerapiPage() {
                           <Check size={11} weight="bold" /> Selesai
                         </span>
                       ) : (
-                        <span className="inline-flex h-8 shrink-0 items-center rounded-lg bg-zinc-900 px-3 text-[12px] font-medium text-white">Mulai</span>
+                        <span className="inline-flex h-8 shrink-0 items-center rounded-lg bg-action px-3 text-[12px] font-medium text-on-action">Mulai</span>
                       )}
                     </Link>
                   </li>

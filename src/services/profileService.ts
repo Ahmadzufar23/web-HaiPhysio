@@ -11,7 +11,8 @@ export const profileService = {
 
   // Simpan editan profil (PATCH). Email, telepon, dan tanggal lahir tidak bisa diubah di sini.
   // String kosong pada address/occupation = hapus isian.
-  updateProfile: async (data: Partial<Record<"full_name" | "gender" | "address" | "occupation", string | null>>) => {
+  // height_cm / weight_kg berupa angka (terapis juga bisa mengubahnya dari halaman sesi)
+  updateProfile: async (data: Partial<Record<"full_name" | "gender" | "address" | "occupation" | "height_cm" | "weight_kg", string | number | null>>) => {
     const response = await authApi.patch("/profile", data);
     return response.data;
   },

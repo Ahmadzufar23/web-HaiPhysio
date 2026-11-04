@@ -5,6 +5,7 @@ import { Printer } from "@phosphor-icons/react";
 import type { MedicalRecordReport } from "@/types/api.types";
 import BodyMap from "@/components/bodymap/BodyMap";
 import { CLINIC } from "@/constants/clinic";
+import { PLATFORM } from "@/constants/platform";
 import { genderLabel } from "@/constants/patient";
 import { painLabel } from "@/constants/painScale";
 import { regionLabel } from "@/constants/bodyRegions";
@@ -56,7 +57,7 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
         <button
           type="button"
           onClick={() => window.print()}
-          className="inline-flex h-9 items-center gap-2 rounded-lg bg-zinc-900 px-4 text-[13px] font-medium text-white hover:bg-zinc-800"
+          className="inline-flex h-9 items-center gap-2 rounded-lg bg-action px-4 text-[13px] font-medium text-on-action hover:bg-action-hover"
         >
           <Printer size={15} />
           Cetak / Simpan PDF
@@ -68,7 +69,7 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
           <div className="flex items-center gap-3">
             <Image src="/fisio_nobg.png" alt="" width={44} height={44} className="h-11 w-11 object-contain" />
             <div>
-              <p className="text-[16px] font-bold tracking-tight">Hai Physio</p>
+              <p className="text-[16px] font-bold tracking-tight">{CLINIC.brand}</p>
               <p className="text-[11px] text-zinc-600">{CLINIC.name}</p>
               <p className="max-w-[360px] text-[11px] text-zinc-600">{CLINIC.address}</p>
             </div>
@@ -192,8 +193,9 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
           )}
         </Section>
 
-        <footer className="mt-8 border-t border-zinc-200 pt-3 text-[10.5px] text-zinc-500">
-          Dokumen ini berisi data kesehatan pribadi. Simpan dengan aman dan bagikan hanya kepada tenaga kesehatan yang berwenang.
+        <footer className="mt-8 flex justify-between gap-6 border-t border-zinc-200 pt-3 text-[10.5px] text-zinc-500">
+          <span>Dokumen ini berisi data kesehatan pribadi. Simpan dengan aman dan bagikan hanya kepada tenaga kesehatan yang berwenang.</span>
+          <span className="shrink-0">Dicetak dari {PLATFORM.name}</span>
         </footer>
       </article>
     </div>

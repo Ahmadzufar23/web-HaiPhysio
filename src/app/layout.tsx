@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import { CLINIC } from "@/constants/clinic";
 
 // Plus Jakarta Sans: satu-satunya huruf (dirancang di Jakarta, sangat terbaca untuk semua usia).
 const jakarta = Plus_Jakarta_Sans({
@@ -12,8 +13,8 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Hai Physio | Klinik Fisioterapi Efektif & Progresif",
-  description: "Klinik Fisioterapi Hai Physio terpercaya di Jakarta Timur. Melayani fisioterapi muskuloskeletal, neuro, dan olahraga untuk pemulihan yang efektif dan progresif.",
+  title: `${CLINIC.brand} | Klinik Fisioterapi Efektif & Progresif`,
+  description: `Klinik Fisioterapi ${CLINIC.brand} terpercaya di Jakarta Timur. Melayani fisioterapi muskuloskeletal, neuro, dan olahraga untuk pemulihan yang efektif dan progresif.`,
   icons: {
     icon: "/fisio_nobg.png", // Ini bakal ngubah ikon bola dunia bawaan Vercel jadi logo klinik
   },

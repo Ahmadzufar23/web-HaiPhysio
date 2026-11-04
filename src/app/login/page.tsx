@@ -1,12 +1,13 @@
 import Link from "next/link";
 import AuthShell from "@/components/auth/AuthShell";
 import LoginForm from "@/components/auth/LoginForm";
+import { CLINIC } from "@/constants/clinic";
 
 export default function LoginPage() {
   return (
     <AuthShell
       headline="Kembali Bergerak Bebas Tanpa Nyeri"
-      description="Masuk untuk melihat jadwal terapi, riwayat kunjungan, dan perkembangan pemulihan Anda bersama Hai Physio."
+      description={`Masuk untuk melihat jadwal terapi, riwayat kunjungan, dan perkembangan pemulihan Anda bersama ${CLINIC.brand}.`}
     >
       <div className="mb-7 space-y-2">
         <h2 className="text-[28px] font-bold text-brand-900">Selamat Datang</h2>

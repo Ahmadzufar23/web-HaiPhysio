@@ -160,7 +160,7 @@ export default function Step2PilihWaktu({ draft, onBack, onNext, onPick }: Step2
                     on ? "border-zinc-900 bg-white text-zinc-900" : "border-zinc-200 bg-zinc-50 text-zinc-400 hover:text-zinc-600"
                   }`}
                 >
-                  <span className={`flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-semibold ${on ? "bg-zinc-900 text-white" : "bg-zinc-200 text-zinc-500"}`}>
+                  <span className={`flex h-6 w-6 items-center justify-center rounded-md text-[10px] font-semibold ${on ? "bg-action text-on-action" : "bg-zinc-200 text-zinc-500"}`}>
                     {initials(t.fullName)}
                   </span>
                   {t.fullName}
@@ -205,12 +205,12 @@ export default function Step2PilihWaktu({ draft, onBack, onNext, onPick }: Step2
                 onClick={() => setDay(d)}
                 disabled={past}
                 className={`flex flex-col items-center gap-0.5 rounded-lg border py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-40 ${
-                  isActive ? "border-zinc-900 bg-zinc-900 text-white" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
+                  isActive ? "border-action bg-action text-on-action" : "border-zinc-200 bg-white text-zinc-700 hover:bg-zinc-50"
                 }`}
               >
-                <span className={`text-[11px] ${isActive ? "text-white/70" : "text-zinc-500"}`}>{dayName.format(noon(d))}</span>
+                <span className={`text-[11px] ${isActive ? "text-on-action/70" : "text-zinc-500"}`}>{dayName.format(noon(d))}</span>
                 <span className="text-[14px] font-semibold">{dayNum.format(noon(d))}</span>
-                <span className={`text-[10px] ${isActive ? "text-white/70" : count > 0 ? "text-zinc-600" : "text-zinc-300"}`}>{slotsLoading ? "·" : count > 0 ? `${count} slot` : "Kosong"}</span>
+                <span className={`text-[10px] ${isActive ? "text-on-action/70" : count > 0 ? "text-zinc-600" : "text-zinc-300"}`}>{slotsLoading ? "·" : count > 0 ? `${count} slot` : "Kosong"}</span>
               </button>
             );
           })}

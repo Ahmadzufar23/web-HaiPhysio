@@ -12,7 +12,7 @@ import { regionLabel } from "@/constants/bodyRegions";
 import ProgramManager from "@/components/admin/video/ProgramManager";
 import { EmptyState, Panel, StatusBadge, btn, inputClass, tableHead } from "@/components/admin/shared/AdminUI";
 import ProgressPanel from "@/components/shared/ProgressChart";
-import { GENDER_OPTIONS, genderLabel } from "@/constants/patient";
+import { GENDER_OPTIONS, bmiOf, genderLabel } from "@/constants/patient";
 import { useStaffUser } from "@/components/admin/layout/AdminGuard";
 import { getApiErrorMessage } from "@/app/utils/api";
 import { formatDate, formatDateOf, formatDateTime, formatSlotTime } from "@/lib/format";
@@ -242,6 +242,7 @@ function PatientDetail() {
 
   const { patient, bookings, record, progress, revisions } = data;
   const p = patient!;
+  const bmi = bmiOf(p.heightCm, p.weightKg);
   const patientIds = record?.bodyPoints.filter((b) => b.source === "patient").map((b) => b.regionId) ?? [];
   const therapistIds = record?.bodyPoints.filter((b) => b.source === "therapist").map((b) => b.regionId) ?? [];
 
@@ -267,6 +268,9 @@ function PatientDetail() {
             <Row label="Tanggal lahir" value={p.dateOfBirth ? formatDate(p.dateOfBirth) : null} />
             <GenderRow patient={p} onSaved={(updated) => setData((d) => (d ? { ...d, patient: updated } : d))} />
             <Row label="Pekerjaan" value={p.occupation} />
+            <Row label="Tinggi badan" value={p.heightCm ? `${p.heightCm} cm` : null} />
+            <Row label="Berat badan" value={p.weightKg ? `${p.weightKg} kg` : null} />
+            <Row label="IMT" value={bmi ? `${bmi.value} · ${bmi.label}` : null} />
             <Row label="Alamat" value={p.address} />
             <AccountRow patient={p} onSaved={(updated) => setData((d) => (d ? { ...d, patient: updated } : d))} />
             <Row label="Terdaftar" value={formatDateOf(p.registeredAt)} />

@@ -4,11 +4,11 @@ import { useState } from "react";
 import type { ProgressPoint } from "@/types/api.types";
 import { formatDate } from "@/lib/format";
 
-// Warna seri tervalidasi (dataviz validate_palette, light): sebelum = oranye, sesudah = biru.
-// Garis "sebelum" juga putus-putus supaya identitas tidak bergantung warna saja.
+// "Sesudah terapi" memakai warna identitas agar perbaikan pasien jadi fokus; "sebelum" abu
+// dan putus-putus, jadi identitas seri tidak bergantung warna saja.
 const SERIES = [
-  { key: "painBefore", label: "Sebelum terapi", color: "#eb6834", dash: "5 4" },
-  { key: "painAfter", label: "Sesudah terapi", color: "#2a78d6", dash: undefined },
+  { key: "painBefore", label: "Sebelum terapi", color: "#71717a", dash: "5 4" },
+  { key: "painAfter", label: "Sesudah terapi", color: "var(--color-action-ink)", dash: undefined },
 ] as const;
 
 const W = 640;
@@ -199,7 +199,7 @@ export default function ProgressPanel({ points }: { points: ProgressPoint[] }) {
                 role="tab"
                 aria-selected={view === v}
                 onClick={() => setView(v)}
-                className={`rounded px-2 py-0.5 capitalize ${view === v ? "bg-zinc-900 text-white" : "text-zinc-600 hover:text-zinc-900"}`}
+                className={`rounded px-2 py-0.5 capitalize ${view === v ? "bg-action text-on-action" : "text-zinc-600 hover:text-zinc-900"}`}
               >
                 {v}
               </button>

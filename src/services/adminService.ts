@@ -144,6 +144,9 @@ export const adminService = {
     phone: string;
     date_of_birth: string;
     gender: string;
+    occupation: string;
+    height_cm: number;
+    weight_kg: number;
     email?: string;
     terms_confirmed: true;
   }): Promise<ApiSuccess<{ patient: WalkInPatient; activationSent: boolean }>> => {
@@ -175,6 +178,12 @@ export const adminService = {
   }): Promise<ApiSuccess<{ bookings: { id: string; slotId: string }[]; patientPackage: PatientPackage | null }>> => {
     const response = await bookingApi.post("/admin/bookings", data);
     return response.data;
+  },
+
+  // PATCH /api/admin/patients/:id/body — TB/BB hasil pengukuran terapis, langsung tersimpan di akun pasien
+  updatePatientBody: async (id: string, data: { height_cm?: number; weight_kg?: number }): Promise<ApiSuccess<{ patient: AdminPatient }>> => {
+    const response = await bookingApi.patch<ApiSuccess<{ patient: RawPatient }>>(`/admin/patients/${id}/body`, data);
+    return { success: true, data: { patient: withPatientAliases(response.data.data.patient) } };
   },
 
   // PATCH /api/admin/patients/:id/gender — koreksi jenis kelamin (owner saja)

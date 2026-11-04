@@ -87,7 +87,7 @@ function BookingFlow() {
                 onNext={(patch) => update(patch, 3)}
               />
             )}
-            {currentStep === 3 && <Step3IsiData initial={draft.patientData} onBack={() => goTo(2)} onNext={(patientData) => update({ patientData }, 4)} />}
+            {currentStep === 3 && <Step3IsiData initial={draft.patientData} isHomeVisit={draft.isHomeVisit} onBack={() => goTo(2)} onNext={(patientData) => update({ patientData }, 4)} />}
             {currentStep === 4 && <Step4Konfirmasi draft={draft} onBack={() => goTo(3)} onEdit={goTo} onDone={() => setDone(true)} />}
           </main>
 

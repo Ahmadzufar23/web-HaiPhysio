@@ -106,7 +106,7 @@ export default function TontonVideoPage() {
                         </span>
                       </div>
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-zinc-100">
-                        <div className="h-full rounded-full bg-zinc-900 transition-all" style={{ width: `${pct}%` }} />
+                        <div className="h-full rounded-full bg-action transition-all" style={{ width: `${pct}%` }} />
                       </div>
                       <p className="mt-2 text-[11px] leading-relaxed text-zinc-500">
                         Check-in tercatat otomatis setelah video ditonton sampai habis. Mempercepat dengan menggeser video tidak dihitung.

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Check } from "@phosphor-icons/react/dist/ssr";
 import BodyMap from "@/components/bodymap/BodyMap";
 import { Eyebrow, mk } from "./ui";
+import { CLINIC } from "@/constants/clinic";
 
 // Fitur di sini semuanya sudah berjalan di sistem. Mockup HP meniru langkah peta nyeri di /booking.
 const POINTS = [
@@ -51,7 +52,7 @@ function PhoneMockup() {
             {/* Header aplikasi */}
             <div className="flex items-center gap-2 px-5 pb-3 pt-1">
               <Image src="/brand/logo-mark.png" alt="" width={18} height={20} className="h-auto w-[15px]" />
-              <span className="text-[12px] font-semibold text-zinc-900">Hai Physio</span>
+              <span className="text-[12px] font-semibold text-zinc-900">{CLINIC.brand}</span>
               <span className="ml-auto text-[10px] text-zinc-400">Langkah 3 dari 4</span>
             </div>
             <div className="px-5">
@@ -111,7 +112,7 @@ export default function DigitalCare({ appointmentHref }: { appointmentHref: stri
             <Eyebrow tone="dark">Pendampingan digital</Eyebrow>
             <h2 className="text-balance text-[28px] font-semibold leading-[1.15] tracking-[-0.025em] text-white md:text-[36px]">Terapis Anda tetap mendampingi, bahkan saat Anda di rumah.</h2>
             <p className="max-w-[520px] text-[15px] leading-relaxed text-white/60">
-              Pasien Hai Physio mendapat akun pribadi. Jadwal, catatan terapi, dan program latihan tersimpan di satu tempat, jadi pemulihan tidak berhenti di ruang praktik.
+              Pasien {CLINIC.brand} mendapat akun pribadi. Jadwal, catatan terapi, dan program latihan tersimpan di satu tempat, jadi pemulihan tidak berhenti di ruang praktik.
             </p>
           </div>
 

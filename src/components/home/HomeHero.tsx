@@ -27,7 +27,7 @@ export default function HomeHero({ appointmentHref }: { appointmentHref: string 
             Efektif & Progresif
           </span>
 
-          <h1 className="text-balance text-[40px] font-semibold leading-[1.06] tracking-[-0.035em] text-zinc-900 sm:text-[50px] lg:text-[58px]">Bergerak lagi tanpa nyeri, bersama Hai Physio.</h1>
+          <h1 className="text-balance text-[40px] font-semibold leading-[1.06] tracking-[-0.035em] text-zinc-900 sm:text-[50px] lg:text-[58px]">Bergerak lagi tanpa nyeri, bersama {CLINIC.brand}.</h1>
 
           <p className="max-w-[500px] text-[16px] leading-relaxed text-zinc-500 md:text-[17px]">
             Klinik fisioterapi di Condet, Jakarta Timur, untuk nyeri otot dan sendi, gangguan saraf seperti pasca stroke, serta cedera olahraga. Ditangani fisioterapis bersertifikat, dipantau dari sesi ke sesi.
@@ -54,7 +54,7 @@ export default function HomeHero({ appointmentHref }: { appointmentHref: string 
         </div>
 
         <div className="relative mr-4 sm:mr-5">
-          <BrandPhoto src="/hero-bg.png" alt="Fisioterapis Hai Physio menjelaskan hasil pemeriksaan kepada pasien" ratio="aspect-[5/4]" priority />
+          <BrandPhoto src="/hero-bg.png" alt={`Fisioterapis ${CLINIC.brand} menjelaskan hasil pemeriksaan kepada pasien`} ratio="aspect-[5/4]" priority />
           <div className="absolute -left-3 bottom-8 flex items-center gap-3 rounded-2xl bg-white py-3 pl-3 pr-5 shadow-[0_20px_40px_-20px_rgb(24_24_27/0.35)] sm:-left-8">
             <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-zinc-950">
               <Image src="/brand/logo-mark.png" alt="" width={24} height={27} className="h-auto w-[22px]" />

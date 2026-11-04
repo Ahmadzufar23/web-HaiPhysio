@@ -37,14 +37,30 @@ Tampilan dibuat tenang supaya informasi penting (layanan, terapis, jam, lokasi, 
 4. **Satu info, satu tempat per halaman.** Jam & kontak tidak diulang di banyak section; sumbernya `src/constants/clinic.ts`.
 5. **Konten asli saja.** Jangan menulis testimoni, angka, atau data yang tidak bisa diverifikasi.
 
-## 3. Warna semantik (tidak ikut kuning)
+## 3. Warna aksi & status
 
-| Makna | Warna |
+**Warna aksi** dipakai untuk tombol utama, pilihan aktif, dan garis grafik "sesudah terapi". Komponen memakai token ini, bukan warna langsung, supaya satu komponen mengikuti tema tempat ia dipakai.
+
+| Token | Publik (warna klinik) | Panel staf (`.admin-theme`, teal platform) | Peran |
+|---|---|---|---|
+| `action` | `#f5c900` | `#0f766e` | Isian tombol & pilihan aktif |
+| `action-hover` | `#e0b400` | `#115e59` | Hover isian |
+| `on-action` | `#0b0b0d` | `#ffffff` | Teks di atas isian (jangan `text-white`) |
+| `action-soft` | `#fffbe6` | `#f0fdfa` | Latar pilihan aktif |
+| `action-line` | `#b58a00` | `#0f766e` | Garis pilihan & fokus |
+| `action-ink` | `#8a6500` | `#0f766e` | Teks aksen & garis grafik |
+
+White-label: cukup ubah enam token ini di `@theme`. `platform` / `platform-hover` khusus layar staf di luar `.admin-theme` (login staf).
+
+**Warna status** sama di semua tabel dan selalu disertai label teks. Warna hijau, amber, oranye, dan biru tidak lagi dipetakan ke abu di panel staf.
+
+| Status | Warna |
 |---|---|
-| Sukses / Selesai / Buka sekarang | hijau (`green-*`, `emerald-*`, `#027a48`) |
-| Error / Dibatalkan | merah (`red-*`, `#ef4444`) |
-| Peringatan (toast warning) | amber (`bg-amber-50 border-amber-200 text-amber-700`) |
-| Menunggu | oranye (`orange-*`) |
+| Menunggu / Terjadwal / Belum ditandai | amber |
+| Berlangsung / Izin | biru |
+| Selesai / Hadir / Aktif | hijau |
+| Dibatalkan / Tidak hadir (absensi) | merah |
+| Tidak hadir (sesi) / Sakit | oranye |
 
 ## 4. Pola komponen
 
