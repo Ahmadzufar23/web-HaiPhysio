@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Plus } from "@phosphor-icons/react";
+import BookingDateStrip from "@/components/admin/booking/BookingDateStrip";
 import BookingFilter from "@/components/admin/booking/BookingFilter";
 import BookingTable from "@/components/admin/booking/BookingTable";
 import { PageHeader, Panel, btn } from "@/components/admin/shared/AdminUI";
@@ -82,6 +83,7 @@ export default function AdminBookingPage() {
           </Link>
         }
       />
+      <BookingDateStrip selectedDate={date} onSelect={setDate} />
       <BookingFilter
         search={search}
         onSearchChange={setSearch}
