@@ -15,7 +15,7 @@ html {
 
 ::selection {
   background: var(--color-brand-600);
-  color: var(--color-brand-950);
+  color: var(--color-on-action);
 }
 
 :focus-visible {
@@ -69,7 +69,7 @@ html {
 
 .btn-primary {
   background: var(--color-brand-500);
-  color: var(--color-brand-950);
+  color: var(--color-on-action);
 }
 .btn-primary:hover { background: var(--color-brand-600); }
 

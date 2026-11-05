@@ -2,40 +2,40 @@
 @import "../styles/motion.css";
 
 @theme {
-  /* Palet Brand Hai Physio — diambil dari logo: kuning #FCDF09 + hitam teks logo.
-     Satu-satunya sumber warna brand. Lihat docs/DESIGN_SYSTEM.md.
-     50–700  = kuning (isian, tint, border). Teks di atas kuning SELALU gelap (brand-950).
-     800–950 = tinta hitam netral (teks utama, panel gelap, sidebar admin). */
-  --color-brand-50: #fffbe6;   /* latar tint lembut */
-  --color-brand-100: #fff3bf;  /* border tint, badge */
-  --color-brand-200: #ffea85;  /* aksen di atas latar gelap / foto */
-  --color-brand-300: #ffe14d;  /* aksen di atas latar gelap */
-  --color-brand-400: #fdd92a;
-  --color-brand-500: #fcdf09;  /* kuning logo */
-  --color-brand-600: #f5c900;  /* PRIMARY: tombol CTA, isian aktif */
-  --color-brand-700: #e0b400;  /* hover tombol kuning */
+  /* Warna aksen klinik. Nilai di sini tampilan netral bawaan; warna tiap klinik dipasang
+     lib/accentTheme.ts dari satu kode warna. Teks di atas aksen selalu text-on-action.
+     50–700  = aksen (isian, tint, border).
+     800–950 = tinta hitam netral, tidak mengikuti klinik (teks utama, panel gelap). */
+  --color-brand-50: #f4f4f5;   /* latar tint lembut */
+  --color-brand-100: #e4e4e7;  /* border tint, badge */
+  --color-brand-200: #d4d4d8;  /* aksen di atas latar gelap / foto */
+  --color-brand-300: #a1a1aa;  /* aksen di atas latar gelap */
+  --color-brand-400: #52525b;
+  --color-brand-500: #18181b;  /* warna aksen */
+  --color-brand-600: #18181b;  /* PRIMARY: tombol CTA, isian aktif */
+  --color-brand-700: #3f3f46;  /* hover tombol */
   --color-brand-800: #2a2c31;  /* tinta sekunder */
   --color-brand-900: #141518;  /* judul, teks utama, panel gelap, sidebar admin (hitam netral) */
-  --color-brand-950: #0b0b0d;  /* teks di atas kuning, latar footer */
+  --color-brand-950: #0b0b0d;  /* latar footer */
 
-  /* Emas gelap — KHUSUS teks/ikon beraksen di atas latar terang
-     (kuning murni di atas putih hanya ±1,5:1, tidak terbaca) */
-  --color-gold-600: #b58a00;   /* border fokus input (≥3:1) */
-  --color-gold-700: #8a6500;   /* teks/ikon aksen (≈4,9:1 di atas putih) */
-  --color-gold-800: #6b4e00;   /* hover teks aksen */
+  /* KHUSUS teks/ikon beraksen di atas latar terang. Warna terang seperti kuning
+     digelapkan otomatis di sini supaya tetap terbaca di atas putih. */
+  --color-gold-600: #18181b;   /* border fokus input (≥3:1) */
+  --color-gold-700: #18181b;   /* teks/ikon aksen (≥4,5:1 di atas putih) */
+  --color-gold-800: #000000;   /* hover teks aksen */
 
   /* Permukaan abu dingin: latar kartu & section selang-seling (bukan krem) */
   --color-surface: #f4f5f7;
   --color-surface-2: #eaecf0;
 
-  /* Warna aksi: tombol utama dan pilihan aktif. Default = warna klinik, panel staf menimpanya
-     di .admin-theme. Untuk white-label cukup ubah enam token ini, termasuk warna teks di atasnya. */
-  --color-action: #f5c900;
-  --color-action-hover: #e0b400;
-  --color-on-action: #0b0b0d;
-  --color-action-soft: #fffbe6;
-  --color-action-line: #b58a00; /* garis pilihan & fokus, minimal 3:1 di atas putih */
-  --color-action-ink: #8a6500;  /* teks dan garis grafik, di atas putih */
+  /* Warna aksi: tombol utama dan pilihan aktif. Default netral, situs pasien memakai warna klinik,
+     panel staf menimpanya di .admin-theme. */
+  --color-action: #18181b;
+  --color-action-hover: #3f3f46;
+  --color-on-action: #ffffff;
+  --color-action-soft: #f4f4f5;
+  --color-action-line: #18181b; /* garis pilihan & fokus, minimal 3:1 di atas putih */
+  --color-action-ink: #18181b;  /* teks dan garis grafik, di atas putih */
 
   /* Identitas platform (teal logo Hyungtang Care), untuk layar staf di luar .admin-theme */
   --color-platform: #0f766e;
@@ -59,6 +59,12 @@
   /* Easing khas HaiPhysio — dipakai semua animasi supaya terasa satu sistem */
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-soft: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+/* Titik berobat pilihan pasien di peta tubuh mengikuti warna klinik di situs pasien */
+:root {
+  --bodymap-fill: var(--color-brand-500);
+  --bodymap-line: var(--color-gold-600);
 }
 
 /* Font dimuat via next/font di layout.tsx (variabel CSS di <html>) */
@@ -98,6 +104,7 @@ input[type="password"] {
   --color-brand-200: #99f6e4;
   --color-brand-300: #5eead4;
   --color-brand-400: #3f3f46;
+  --color-brand-500: #0f766e;
   --color-brand-600: #0f766e;   /* tombol utama halaman lama */
   --color-brand-700: #115e59;
   --color-brand-800: #3f3f46;
@@ -107,6 +114,10 @@ input[type="password"] {
   --color-gold-800: #115e59;
   --color-surface: #fafafa;
   --color-surface-2: #e4e4e7;
+
+  /* Di panel staf kuning berarti "dipilih pasien", berlaku untuk semua klinik */
+  --bodymap-fill: #fcdf09;
+  --bodymap-line: #c99d00;
 
   color: var(--color-brand-900);
   background: #fafafa;
