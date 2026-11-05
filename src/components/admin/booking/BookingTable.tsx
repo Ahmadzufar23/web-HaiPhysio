@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { CaretRight } from "@phosphor-icons/react";
+import BookingFinishDialog from "./BookingFinishDialog";
+import { useStaffUser } from "@/components/admin/layout/AdminGuard";
 import { adminService } from "@/services/adminService";
 import { getApiErrorMessage } from "@/app/utils/api";
 import type { AdminBooking } from "@/types/api.types";
@@ -19,8 +21,10 @@ interface BookingTableProps {
 const PAGE_SIZE = 12;
 
 export default function BookingTable({ bookings, isLoading, onRefresh }: BookingTableProps) {
+  const user = useStaffUser();
   const [page, setPage] = useState(1);
   const [cancelTarget, setCancelTarget] = useState<AdminBooking | null>(null);
+  const [finishTarget, setFinishTarget] = useState<AdminBooking | null>(null);
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -114,6 +118,11 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
                         </button>
                       </>
                     )}
+                    {b.bookingStatus === "Berlangsung" && (user.role === "owner" || b.handledByTherapistUserId === user.id) && (
+                      <button type="button" onClick={() => setFinishTarget(b)} className="rounded-md bg-action px-2.5 py-1 text-[13px] font-medium text-on-action hover:bg-action-hover">
+                        Selesai
+                      </button>
+                    )}
                     <Link href={`/admin/sesi/${b.id}`} className="inline-flex items-center gap-0.5 rounded-md px-2 py-1 text-[13px] font-medium text-brand-900 hover:bg-surface">
                       Buka
                       <CaretRight size={14} />
@@ -141,6 +150,8 @@ export default function BookingTable({ bookings, isLoading, onRefresh }: Booking
           </div>
         </div>
       )}
+
+      {finishTarget && <BookingFinishDialog booking={finishTarget} onClose={() => setFinishTarget(null)} onChanged={onRefresh} />}
 
       {cancelTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-labelledby="cancel-title">

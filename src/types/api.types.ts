@@ -35,6 +35,8 @@ export interface AdminBooking {
   therapistId: string;
   therapistName: string;
   therapistSpecializations: Specialization[];
+  /** Akun terapis yang menangani sesi; null bila belum di-Start atau terapis tanpa akun */
+  handledByTherapistUserId: string | null;
   focusArea: Pick<FocusArea, "id" | "name" | "slug"> | null;
   bookingDate: string;
   bookingTime: string;
@@ -242,7 +244,7 @@ export interface MedicalRecordReport {
 export interface SessionPayment {
   status: "pending" | "paid" | "expired" | "cancelled";
   invoiceUrl: string | null;
-  /** Hanya untuk owner; terapis tidak melihat nominal */
+  /** Terapis hanya menerima nominal selama pembayaran menunggu */
   amount: number | null;
 }
 
@@ -266,6 +268,12 @@ export interface SessionDetail {
     cancellationReason: string | null;
     /** Catatan terapi sudah disimpan setelah Start — syarat tombol Selesai */
     noteReady: boolean;
+    /** Owner atau terapis yang menangani sesi: boleh menekan Selesai dan menagih */
+    canCollectPayment: boolean;
+    /** Tagihan pasien, terlihat oleh yang menagih hanya selama sesi berlangsung */
+    amountDue: number | null;
+    /** Nyeri sesudah terapi sudah diisi — syarat tombol Selesai */
+    painAfterReady: boolean;
     /** Hari jadwal sudah tiba — syarat tombol Start */
     canStart: boolean;
     /** Jam jadwal sudah lewat — syarat tombol Tidak Hadir */
@@ -329,27 +337,24 @@ export interface AttendanceDay {
 // GET /api/admin/reports
 export interface ClinicReport {
   range: { dateFrom: string; dateTo: string };
-  totals: { revenue: number; completedSessions: number; sessionsWithoutPrice: number };
+  totals: { revenue: number; revenueCash: number; revenueOnline: number; completedSessions: number; sessionsWithoutPrice: number };
   therapists: ({ therapistId: string; therapistName: string; sessions: number; revenue: number } & StaffAttendanceSummary)[];
   attendanceDays: AttendanceDay[];
-  revenue: { bookingId: string; recordedAt: string; amount: number; therapistName: string; patientName: string; packageName: string | null }[];
+  revenue: { bookingId: string; recordedAt: string; amount: number; therapistName: string; patientName: string; packageName: string | null; paymentMethod: "cash" | "xendit" | null }[];
   attendance: { therapistName: string; patientName: string; scheduledTime: string; startedAt: string; endedAt: string | null }[];
 }
 
 // ---------- Video terapi (lihat API_REFERENCE bagian I) ----------
-export type VideoSource = "upload" | "youtube";
+
 
 export interface TherapyVideo {
   id: string;
   folderId: string;
   title: string;
   description: string | null;
-  source: VideoSource;
-  youtubeId: string | null;
-  thumbnailUrl: string | null;
-  durationSeconds: number | null;
+  youtubeId: string;
+  thumbnailUrl: string;
   isActive: boolean;
-  ready: boolean;
   createdAt: string;
 }
 

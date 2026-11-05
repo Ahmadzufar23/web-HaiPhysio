@@ -17,6 +17,18 @@ import type {
   TherapyPackage,
 } from "@/types/api.types";
 
+export type CashPaymentEntry = {
+  id: string;
+  bookingId: string;
+  referenceCode: string;
+  patientName: string;
+  therapistName: string;
+  amount: number;
+  recordedAt: string;
+  recordedByName: string;
+  isReversed: boolean;
+};
+
 // Paket terapi, eksekusi sesi, rekam medis, dan laporan (lihat backend/API_REFERENCE.md).
 export const clinicService = {
   // GET /api/packages — paket aktif untuk pasien
@@ -63,8 +75,8 @@ export const clinicService = {
   },
 
   // POST /api/admin/sessions/:id/cancel — pasien tidak hadir (tanpa absensi & pendapatan)
-  cancelSession: async (id: string) => {
-    const response = await bookingApi.post(`/admin/sessions/${id}/cancel`);
+  cancelSession: async (id: string, reason: string) => {
+    const response = await bookingApi.post(`/admin/sessions/${id}/cancel`, { reason });
     return response.data;
   },
 
@@ -142,6 +154,12 @@ export const clinicService = {
   // GET /api/admin/reports — owner
   getReport: async (params?: { date_from?: string; date_to?: string }): Promise<ApiSuccess<ClinicReport>> => {
     const response = await bookingApi.get("/admin/reports", { params });
+    return response.data;
+  },
+
+  // GET /api/admin/reports/cash-payments — owner
+  getCashPayments: async (params: { date_from: string; date_to: string }): Promise<ApiSuccess<{ entries: CashPaymentEntry[] }>> => {
+    const response = await bookingApi.get("/admin/reports/cash-payments", { params });
     return response.data;
   },
 

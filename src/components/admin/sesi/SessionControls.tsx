@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Play, Stop, Prohibit } from "@phosphor-icons/react";
 import type { SessionDetail } from "@/types/api.types";
+import PaymentChoiceDialog from "./PaymentChoiceDialog";
 import { btn, inputClass, StatusBadge } from "@/components/admin/shared/AdminUI";
 import { formatClock, formatLongDate, formatRupiah, formatSlotTime } from "@/lib/format";
 
@@ -12,26 +13,40 @@ interface Props {
   editing: boolean;
   busy: boolean;
   onStart: (therapistId: string) => void;
+  /** Bayar online: membuat link Xendit */
   onFinish: () => void;
-  onCancel: () => void;
+  /** Bayar tunai: sesi langsung Selesai */
+  onPayCash: () => void;
+  onCancel: (reason: string) => void;
   /** Harga & pendapatan hanya untuk owner */
   showPrices: boolean;
   /** User staf yang login: namanya dipilih otomatis di dropdown terapis */
   currentUserId: string;
 }
 
-const minutesBetween = (a: string, b: string) => Math.max(0, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 60000));
+const MIN_CANCEL_REASON_LENGTH = 3;
+
+const minutesBetween =(a: string, b: string) => Math.max(0, Math.round((new Date(b).getTime() - new Date(a).getTime()) / 60000));
 
 /**
  * Baris kendali sesi: nama terapis (absensi), paket (harga yang dicatat),
  * dan tombol Start → Selesai, atau Cancel bila pasien tidak hadir.
  */
-export default function SessionControls({ data, noteReady, editing, busy, onStart, onFinish, onCancel, showPrices, currentUserId }: Props) {
+export default function SessionControls({ data, noteReady, editing, busy, onStart, onFinish, onPayCash, onCancel, showPrices, currentUserId }: Props) {
   const { session, therapists } = data;
   const [therapistId, setTherapistId] = useState(
     session.handledByTherapist?.id ?? therapists.find((t) => t.userId === currentUserId)?.id ?? ""
   );
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [choosePayment, setChoosePayment] = useState(false);
+  const [confirmStart, setConfirmStart] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const selectedTherapistName = therapists.find((t) => t.id === therapistId)?.fullName ?? "";
+
+  const handleChoosePayment = (action: () => void) => {
+    setChoosePayment(false);
+    action();
+  };
 
   const waiting = session.status === "Terkonfirmasi";
   const running = session.status === "Berlangsung";
@@ -39,7 +54,17 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
 
   // Start baru boleh pada hari jadwalnya (BE juga menolak)
   const startHint = waiting && !session.canStart ? "Sesi baru bisa di-Start pada hari jadwalnya" : waiting && !therapistId ? "Pilih nama terapis dulu" : undefined;
-  const finishHint = running && !noteReady ? "Perbarui dan simpan catatan terapi untuk sesi ini dulu" : running && editing ? "Simpan rekam medis dulu" : undefined;
+  const finishHint = !running
+    ? undefined
+    : !session.canCollectPayment
+      ? "Sesi ini hanya bisa diselesaikan oleh terapis yang menanganinya atau owner"
+    : !noteReady
+      ? "Perbarui dan simpan catatan terapi untuk sesi ini dulu"
+      : !session.painAfterReady
+        ? "Isi dan simpan nyeri sesudah terapi di asesmen dulu"
+        : editing
+          ? "Simpan rekam medis dulu"
+          : undefined;
   // Tidak Hadir baru boleh setelah jam jadwal dimulai (BE juga menolak)
   const cancelHint = waiting && !session.canMarkNoShow ? "Pasien baru bisa ditandai tidak hadir setelah jam jadwalnya dimulai" : undefined;
   // Alasan tombol nonaktif ditampilkan sebagai teks: tooltip tidak muncul di layar sentuh
@@ -60,11 +85,11 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button className={btn.primary} disabled={!waiting || !session.canStart || !therapistId || busy} onClick={() => onStart(therapistId)} title={startHint}>
+          <button className={btn.primary} disabled={!waiting || !session.canStart || !therapistId || busy} onClick={() => setConfirmStart(true)} title={startHint}>
             <Play size={14} weight="fill" />
             Start
           </button>
-          <button className={btn.primary} disabled={!running || !noteReady || editing || busy} onClick={onFinish} title={finishHint}>
+          <button className={btn.primary} disabled={!running || !session.canCollectPayment || !noteReady || !session.painAfterReady || editing || busy} onClick={() => setChoosePayment(true)} title={finishHint}>
             <Stop size={14} weight="fill" />
             Selesai
           </button>
@@ -126,6 +151,48 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
         </div>
       </div>
 
+      {choosePayment && (
+        <PaymentChoiceDialog
+          patientName={data.patient.fullName}
+          referenceCode={session.referenceCode}
+          amount={session.amountDue}
+          packageName={pkg?.name}
+          busy={busy}
+          onPayOnline={() => handleChoosePayment(onFinish)}
+          onPayCash={() => handleChoosePayment(onPayCash)}
+          onClose={() => setChoosePayment(false)}
+        />
+      )}
+
+      {confirmStart && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-labelledby="start-title">
+          <div className="w-full max-w-[420px] rounded-xl bg-white p-6">
+            <h3 id="start-title" className="text-[14px] font-semibold text-brand-900">
+              Terapisnya sudah benar?
+            </h3>
+            <p className="mt-2 text-[13px] leading-relaxed text-brand-900/65">
+              Sesi {data.patient.fullName} akan dimulai dengan terapis <strong>{selectedTherapistName}</strong>. Terapis ini tidak bisa memulai pasien lain sampai sesi ini selesai.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button type="button" className={btn.secondary} onClick={() => setConfirmStart(false)}>
+                Kembali
+              </button>
+              <button
+                type="button"
+                className={btn.primary}
+                disabled={busy}
+                onClick={() => {
+                  setConfirmStart(false);
+                  onStart(therapistId);
+                }}
+              >
+                Ya, mulai sesi
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {confirmCancel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4" role="dialog" aria-modal="true" aria-labelledby="noshow-title">
           <div className="w-full max-w-[420px] rounded-xl bg-white p-6">
@@ -136,16 +203,21 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
               Sesi {data.patient.fullName}, {formatLongDate(session.date)} pukul {formatSlotTime(session.startTime)} akan berstatus <strong>Tidak Hadir</strong>. Sesi hangus, tidak ada absensi
               terapis dan tidak ada pendapatan yang dicatat.
             </p>
+            <label className="mt-4 block text-[13px] font-medium text-brand-900">
+              Alasan
+              <textarea value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} rows={3} maxLength={300} className={`${inputClass} mt-1.5 resize-none`} placeholder="Mis. pasien tidak datang dan tidak bisa dihubungi" />
+            </label>
             <div className="mt-5 flex justify-end gap-2">
-              <button className={btn.secondary} onClick={() => setConfirmCancel(false)}>
+              <button type="button" className={btn.secondary} onClick={() => setConfirmCancel(false)}>
                 Kembali
               </button>
               <button
+                type="button"
                 className={btn.danger}
-                disabled={busy}
+                disabled={busy || cancelReason.trim().length < MIN_CANCEL_REASON_LENGTH}
                 onClick={() => {
                   setConfirmCancel(false);
-                  onCancel();
+                  onCancel(cancelReason.trim());
                 }}
               >
                 Ya, tidak hadir

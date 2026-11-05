@@ -83,7 +83,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
       return { tone: "ok", text: "Sesi dimulai. Absensi tercatat setelah sesi Selesai." };
     });
 
-  // Selesai = minta pembayaran online. Bila tidak bisa, opsi tunai tetap muncul.
+  // Pilihan "Bayar online" di popup Selesai. Bila gagal, opsi tunai tetap muncul di panel.
   const handleFinish = () =>
     run(async () => {
       setCashOnly(false);
@@ -109,9 +109,9 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
         : { tone: "ok", text: `Sesi selesai. Pendapatan ${formatRupiah(recordedAmount)} tercatat.` };
     });
 
-  const handleCancel = () =>
+  const handleCancel = (reason: string) =>
     run(async () => {
-      await clinicService.cancelSession(id);
+      await clinicService.cancelSession(id, reason);
       return { tone: "ok", text: "Sesi ditandai Tidak Hadir. Tidak ada absensi maupun pendapatan yang dicatat." };
     });
 
@@ -177,12 +177,13 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
             busy={busy}
             onStart={handleStart}
             onFinish={handleFinish}
+            onPayCash={handlePayCash}
             onCancel={handleCancel}
             showPrices={user.role === "owner"}
             currentUserId={user.id}
           />
 
-          {data.session.status === "Berlangsung" && (isWaitingPayment || cashOnly) && (
+          {data.session.status === "Berlangsung" && data.session.canCollectPayment && (isWaitingPayment || cashOnly) && (
             <SessionPaymentPanel payment={data.session.payment} busy={busy} onPayCash={handlePayCash} />
           )}
           {data.session.status === "Selesai" && data.session.payment?.status === "paid" && <Notice tone="info">Pembayaran online diterima.</Notice>}
