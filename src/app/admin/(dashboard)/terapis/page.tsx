@@ -6,6 +6,7 @@ import { MagnifyingGlass, Plus } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 import { getApiErrorMessage } from "@/app/utils/api";
 import type { AdminTherapist } from "@/types/api.types";
+import TherapistTransfer from "@/components/admin/terapis/TherapistTransfer";
 import { btn, EmptyState, inputClass, MetricStrip, Notice, PageHeader, Panel, tableHead } from "@/components/admin/shared/AdminUI";
 
 function ActiveBadge({ active }: { active: boolean }) {
@@ -23,6 +24,7 @@ export default function AdminTerapisPage() {
   const [status, setStatus] = useState<"" | "aktif" | "nonaktif">("");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState("");
+  const [info, setInfo] = useState("");
 
   const load = () =>
     adminService
@@ -84,6 +86,7 @@ export default function AdminTerapisPage() {
       />
 
       {error && <Notice tone="error">{error}</Notice>}
+      {info && <Notice tone="info">{info}</Notice>}
 
       <Panel>
         <div className="flex flex-col gap-2 border-b border-zinc-200 p-3 sm:flex-row">
@@ -152,6 +155,21 @@ export default function AdminTerapisPage() {
                         <Link href={`/admin/terapis/edit?id=${t.id}`} className="rounded px-2 py-1 text-[12px] text-zinc-700 hover:bg-zinc-100">
                           Kelola
                         </Link>
+                        {!t.account?.isOwner && t.status === "aktif" && (
+                          <TherapistTransfer
+                            therapistId={t.id}
+                            therapistName={t.fullName}
+                            onDone={(message) => {
+                              setError("");
+                              setInfo(message);
+                              void load();
+                            }}
+                            onError={(message) => {
+                              setInfo("");
+                              setError(message);
+                            }}
+                          />
+                        )}
                         {!t.account?.isOwner && (
                           <button
                             onClick={() => toggleStatus(t)}

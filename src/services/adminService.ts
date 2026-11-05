@@ -53,6 +53,12 @@ export const adminService = {
     return response.data;
   },
 
+  // GET /api/admin/bookings/date-counts — jumlah pasien per tanggal, booking dibatalkan tidak dihitung
+  getBookingDateCounts: async (dateFrom: string, dateTo: string): Promise<ApiSuccess<{ counts: { date: string; patients: number }[] }>> => {
+    const response = await bookingApi.get("/admin/bookings/date-counts", { params: { date_from: dateFrom, date_to: dateTo } });
+    return response.data;
+  },
+
   // PATCH /api/bookings/:id/cancel — pembatalan oleh klinik (alasan wajib).
   // Sesi selesai / pasien tidak hadir dicatat lewat clinicService (halaman Detail Sesi).
   cancelBooking: async (id: string, reason: string) => {
