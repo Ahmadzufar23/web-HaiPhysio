@@ -8,7 +8,9 @@ import type { ClinicReport } from "@/types/api.types";
 import { useStaffUser } from "@/components/admin/layout/AdminGuard";
 import { EmptyState, inputClass, MetricStrip, PageHeader, Panel } from "@/components/admin/shared/AdminUI";
 import AttendancePanel from "@/components/admin/laporan/AttendancePanel";
+import CashPaymentLogPanel from "@/components/admin/laporan/CashPaymentLogPanel";
 import { formatDateTime, formatHours, formatRupiah, todayWib } from "@/lib/format";
+import { matchesPaymentFilter, PAYMENT_FILTER_OPTIONS, paymentMethodLabel, type PaymentFilter } from "@/lib/paymentMethod";
 
 /** "1 sakit · 2 izin" dari ringkasan absensi; "—" bila tidak ada */
 const absenceLabel = (t: ClinicReport["therapists"][number]) =>
@@ -22,6 +24,7 @@ export default function ReportPage() {
   const [to, setTo] = useState(today);
   const [report, setReport] = useState<ClinicReport | null>(null);
   const [error, setError] = useState("");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("all");
   // Naik setiap absensi ditandai → muat ulang tanpa mengosongkan tampilan
   const [version, setVersion] = useState(0);
   // Periode yang datanya sedang tampil; beda dengan periode aktif = masih memuat
@@ -46,6 +49,7 @@ export default function ReportPage() {
   }, [from, to, version, user.role, router]);
 
   const totals = report?.totals;
+  const filteredRevenue = report?.revenue.filter((r) => matchesPaymentFilter(r.paymentMethod, paymentFilter)) ?? [];
   const workMinutes = report?.therapists.reduce((sum, t) => sum + t.workMinutes, 0) ?? 0;
   const unmarked = report?.attendanceDays.filter((d) => d.status === "belum_ditandai").length ?? 0;
 
@@ -73,6 +77,8 @@ export default function ReportPage() {
             value: formatRupiah(totals?.revenue ?? 0),
             hint: totals?.sessionsWithoutPrice ? `${totals.sessionsWithoutPrice} sesi tanpa harga` : undefined,
           },
+          { label: "Tunai", value: formatRupiah(totals?.revenueCash ?? 0) },
+          { label: "Non tunai", value: formatRupiah(totals?.revenueOnline ?? 0) },
           { label: "Sesi selesai", value: totals?.completedSessions ?? 0 },
           { label: "Jam kerja staf", value: formatHours(workMinutes), hint: "Jam slot terjadwal di hari hadir" },
           { label: "Absensi belum ditandai", value: unmarked, hint: unmarked ? "Tandai di Absensi harian" : undefined },
@@ -122,21 +128,36 @@ export default function ReportPage() {
 
       <AttendancePanel days={report?.attendanceDays ?? null} onChanged={() => setVersion((v) => v + 1)} />
 
-      <Panel title="Pencatatan pendapatan" description="Satu baris per sesi selesai">
-        {!report || report.revenue.length === 0 ? (
+      <CashPaymentLogPanel dateFrom={from} dateTo={to} />
+
+      <Panel
+        title="Pencatatan pendapatan"
+        description={`Satu baris per sesi selesai. Total ${formatRupiah(filteredRevenue.reduce((sum, r) => sum + r.amount, 0))}.`}
+        actions={
+          <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)} aria-label="Filter metode pembayaran" className={`${inputClass} w-[170px]! shrink-0`}>
+            {PAYMENT_FILTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        }
+      >
+        {filteredRevenue.length === 0 ? (
           <EmptyState title="Belum ada pendapatan tercatat" />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-left text-[13px]">
+            <table className="w-full min-w-[560px] text-left text-[13px]">
               <thead>
                 <tr className="border-b border-surface-2 text-[12px] text-brand-900/55">
                   <th className="px-5 py-2.5 font-medium">Waktu</th>
                   <th className="px-5 py-2.5 font-medium">Pasien · paket</th>
+                  <th className="px-5 py-2.5 font-medium">Metode</th>
                   <th className="px-5 py-2.5 text-right font-medium">Nominal</th>
                 </tr>
               </thead>
               <tbody>
-                {report.revenue.map((r) => (
+                {filteredRevenue.map((r) => (
                   <tr key={r.bookingId} className="border-b border-surface-2 last:border-0">
                     <td className="px-5 py-3 tabular-nums text-brand-900/70">{formatDateTime(r.recordedAt)}</td>
                     <td className="px-5 py-3">
@@ -145,6 +166,7 @@ export default function ReportPage() {
                         {r.packageName ?? "Tanpa paket"} · {r.therapistName}
                       </div>
                     </td>
+                    <td className="px-5 py-3 text-brand-900/70">{paymentMethodLabel(r.paymentMethod)}</td>
                     <td className={`px-5 py-3 text-right tabular-nums ${r.amount === 0 ? "text-zinc-400" : "text-zinc-900"}`}>{formatRupiah(r.amount)}</td>
                   </tr>
                 ))}
