@@ -5,15 +5,19 @@ import { useParams, useSearchParams } from "next/navigation";
 import { getApiErrorMessage } from "@/app/utils/api";
 import { currentPeriod, INVOICE_STATUS_LABEL, superAdminService, type ClinicDetails, type ClinicTransactions } from "@/services/superAdminService";
 import { AccountsPanel, BookingsPanel, PackagesPanel, ProfilePanel } from "@/components/super-admin/ClinicInfoPanels";
+import GroupPanel from "@/components/super-admin/GroupPanel";
+import SettlementPanel from "@/components/super-admin/SettlementPanel";
 import { btn, EmptyState, inputClass, Notice, PageHeader, Panel, tableHead } from "@/components/admin/shared/AdminUI";
 import { formatRupiah } from "@/lib/format";
+import { matchesPaymentFilter, PAYMENT_FILTER_OPTIONS, paymentMethodLabel, type PaymentFilter } from "@/lib/paymentMethod";
 
 const LEDGER_STATUS_LABEL = { settled_auto: "Otomatis", unbilled: "Belum ditagih", billed: "Ditagih", paid: "Lunas" } as const;
-const METHOD_LABEL = { cash: "Tunai", xendit: "Xendit" } as const;
 
 const TABS = [
   { key: "tagihan", label: "Tagihan & transaksi" },
-  { key: "akun", label: "Akun & terapis" },
+  { key: "setoran", label: "Setoran" },
+  { key: "akun", label: "Akun" },
+  { key: "merek", label: "Merek & cabang" },
   { key: "harga", label: "Harga paket" },
   { key: "booking", label: "Booking" },
   { key: "profil", label: "Profil klinik" },
@@ -34,6 +38,7 @@ function ClinicDetail() {
   const [overrideUntil, setOverrideUntil] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [tab, setTab] = useState<TabKey>("tagihan");
+  const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>("all");
   const [details, setDetails] = useState<ClinicDetails | null>(null);
 
   const loadDetails = useCallback(async () => {
@@ -89,6 +94,7 @@ function ClinicDetail() {
   }
 
   const { clinic, invoice, transactions } = data;
+  const filteredTransactions = transactions.filter((row) => matchesPaymentFilter(row.paymentMethod, paymentFilter));
   const isSuspended = clinic.billingStatus === "suspended";
 
   return (
@@ -122,7 +128,9 @@ function ClinicDetail() {
         ))}
       </div>
 
+      {tab === "setoran" && <SettlementPanel key={id} clinicId={id} />}
       {tab === "akun" && details && <AccountsPanel details={details} />}
+      {tab === "merek" && details && <GroupPanel details={details} onChanged={loadDetails} />}
       {tab === "harga" && details && <PackagesPanel details={details} />}
       {tab === "booking" && <BookingsPanel clinicId={id} period={period} />}
       {tab === "profil" && details && <ProfilePanel details={details} onSaved={loadDetails} />}
@@ -208,8 +216,19 @@ function ClinicDetail() {
         </Panel>
       </div>
 
-      <Panel title="Transaksi">
-        {transactions.length === 0 ? (
+      <Panel
+        title="Transaksi"
+        actions={
+          <select value={paymentFilter} onChange={(e) => setPaymentFilter(e.target.value as PaymentFilter)} aria-label="Filter metode pembayaran" className={`${inputClass} w-[170px]! shrink-0`}>
+            {PAYMENT_FILTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        }
+      >
+        {filteredTransactions.length === 0 ? (
           <EmptyState title="Belum ada transaksi di periode ini" />
         ) : (
           <div className="overflow-x-auto">
@@ -226,7 +245,7 @@ function ClinicDetail() {
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((row) => {
+                {filteredTransactions.map((row) => {
                   const isReversed = transactions.some((t) => t.bookingId === row.bookingId && t.entryType === "reversal");
                   return (
                     <tr key={row.id} className="border-b border-zinc-100 last:border-0">
@@ -237,7 +256,7 @@ function ClinicDetail() {
                         </span>
                       </td>
                       <td className="px-4 py-2.5 tabular-nums text-zinc-600">{new Date(row.occurredAt).toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta" })}</td>
-                      <td className="px-4 py-2.5 text-zinc-600">{METHOD_LABEL[row.paymentMethod]}</td>
+                      <td className="px-4 py-2.5 text-zinc-600">{paymentMethodLabel(row.paymentMethod)}</td>
                       <td className="px-4 py-2.5 text-right tabular-nums">{formatRupiah(row.grossAmount)}</td>
                       <td className="px-4 py-2.5 text-right tabular-nums">{formatRupiah(row.commissionAmount)}</td>
                       <td className="px-4 py-2.5 text-zinc-600">{LEDGER_STATUS_LABEL[row.status]}</td>

@@ -14,6 +14,11 @@ const ACTION_LABEL: Record<string, string> = {
   invoice_due_extended: "Memperpanjang jatuh tempo",
   invoice_reminded: "Menandai sudah diingatkan",
   booking_reversed: "Membatalkan booking selesai",
+  branch_created: "Menambah cabang",
+  group_profile_updated: "Mengubah identitas merek",
+  group_logo_updated: "Mengganti logo",
+  reset_link_created: "Membuat link reset akun",
+  therapist_transferred: "Owner memutasi terapis",
 };
 
 export default function AuditLogPage() {

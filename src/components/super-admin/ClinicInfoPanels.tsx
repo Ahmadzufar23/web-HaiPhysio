@@ -5,6 +5,7 @@ import { getApiErrorMessage } from "@/app/utils/api";
 import { superAdminService, type ClinicBookings, type ClinicDetails } from "@/services/superAdminService";
 import { btn, EmptyState, inputClass, MetricStrip, Notice, Panel, StatusBadge, tableHead } from "@/components/admin/shared/AdminUI";
 import { formatRupiah } from "@/lib/format";
+import AccountsTable from "@/components/super-admin/AccountsTable";
 import type { BookingStatus } from "@/types/api.types";
 
 const formatDateTime = (value: string | null) => (value ? new Date(value).toLocaleString("id-ID", { timeZone: "Asia/Jakarta", dateStyle: "medium", timeStyle: "short" }) : "Belum pernah");
@@ -55,6 +56,9 @@ export function AccountsPanel({ details }: { details: ClinicDetails }) {
             </table>
           </div>
         )}
+      </Panel>
+      <Panel title="Semua akun klinik ini" description="Cari staf atau pasien yang lupa akun, lalu kirim link reset lewat WhatsApp. Rekam medis tidak ditampilkan.">
+        <AccountsTable clinicId={details.clinic.id} />
       </Panel>
       {therapistsWithoutAccount.length > 0 && (
         <Panel title="Terapis tanpa akun login" description="Profilnya ada dan bisa dijadwalkan, tapi belum bisa masuk ke panel.">

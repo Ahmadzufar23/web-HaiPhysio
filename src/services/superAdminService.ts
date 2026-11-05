@@ -21,21 +21,32 @@ export interface OverviewClinic {
   brand: string;
   completedBookings: number;
   gross: number;
+  grossCash: number;
+  grossXendit: number;
+  bookingsCash: number;
+  bookingsXendit: number;
   commissionXendit: number;
   commissionCash: number;
   owedToClinic: number;
+  outstandingToClinic: number;
   invoiceStatus: InvoiceStatus | null;
   invoiceId: string | null;
   billingStatus: "active" | "suspended";
   suspendSource: "auto" | "manual" | null;
   commissionAmount: number;
   hangingBookings: number;
+  groupId: string;
+  groupName: string;
+  groupSlug: string;
+  logoUrl: string | null;
+  branchName: string | null;
+  overdueInvoices: number;
   autoNoShowBookings: number;
 }
 
 export interface Overview {
   period: string;
-  totals: { platformRevenue: number; commissionXendit: number; commissionCash: number; owedToClinics: number; gross: number; completedBookings: number };
+  totals: { platformRevenue: number; commissionXendit: number; commissionCash: number; owedToClinics: number; outstandingToClinics: number; gross: number; grossCash: number; grossXendit: number; bookingsCash: number; bookingsXendit: number; completedBookings: number };
   clinics: OverviewClinic[];
 }
 
@@ -63,6 +74,24 @@ export interface ClinicTransactions {
     status: "settled_auto" | "unbilled" | "billed" | "paid";
     occurredAt: string;
   }[];
+}
+
+export interface ClinicSettlement {
+  id: string;
+  amount: number;
+  transferredOn: string;
+  reference: string | null;
+  note: string | null;
+  recordedByName: string;
+  createdAt: string;
+  voidedAt: string | null;
+  voidedByName: string | null;
+  voidReason: string | null;
+}
+
+export interface ClinicSettlements {
+  summary: { totalOwed: number; totalSettled: number; outstanding: number };
+  settlements: ClinicSettlement[];
 }
 
 export type Reminder = BillingInvoice & {
@@ -101,8 +130,13 @@ export type CreateClinicPayload = {
 };
 
 export interface ClinicDetails {
+  group: { id: string; slug: string; name: string; tagline: string | null; about: string | null; foundedYear: number | null; logoUrl: string | null; accentColor: string | null };
+  branches: { id: string; slug: string; brand: string; branchName: string | null; billingStatus: "active" | "suspended" }[];
+  setup: { hasLogo: boolean; hasPrices: boolean; hasTherapists: boolean; hasSchedule: boolean };
   clinic: {
     id: string;
+    groupId: string;
+    branchName: string | null;
     slug: string;
     brand: string;
     name: string;
@@ -160,6 +194,33 @@ export type ClinicProfilePayload = {
 
 const BASE = "/super-admin";
 
+export type AccountRole = "pasien" | "terapis" | "owner";
+
+export interface PlatformAccount {
+  id: string;
+  fullName: string;
+  email: string | null;
+  phone: string;
+  role: AccountRole;
+  brand: string | null;
+  slug: string | null;
+  therapistStatus: "aktif" | "nonaktif" | null;
+  accountStatus: "aktif" | "belum_aktivasi" | "offline";
+  lastLoginAt: string | null;
+}
+
+export type ResetLink = { link: string; expiresAt: string; whatsappUrl: string };
+
+export type CreateBranchPayload = {
+  slug: string;
+  brand: string;
+  name: string;
+  branch_name: string;
+  whatsapp: string;
+  address?: string;
+  first_branch?: { slug: string; branch_name: string };
+};
+
 export const superAdminService = {
   login: async (email: string, password: string) => {
     const response = await authApi.post("/super-admin/login", { email, password });
@@ -188,11 +249,28 @@ export const superAdminService = {
   unsuspend: async (clinicId: string, overrideUntil?: string) =>
     (await bookingApi.post(`${BASE}/clinics/${clinicId}/unsuspend`, overrideUntil ? { override_until: overrideUntil } : {})).data,
 
+  getSettlements: async (clinicId: string): Promise<ApiSuccess<ClinicSettlements>> => (await bookingApi.get(`${BASE}/clinics/${clinicId}/settlements`)).data,
+
+  recordSettlement: async (clinicId: string, input: { amount: number; transferred_on: string; reference?: string; note?: string }) =>
+    (await bookingApi.post(`${BASE}/clinics/${clinicId}/settlements`, input)).data,
+
+  voidSettlement: async (settlementId: string, reason: string) => (await bookingApi.post(`${BASE}/settlements/${settlementId}/void`, { reason })).data,
+
   extendInvoice: async (invoiceId: string, dueDate: string) => (await bookingApi.post(`${BASE}/invoices/${invoiceId}/extend`, { due_date: dueDate })).data,
 
   markReminded: async (invoiceId: string) => (await bookingApi.post(`${BASE}/invoices/${invoiceId}/remind`)).data,
 
   reverseBooking: async (bookingId: string, reason: string) => (await bookingApi.post(`${BASE}/bookings/${bookingId}/reverse`, { reason })).data,
+
+  listAccounts: async (params: { q?: string; role?: AccountRole; clinic_id?: string }): Promise<ApiSuccess<{ accounts: PlatformAccount[] }>> => (await bookingApi.get(`${BASE}/accounts`, { params })).data,
+
+  createResetLink: async (userId: string): Promise<ApiSuccess<ResetLink>> => (await bookingApi.post(`${BASE}/accounts/${userId}/reset-link`)).data,
+
+  createBranch: async (groupId: string, data: CreateBranchPayload) => (await bookingApi.post(`${BASE}/groups/${groupId}/branches`, data)).data,
+
+  updateGroup: async (groupId: string, data: { name?: string; tagline?: string | null; about?: string | null; founded_year?: number | null; accent_color?: string | null }) => (await bookingApi.patch(`${BASE}/groups/${groupId}`, data)).data,
+
+  uploadGroupLogo: async (groupId: string, image: string) => (await bookingApi.put(`${BASE}/groups/${groupId}/logo`, { image })).data,
 
   listReminders: async (): Promise<ApiSuccess<{ reminders: Reminder[] }>> => (await bookingApi.get(`${BASE}/reminders`)).data,
 

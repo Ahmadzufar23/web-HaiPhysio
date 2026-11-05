@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { profileService } from "@/services/profileService";
 import { PLATFORM } from "@/constants/platform";
 
 const NAV = [
   { title: "Ringkasan", path: "/super-admin" },
+  { title: "Cari akun", path: "/super-admin/akun" },
   { title: "Reminder", path: "/super-admin/reminder" },
   { title: "Klinik baru", path: "/super-admin/klinik/baru" },
   { title: "Audit log", path: "/super-admin/audit" },
@@ -48,7 +50,10 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
       <header className="border-b border-zinc-200 bg-white">
         <div className="mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div className="flex flex-wrap items-center gap-4">
-            <span className="text-[14px] font-semibold text-zinc-900">{PLATFORM.name}</span>
+            <span className="flex items-center gap-2 text-[14px] font-semibold text-zinc-900">
+              <Image src={PLATFORM.logo} alt="" width={24} height={24} unoptimized className="h-6 w-6" />
+              {PLATFORM.name}
+            </span>
             <nav className="flex flex-wrap gap-1">
               {NAV.map((item) => (
                 <Link
