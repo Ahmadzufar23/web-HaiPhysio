@@ -317,7 +317,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
             onClick={handleLanjut}
             disabled={!selectedSlot}
             className={`flex-1 py-4 text-center rounded-xl font-bold text-[15px] transition-colors ${
-              selectedSlot ? "bg-brand-600 text-brand-950 hover:bg-brand-700 shadow-md" : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              selectedSlot ? "bg-brand-600 text-on-action hover:bg-brand-700 shadow-md" : "bg-gray-200 text-gray-400 cursor-not-allowed"
             }`}
           >
             Lanjut

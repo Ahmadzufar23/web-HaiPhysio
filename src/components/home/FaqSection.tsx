@@ -1,5 +1,6 @@
 "use client";
 
+import { clinicHoursText } from "@/constants/clinic";
 import Link from "next/link";
 import { CaretDown, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 import { mk, SectionTitle } from "@/components/marketing/ui";
@@ -28,7 +29,7 @@ const faqs = [
 
 export default function FaqSection({ className = "bg-white" }: { className?: string }) {
   const clinic = useClinic();
-  const allFaqs = [...faqs, { q: "Kapan klinik buka?", a: `${clinic.hours}. ${clinic.hoursNote}. Alamat: ${clinic.address}.` }];
+  const allFaqs = [...faqs, { q: "Kapan klinik buka?", a: [clinicHoursText(clinic), clinic.address && `Alamat: ${clinic.address}`].filter(Boolean).join(". ") || "Hubungi klinik lewat WhatsApp untuk jam buka." }];
   return (
     <section className={`${mk.section} ${className}`}>
       <div className={`${mk.container} grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16`}>

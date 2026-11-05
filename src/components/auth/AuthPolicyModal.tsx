@@ -105,7 +105,7 @@ export default function AuthPolicyModal({
         <div className="pt-5 mt-4 border-t border-gray-100 flex justify-end shrink-0">
           <button
             onClick={onClose}
-            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-brand-950 font-bold rounded-xl text-[14px] transition-colors"
+            className="px-6 py-2.5 bg-brand-600 hover:bg-brand-700 text-on-action font-bold rounded-xl text-[14px] transition-colors"
           >
             Saya Mengerti
           </button>

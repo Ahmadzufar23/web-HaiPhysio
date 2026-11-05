@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check } from "@phosphor-icons/react/dist/ssr";
 import BodyMap from "@/components/bodymap/BodyMap";
@@ -54,7 +53,6 @@ function PhoneMockup() {
 
             {/* Header aplikasi */}
             <div className="flex items-center gap-2 px-5 pb-3 pt-1">
-              <Image src="/brand/logo-mark.png" alt="" width={18} height={20} className="h-auto w-[15px]" />
               <span className="text-[12px] font-semibold text-zinc-900">{clinic.brand}</span>
               <span className="ml-auto text-[10px] text-zinc-400">Langkah 3 dari 4</span>
             </div>
@@ -85,7 +83,7 @@ function PhoneMockup() {
               <p className="text-[10px] font-medium text-zinc-600">Tingkat nyeri</p>
               <div className="mt-1.5 grid grid-cols-5 gap-1">
                 {[1, 2, 3, 4, 5].map((n) => (
-                  <span key={n} className={`rounded-md py-1 text-center text-[11px] font-semibold ${n === 3 ? "bg-zinc-950 text-white" : n < 3 ? "bg-brand-500 text-brand-950" : "border border-zinc-200 text-zinc-400"}`}>
+                  <span key={n} className={`rounded-md py-1 text-center text-[11px] font-semibold ${n === 3 ? "bg-zinc-950 text-white" : n < 3 ? "bg-brand-500 text-on-action" : "border border-zinc-200 text-zinc-400"}`}>
                     {n}
                   </span>
                 ))}
@@ -93,7 +91,7 @@ function PhoneMockup() {
             </div>
 
             <div className="mt-auto px-5 pb-3">
-              <span className="flex h-10 items-center justify-center rounded-xl bg-brand-500 text-[12px] font-semibold text-brand-950">Lanjut ke konfirmasi</span>
+              <span className="flex h-10 items-center justify-center rounded-xl bg-brand-500 text-[12px] font-semibold text-on-action">Lanjut ke konfirmasi</span>
               {/* Home indicator */}
               <span className="mx-auto mt-3 block h-[5px] w-[120px] rounded-full bg-zinc-950" />
             </div>
@@ -109,7 +107,6 @@ export default function DigitalCare({ appointmentHref }: { appointmentHref: stri
   const clinic = useClinic();
   return (
     <section className={`${mk.section} relative overflow-hidden bg-zinc-950`}>
-      <div className="pointer-events-none absolute -right-40 top-1/2 h-[520px] w-[520px] -translate-y-1/2 rounded-full bg-brand-500/10 blur-3xl" aria-hidden />
       <div className={`${mk.container} relative grid items-center gap-14 lg:grid-cols-[1.1fr_0.9fr]`}>
         <div className="flex flex-col gap-8">
           <div className="flex flex-col gap-3">
@@ -123,7 +120,7 @@ export default function DigitalCare({ appointmentHref }: { appointmentHref: stri
           <ul className="grid gap-x-8 gap-y-6 sm:grid-cols-2">
             {POINTS.map((p) => (
               <li key={p.title} className="flex gap-3">
-                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-500 text-brand-950">
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-brand-500 text-on-action">
                   <Check size={12} weight="bold" />
                 </span>
                 <span>

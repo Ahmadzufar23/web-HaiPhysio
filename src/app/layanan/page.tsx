@@ -29,7 +29,7 @@ export default function Layanan() {
         <ul className="mt-1 grid max-w-[480px] gap-2 sm:grid-cols-2">
           {INCLUDED.map((i) => (
             <li key={i} className="flex items-center gap-2 text-[14px] text-zinc-700">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-brand-950">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-on-action">
                 <Check size={11} weight="bold" />
               </span>
               {i}

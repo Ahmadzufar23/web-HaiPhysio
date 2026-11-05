@@ -61,7 +61,7 @@ export default function SuksesUbahJadwalPage() {
     return (
       <div className="w-full min-h-screen flex flex-col justify-center items-center bg-[#FAFAFA]">
         <p className="text-gray-500 mb-4">Data tidak ditemukan.</p>
-        <button onClick={() => router.push('/riwayat-booking')} className="px-6 py-2 bg-brand-600 text-brand-950 rounded-xl">Kembali</button>
+        <button onClick={() => router.push('/riwayat-booking')} className="px-6 py-2 bg-brand-600 text-on-action rounded-xl">Kembali</button>
       </div>
     );
   }
@@ -140,7 +140,7 @@ export default function SuksesUbahJadwalPage() {
         <div className="w-full flex flex-col gap-3">
           <Link 
           href="/riwayat-booking"
-          className="w-full py-4 rounded-xl bg-brand-600 text-brand-950 font-bold text-[15px] hover:bg-brand-700 transition-colors"
+          className="w-full py-4 rounded-xl bg-brand-600 text-on-action font-bold text-[15px] hover:bg-brand-700 transition-colors"
         >
           Lihat Detail Riwayat
         </Link>

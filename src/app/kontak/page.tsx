@@ -1,5 +1,6 @@
 "use client";
 
+import { clinicHoursText } from "@/constants/clinic";
 import Link from "next/link";
 import { ArrowRight, WhatsappLogo } from "@phosphor-icons/react";
 import { PageIntro, mk } from "@/components/marketing/ui";
@@ -17,7 +18,7 @@ export default function KontakKami() {
       <PageIntro
         crumb="Kontak Kami"
         title="Kami siap membantu pemulihan Anda"
-        lead={`Tanyakan keluhan, tarif, atau jadwal lewat WhatsApp. ${clinic.hours}, ${clinic.hoursNote.toLowerCase()}.`}
+        lead={`Tanyakan keluhan, tarif, atau jadwal lewat WhatsApp. ${clinicHoursText(clinic)}`.trim()}
         image={{ src: "/ruangan-klinik.png", alt: "Ruang latihan dan terapi klinik" }}
       >
         <div className="mt-2 flex flex-wrap gap-3">

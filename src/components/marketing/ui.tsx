@@ -10,7 +10,7 @@ export const mk = {
   container: "mx-auto w-full max-w-[1160px] px-5 md:px-8",
   section: "w-full py-16 md:py-24",
   btnPrimary:
-    "inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-500 px-5 text-[14px] font-semibold text-brand-950 transition-colors hover:bg-brand-600",
+    "inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-brand-500 px-5 text-[14px] font-semibold text-on-action transition-colors hover:bg-brand-600",
   btnDark:
     "inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 text-[14px] font-medium text-white transition-colors hover:bg-zinc-800",
   btnSecondary:

@@ -19,7 +19,7 @@ export default function ProcessSection({ className = "bg-white" }: { className?:
           {steps.map(({ title, desc }, i) => (
             <Reveal as="li" key={title} delay={i * 60} className="relative flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[13px] font-semibold tabular-nums text-brand-950">{i + 1}</span>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[13px] font-semibold tabular-nums text-on-action">{i + 1}</span>
                 {i < steps.length - 1 && <span className="hidden h-px flex-1 bg-zinc-200 lg:block" aria-hidden />}
               </div>
               <h3 className="text-[15px] font-semibold text-zinc-900">{title}</h3>

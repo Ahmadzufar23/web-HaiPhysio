@@ -6,8 +6,9 @@ import { usePathname } from "next/navigation";
 import { clearClinicSlug, getClinicSlug, setClinicSlug } from "@/app/utils/api";
 import { publicClinicService } from "@/services/publicClinicService";
 import { profileService } from "@/services/profileService";
-import { EMPTY_CLINIC, toClinicView, type ClinicView, type PublicClinic } from "@/constants/clinic";
+import { EMPTY_CLINIC, toClinicView, type ClinicDirectoryEntry, type ClinicView } from "@/constants/clinic";
 import { PLATFORM } from "@/constants/platform";
+import { applyAccentTheme } from "@/lib/accentTheme";
 
 const ClinicContext = createContext<ClinicView>(EMPTY_CLINIC);
 
@@ -65,9 +66,18 @@ export default function ClinicProvider({ children }: { children: React.ReactNode
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
+  // Panel super admin milik platform, jadi judulnya tidak mengikuti klinik terakhir
+  const isPlatformPage = pathname.startsWith("/super-admin");
   useEffect(() => {
-    if (clinic.brand) document.title = `${clinic.brand} | Klinik Fisioterapi`;
-  }, [clinic.brand]);
+    if (isPlatformPage) document.title = PLATFORM.name;
+    else if (clinic.brand) document.title = `${clinic.brand} | Klinik Fisioterapi`;
+  }, [clinic.brand, isPlatformPage]);
+
+  // Selama klinik dimuat, warna dari kunjungan terakhir dibiarkan supaya tidak berkedip
+  useEffect(() => {
+    if (isPlatformPage) applyAccentTheme(null);
+    else if (status !== "loading") applyAccentTheme(clinic.accentColor);
+  }, [clinic.accentColor, isPlatformPage, status]);
 
   const needsClinic = !PATHS_WITHOUT_CLINIC.some((path) => pathname.startsWith(path));
   if (needsClinic && status === "none") return <ClinicPicker />;
@@ -77,8 +87,9 @@ export default function ClinicProvider({ children }: { children: React.ReactNode
 
 // Alamat utama dibuka tanpa link klinik: pengunjung memilih kliniknya dulu.
 function ClinicPicker() {
-  const [clinics, setClinics] = useState<PublicClinic[] | null>(null);
+  const [clinics, setClinics] = useState<ClinicDirectoryEntry[] | null>(null);
   const [failed, setFailed] = useState(false);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     publicClinicService
@@ -86,6 +97,15 @@ function ClinicPicker() {
       .then(setClinics)
       .catch(() => setFailed(true));
   }, []);
+
+  // Cabang satu merek dikelompokkan supaya mudah dicari
+  const keyword = query.trim().toLowerCase();
+  const groups = new Map<string, ClinicDirectoryEntry[]>();
+  for (const item of clinics ?? []) {
+    const text = `${item.group.name} ${item.brand} ${item.branchName ?? ""} ${item.address ?? ""}`.toLowerCase();
+    if (keyword && !text.includes(keyword)) continue;
+    groups.set(item.group.slug, [...(groups.get(item.group.slug) ?? []), item]);
+  }
 
   return (
     <div className="flex min-h-screen w-full flex-col items-center bg-zinc-50 px-4 py-12">
@@ -98,16 +118,33 @@ function ClinicPicker() {
         {clinics?.length === 0 && <p className="mt-6 text-[14px] text-zinc-500">Belum ada klinik yang terdaftar.</p>}
 
         {clinics && clinics.length > 0 && (
-          <ul className="mt-6 divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
-            {clinics.map((item) => (
-              <li key={item.slug}>
-                <a href={`/k/${item.slug}`} className="block px-4 py-3 transition-colors hover:bg-zinc-50">
-                  <span className="block text-[14px] font-medium text-zinc-900">{item.brand}</span>
-                  {item.address && <span className="mt-0.5 block text-[13px] text-zinc-500">{item.address}</span>}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari nama klinik atau kota"
+              aria-label="Cari klinik"
+              className="mt-6 h-10 w-full rounded-md border border-zinc-200 bg-white px-3 text-[14px] text-zinc-900 outline-none focus:border-zinc-400"
+            />
+            {groups.size === 0 && <p className="mt-4 text-[14px] text-zinc-500">Klinik tidak ditemukan.</p>}
+            <div className="mt-4 flex flex-col gap-4">
+              {[...groups.entries()].map(([groupSlug, branches]) => (
+                <section key={groupSlug}>
+                  {branches.length > 1 && <h2 className="mb-1.5 text-[12px] font-medium text-zinc-500">{branches[0].group.name}</h2>}
+                  <ul className="divide-y divide-zinc-200 rounded-lg border border-zinc-200 bg-white">
+                    {branches.map((item) => (
+                      <li key={item.slug}>
+                        <a href={`/k/${item.slug}`} className="block px-4 py-3 transition-colors hover:bg-zinc-50">
+                          <span className="block text-[14px] font-medium text-zinc-900">{item.brand}</span>
+                          {item.address && <span className="mt-0.5 block text-[13px] text-zinc-500">{item.address}</span>}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+            </div>
+          </>
         )}
 
         <p className="mt-6 text-[13px] text-zinc-500">

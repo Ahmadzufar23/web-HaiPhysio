@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
+import ClinicLogo from "@/components/shared/ClinicLogo";
+import BranchSwitcher from "@/components/shared/BranchSwitcher";
 import { useState, useEffect, useRef } from "react";
 import { List, X, UserCircle, ClockCounterClockwise, ArrowRight, CaretDown } from "@phosphor-icons/react";
 import { useAuthStatus } from "@/hooks/useAuthStatus";
@@ -77,16 +78,12 @@ export default function Navbar() {
         }`}
       >
         {/* LOGO */}
-        <Link href="/" aria-label={`${clinic.brand}, Beranda`} className="relative flex w-[78px] items-center">
-          <Image
-            src="/fisio_nobg.png"
-            alt={`Logo ${clinic.brand}`}
-            width={125}
-            height={80}
-            priority
-            className="h-auto w-full object-contain object-left"
-          />
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" aria-label={`${clinic.brand}, Beranda`} className="flex max-w-[160px] items-center">
+            <ClinicLogo className="h-11 w-auto object-left" />
+          </Link>
+          <BranchSwitcher />
+        </div>
 
         {/* MENU NAVIGASI DESKTOP */}
         <ul className="hidden lg:flex items-center gap-8">

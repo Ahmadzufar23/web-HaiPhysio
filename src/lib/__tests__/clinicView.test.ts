@@ -12,6 +12,9 @@ const clinic: PublicClinic = {
   homeVisitWhatsapp: null,
   email: "halo@sehat.dev",
   instagram: "kliniksehat",
+  branchName: null,
+  group: { slug: "klinik-sehat", name: "Klinik Sehat", tagline: null, about: null, foundedYear: null, logoUrl: null, markUrl: null, heroImageUrl: null, accentColor: "#1d4ed8" },
+  branches: [],
 };
 
 describe("identitas klinik dari API", () => {

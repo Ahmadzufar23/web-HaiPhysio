@@ -80,7 +80,7 @@ export default function BodyMapPicker({ selected, onChange, scale = null, onScal
                   aria-label={`Hapus ${regionLabel(id)}`}
                   className={
                     dark
-                      ? "flex items-center gap-1.5 rounded-full bg-brand-500 py-1.5 pl-3 pr-2 text-[13px] font-semibold text-brand-950 transition-colors hover:bg-brand-600"
+                      ? "flex items-center gap-1.5 rounded-full bg-brand-500 py-1.5 pl-3 pr-2 text-[13px] font-semibold text-on-action transition-colors hover:bg-brand-600"
                       : "flex items-center gap-1.5 rounded-md border border-zinc-200 bg-white py-1 pl-2 pr-1.5 text-[12px] text-zinc-800 transition-colors hover:border-zinc-300"
                   }
                 >
@@ -105,7 +105,7 @@ export default function BodyMapPicker({ selected, onChange, scale = null, onScal
               const active = scale === n;
               const filled = Boolean(scale && n <= scale);
               const cls = dark
-                ? `h-9 rounded-lg text-[13px] font-bold ${active ? "bg-brand-900 text-white" : filled ? "bg-brand-500 text-brand-950" : "bg-white/10 text-white/70 hover:bg-white/20"}`
+                ? `h-9 rounded-lg text-[13px] font-bold ${active ? "bg-brand-900 text-white" : filled ? "bg-brand-500 text-on-action" : "bg-white/10 text-white/70 hover:bg-white/20"}`
                 : `flex h-12 flex-col items-center justify-center rounded-lg border ${
                     active ? "border-action bg-action text-on-action" : filled ? "border-zinc-300 bg-zinc-100 text-zinc-700" : scaleError ? "border-red-200 bg-white text-zinc-600 hover:bg-zinc-50" : "border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50"
                   }`;

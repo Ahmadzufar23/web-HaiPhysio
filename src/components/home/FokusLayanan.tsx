@@ -36,7 +36,7 @@ export default function FokusLayanan({ detailed = false, className = "bg-white" 
               </div>
               <div className="flex flex-1 flex-col gap-4 p-6">
                 <div className="flex items-center gap-3">
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500 text-brand-950 [&_svg]:h-[18px] [&_svg]:w-[18px]">{service.icon}</span>
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-500 text-on-action [&_svg]:h-[18px] [&_svg]:w-[18px]">{service.icon}</span>
                   <div>
                     <h3 className="text-[15px] font-semibold text-zinc-900">
                       {service.title} {service.titleBold}

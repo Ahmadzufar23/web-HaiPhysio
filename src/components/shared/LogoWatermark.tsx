@@ -1,5 +1,7 @@
-import Image from "next/image";
+"use client";
+
 import type { CSSProperties } from "react";
+import { useClinic } from "@/components/shared/ClinicProvider";
 
 interface LogoWatermarkProps {
   /** Posisi & ukuran (kelas Tailwind), mis. "-right-20 -bottom-24 w-[520px]". */
@@ -21,8 +23,7 @@ const TONE_FILTER: Record<NonNullable<LogoWatermarkProps["tone"]>, string> = {
 };
 
 /**
- * Figur logo Hai Physio (orang yang melompat + sapuan) sebagai watermark latar —
- * ciri khas visual klinik. Sumber: public/brand/logo-mark.png (dipotong dari logo asli).
+ * Figur logo klinik sebagai watermark latar. Klinik tanpa gambar figur tidak menampilkannya.
  * Murni dekoratif: disembunyikan dari pembaca layar.
  */
 export default function LogoWatermark({
@@ -32,20 +33,16 @@ export default function LogoWatermark({
   drift = true,
   tone = "brand",
 }: LogoWatermarkProps) {
+  const { markUrl } = useClinic();
+  if (!markUrl) return null;
   return (
     <div
       aria-hidden="true"
       className={`pointer-events-none absolute select-none ${drift ? "animate-drift" : ""} ${className}`}
       style={{ opacity, "--wm-rotate": `${rotate}deg`, transform: drift ? undefined : `rotate(${rotate}deg)` } as CSSProperties}
     >
-      <Image
-        src="/brand/logo-mark.png"
-        alt=""
-        width={640}
-        height={711}
-        className="h-auto w-full"
-        style={{ filter: TONE_FILTER[tone] }}
-      />
+      {/* eslint-disable-next-line @next/next/no-img-element -- gambar milik klinik */}
+      <img src={markUrl} alt="" className="h-auto w-full" style={{ filter: TONE_FILTER[tone] }} />
     </div>
   );
 }

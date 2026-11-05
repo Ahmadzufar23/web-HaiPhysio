@@ -80,7 +80,7 @@ function Avatar({ profile, size }: { profile: Profile; size: "md" | "lg" }) {
     // eslint-disable-next-line @next/next/no-img-element -- data URL dari API profil
     <img src={profile.photo} alt="Foto profil" className={`${box} shrink-0 rounded-xl border border-zinc-200 object-cover`} />
   ) : (
-    <span className={`${box} flex shrink-0 items-center justify-center rounded-xl bg-brand-500 font-semibold text-brand-950`}>{initials(profile.fullName) || "?"}</span>
+    <span className={`${box} flex shrink-0 items-center justify-center rounded-xl bg-brand-500 font-semibold text-on-action`}>{initials(profile.fullName) || "?"}</span>
   );
 }
 

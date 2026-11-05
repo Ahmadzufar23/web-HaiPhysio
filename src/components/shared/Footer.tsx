@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { WhatsappLogo, EnvelopeSimple, InstagramLogo, MapPin, Clock } from "@phosphor-icons/react";
@@ -24,21 +23,23 @@ export default function Footer() {
     { icon: WhatsappLogo, ...clinic.whatsapp },
     { icon: EnvelopeSimple, ...clinic.email },
     { icon: InstagramLogo, ...clinic.instagram },
-  ];
+    // Kontak yang belum diisi klinik tidak ditampilkan
+  ].filter((contact) => contact.label);
 
   return (
     <footer className="mt-auto w-full bg-brand-950 text-white print:hidden">
       <div className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-10 px-5 py-14 md:grid-cols-2 md:px-8 lg:grid-cols-12">
         {/* Brand */}
         <div className="flex flex-col gap-4 lg:col-span-4">
-          {/* Figur logo kuning asli + nama putih (teks hitam bawaan logo tidak terbaca di latar gelap) */}
+          {/* Figur logo + nama putih, karena teks gelap pada logo tidak terbaca di latar gelap */}
           <span className="flex items-center gap-2.5">
-            <Image src="/brand/logo-mark.png" alt="" width={64} height={71} className="h-auto w-10" />
+            {clinic.markUrl && (
+              // eslint-disable-next-line @next/next/no-img-element -- gambar milik klinik
+              <img src={clinic.markUrl} alt="" className="h-auto w-10" />
+            )}
             <span className="text-[22px] font-extrabold tracking-[-0.02em] text-white">{clinic.brand}</span>
           </span>
-          <p className="max-w-[300px] text-[14px] leading-relaxed text-white/60">
-            Klinik fisioterapi di bawah Klinik Pratama Condet Jaya, Jakarta Timur. Efektif dan progresif.
-          </p>
+          <p className="max-w-[300px] text-[14px] leading-relaxed text-white/60">{clinic.tagline || `Klinik fisioterapi ${clinic.brand}.`}</p>
         </div>
 
         {/* Menu */}

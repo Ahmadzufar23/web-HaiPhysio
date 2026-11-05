@@ -43,7 +43,7 @@ export default function ContactSection({
               <OpenStatus />
             </div>
             <ul className="flex flex-1 flex-col divide-y divide-zinc-100">
-              {rows.map(({ icon: RowIcon, label, value, note, href }) => {
+              {rows.filter((row) => row.value).map(({ icon: RowIcon, label, value, note, href }) => {
                 const external = href?.startsWith("http");
                 const content = (
                   <>

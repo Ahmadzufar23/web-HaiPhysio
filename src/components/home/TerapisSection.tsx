@@ -58,7 +58,7 @@ export default function TerapisSection({ appointmentHref, className = "bg-zinc-5
             ? Array.from({ length: 4 }, (_, i) => <li key={i} className="h-[92px] animate-pulse rounded-2xl bg-zinc-100" aria-hidden />)
             : therapists.map((t, i) => (
                 <Reveal as="li" key={t.id} delay={i * 60} className={`${mk.card} flex items-center gap-4 p-5`}>
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-brand-500 text-[14px] font-semibold text-brand-950">
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-brand-500 text-[14px] font-semibold text-on-action">
                     {t.photoUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={t.photoUrl} alt={t.fullName} className="h-full w-full object-cover" />

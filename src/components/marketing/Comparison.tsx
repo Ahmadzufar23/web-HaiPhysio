@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Check, Minus } from "@phosphor-icons/react/dist/ssr";
 import { mk, SectionTitle } from "./ui";
 import { useClinic } from "@/components/shared/ClinicProvider";
@@ -27,9 +26,8 @@ export default function ComparisonSection({ className = "bg-zinc-50" }: { classN
             <thead>
               <tr className="border-b border-zinc-200 text-[12px] text-zinc-500">
                 <th className="w-[26%] px-5 py-3.5 font-medium" />
-                <th className="w-[40%] bg-brand-500 px-5 py-3.5 font-semibold text-brand-950">
+                <th className="w-[40%] bg-brand-500 px-5 py-3.5 font-semibold text-on-action">
                   <span className="inline-flex items-center gap-2">
-                    <Image src="/brand/logo-mark.png" alt="" width={16} height={18} className="h-auto w-[14px] brightness-0" />
                     {clinic.brand}
                   </span>
                 </th>

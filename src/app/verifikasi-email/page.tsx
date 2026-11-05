@@ -52,7 +52,7 @@ function VerifyEmail() {
       </div>
       <Link
         href="/login"
-        className="flex h-12 w-full items-center justify-center rounded-[8px] bg-brand-500 px-5 text-[15px] font-semibold text-brand-950 transition hover:bg-brand-600"
+        className="flex h-12 w-full items-center justify-center rounded-[8px] bg-brand-500 px-5 text-[15px] font-semibold text-on-action transition hover:bg-brand-600"
       >
         Ke halaman login
       </Link>

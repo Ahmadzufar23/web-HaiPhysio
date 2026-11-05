@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import ClinicLogo from "@/components/shared/ClinicLogo";
 import { Printer } from "@phosphor-icons/react";
 import type { MedicalRecordReport } from "@/types/api.types";
 import BodyMap from "@/components/bodymap/BodyMap";
@@ -68,7 +68,7 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
       <article className="rounded-lg border border-zinc-200 bg-white p-8 text-zinc-900 print:rounded-none print:border-0 print:p-0">
         <header className="flex items-start justify-between gap-6 border-b-2 border-zinc-900 pb-4">
           <div className="flex items-center gap-3">
-            <Image src="/fisio_nobg.png" alt="" width={44} height={44} className="h-11 w-11 object-contain" />
+            <ClinicLogo className="h-11 w-auto" nameClassName="hidden" />
             <div>
               <p className="text-[16px] font-bold tracking-tight">{clinic.brand}</p>
               <p className="text-[11px] text-zinc-600">{clinic.name}</p>
@@ -120,7 +120,7 @@ export default function MedicalRecordPrint({ report }: { report: MedicalRecordRe
               </div>
               <div className="mt-3 flex flex-wrap gap-x-3 gap-y-1 text-[10.5px] text-zinc-600 [print-color-adjust:exact]">
                 <span className="inline-flex items-center gap-1.5">
-                  <span className="h-2 w-2 rounded-sm bg-[#fcdf09]" aria-hidden /> Keluhan pasien
+                  <span className="h-2 w-2 rounded-sm bg-[var(--bodymap-fill)]" aria-hidden /> Keluhan pasien
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <span className="h-2 w-2 rounded-sm bg-zinc-600" aria-hidden /> Ditandai terapis

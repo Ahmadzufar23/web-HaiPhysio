@@ -60,7 +60,7 @@ export default function PricingSection({ appointmentHref, className = "bg-white"
                 const sessions = p.totalSessions ?? 1;
                 return (
                   <article key={p.id} className={`relative flex flex-col rounded-2xl border bg-white p-6 ${best ? "border-brand-500 ring-1 ring-brand-500 shadow-[0_24px_48px_-28px_rgb(24_24_27/0.45)]" : "border-zinc-200"}`}>
-                    {best && <span className="absolute -top-3 left-6 rounded-full bg-brand-500 px-2.5 py-1 text-[11px] font-semibold text-brand-950">Paling hemat</span>}
+                    {best && <span className="absolute -top-3 left-6 rounded-full bg-brand-500 px-2.5 py-1 text-[11px] font-semibold text-on-action">Paling hemat</span>}
                     <h3 className="text-[15px] font-semibold text-zinc-900">{p.name}</h3>
                     <p className="text-[13px] text-zinc-500">{sessions === 1 ? "Satu kali kunjungan" : `${sessions} sesi terapi · 1 jam per sesi`}</p>
 
@@ -102,7 +102,7 @@ export default function PricingSection({ appointmentHref, className = "bg-white"
             {homecare && (
               <div className={`${mk.card} flex flex-col gap-5 p-6 md:flex-row md:items-center md:justify-between`}>
                 <div className="flex items-start gap-4">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-brand-950">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-500 text-on-action">
                     <House size={18} />
                   </span>
                   <div>

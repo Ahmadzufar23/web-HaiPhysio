@@ -44,8 +44,9 @@ const TONES = {
   },
 };
 
-const ON_FILL = "#fcdf09";
-const ON_SEAM = "#c99d00";
+// Warna klinik di situs pasien, kuning di panel staf (lihat globals.css)
+const ON_FILL = "var(--bodymap-fill)";
+const ON_SEAM = "var(--bodymap-line)";
 // Titik dari terapis (dibedakan dari pilihan pasien)
 const MARK_FILL = "#52525b";
 const MARK_SEAM = "#27272a";

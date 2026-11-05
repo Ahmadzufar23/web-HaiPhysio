@@ -161,7 +161,7 @@ export default function KonfirmasiUbahJadwalPage({ params }: { params: Promise<{
             onClick={handleConfirm}
             disabled={isSubmitting || !slotId}
             className={`w-full py-4 rounded-xl font-bold text-[15px] transition-colors ${
-              isSubmitting || !slotId ? "bg-gray-400 text-brand-950 cursor-not-allowed" : "bg-brand-600 text-brand-950 hover:bg-brand-700"
+              isSubmitting || !slotId ? "bg-gray-400 text-on-action cursor-not-allowed" : "bg-brand-600 text-on-action hover:bg-brand-700"
             }`}
           >
             {isSubmitting ? "Memproses Perubahan..." : "Konfirmasi Ubah Jadwal"}
