@@ -4,12 +4,15 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { SquaresFour, ClipboardText, CalendarBlank, Users, Stethoscope, Package, ChartLineUp, FilmStrip, Receipt, SignOut, X, type Icon } from "@phosphor-icons/react";
+import { SquaresFour, ClipboardText, CalendarBlank, Users, Stethoscope, Package, ChartLineUp, FilmStrip, Receipt, Buildings, SignOut, X, type Icon } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
 import ModalLogout from "@/components/profile/ModalLogout";
 import { useStaffUser } from "./AdminGuard";
 import type { StaffRole } from "@/types/api.types";
 import { PLATFORM } from "@/constants/platform";
+import { useClinic } from "@/components/shared/ClinicProvider";
+import ClinicLogo from "@/components/shared/ClinicLogo";
+import BranchSwitcher from "@/components/shared/BranchSwitcher";
 
 type NavItem = { title: string; path: string; icon: Icon; roles: StaffRole[] };
 
@@ -32,6 +35,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { title: "Paket Terapi", path: "/admin/paket", icon: Package, roles: ["owner"] },
       { title: "Keuangan & Absensi", path: "/admin/laporan", icon: ChartLineUp, roles: ["owner"] },
       { title: "Tagihan", path: "/admin/tagihan", icon: Receipt, roles: ["owner"] },
+      { title: "Profil Klinik", path: "/admin/klinik", icon: Buildings, roles: ["owner"] },
     ],
   },
 ];
@@ -41,6 +45,7 @@ const ROLE_LABEL: Record<StaffRole, string> = { owner: "Owner", terapis: "Terapi
 export default function AdminSidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const user = useStaffUser();
+  const clinic = useClinic();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -67,14 +72,17 @@ export default function AdminSidebar({ open, onClose }: { open: boolean; onClose
           open ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="flex h-12 items-center justify-between gap-2 px-4">
-          <Link href="/admin" className="flex items-center gap-2" onClick={onClose}>
-            <Image src={PLATFORM.logo} alt="" width={28} height={28} unoptimized className="h-7 w-7" />
-            <span className="text-[14px] font-semibold tracking-tight text-zinc-900">{PLATFORM.name}</span>
-          </Link>
-          <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:text-zinc-900 lg:hidden" aria-label="Tutup menu">
-            <X size={16} />
-          </button>
+        <div className="flex flex-col gap-2 border-b border-zinc-100 px-4 py-3">
+          <div className="flex items-start justify-between gap-2">
+            <Link href="/admin" className="flex min-w-0 flex-col gap-1.5" onClick={onClose}>
+              <ClinicLogo className="h-10 w-auto max-w-[150px] object-left" nameClassName="text-[14px] font-semibold tracking-tight text-zinc-900" />
+              {clinic.logoUrl && <span className="truncate text-[12px] font-medium text-zinc-700">{clinic.brand}</span>}
+            </Link>
+            <button onClick={onClose} className="rounded p-1 text-zinc-400 hover:text-zinc-900 lg:hidden" aria-label="Tutup menu">
+              <X size={16} />
+            </button>
+          </div>
+          {user.role === "owner" && <BranchSwitcher redirectTo="/admin" className="w-full" />}
         </div>
 
         <nav className="flex-1 overflow-y-auto px-2 py-3">
@@ -121,6 +129,10 @@ export default function AdminSidebar({ open, onClose }: { open: boolean; onClose
             <SignOut size={16} className="text-zinc-400" />
             Keluar
           </button>
+          <p className="mt-1 flex items-center gap-1.5 px-2 pb-1 pt-1.5 text-[11px] text-zinc-400">
+            <Image src={PLATFORM.logo} alt="" width={14} height={14} unoptimized className="h-3.5 w-3.5" />
+            {PLATFORM.name}
+          </p>
         </div>
       </aside>
 
