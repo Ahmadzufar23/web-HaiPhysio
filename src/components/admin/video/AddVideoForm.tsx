@@ -7,7 +7,7 @@ import type { StaffVideoFolder } from "@/types/api.types";
 import { btn, inputClass, Notice } from "@/components/admin/shared/AdminUI";
 
 // Sama dengan parseYoutubeId di backend (validators/videos.validator.ts)
-export function youtubeIdOf(url: string): string | null {
+function youtubeIdOf(url: string): string | null {
   try {
     const u = new URL(url.trim());
     const host = u.hostname.replace(/^(www|m)\./, "");
@@ -65,7 +65,7 @@ export default function AddVideoForm({
           <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={150} placeholder="Mis. Quad set setelah rekonstruksi ACL" className={inputClass} />
         </label>
         <label className="flex flex-col gap-1">
-          <span className="text-[12px] font-medium text-zinc-700">Folder</span>
+          <span className="text-[12px] font-medium text-zinc-700">Kategori</span>
           <select value={folderId} onChange={(e) => setFolderId(e.target.value)} className={inputClass}>
             {folders.map((f) => (
               <option key={f.id} value={f.id}>
@@ -77,7 +77,7 @@ export default function AddVideoForm({
       </div>
       <label className="flex flex-col gap-1">
         <span className="text-[12px] font-medium text-zinc-700">
-          Petunjuk <span className="font-normal text-zinc-400">· opsional</span>
+          Deskripsi <span className="font-normal text-zinc-400">· opsional</span>
         </span>
         <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} maxLength={1000} placeholder="Posisi awal, hal yang perlu diperhatikan, kapan berhenti" className={`${inputClass} h-auto py-2`} />
       </label>

@@ -2,11 +2,9 @@
 
 import { Check, FilmStrip, Play } from "@phosphor-icons/react";
 import type { TherapyVideo } from "@/types/api.types";
-import { formatDuration } from "./VideoPlayer";
 
-/** Sampul video: thumbnail YouTube, atau bidang netral untuk file unggahan. */
-export function VideoThumb({ video, className = "", done }: { video: Pick<TherapyVideo, "thumbnailUrl" | "durationSeconds" | "title">; className?: string; done?: boolean }) {
-  const duration = formatDuration(video.durationSeconds);
+/** Sampul video: thumbnail YouTube. */
+export function VideoThumb({ video, className = "", done }: { video: Pick<TherapyVideo, "thumbnailUrl" | "title">; className?: string; done?: boolean }) {
   return (
     <div className={`relative aspect-video overflow-hidden rounded-lg bg-zinc-100 ${className}`}>
       {video.thumbnailUrl ? (
@@ -22,7 +20,6 @@ export function VideoThumb({ video, className = "", done }: { video: Pick<Therap
           <Play size={12} weight="fill" />
         </span>
       </span>
-      {duration && <span className="absolute bottom-1.5 right-1.5 rounded bg-zinc-950/75 px-1 py-px text-[10px] font-medium tabular-nums text-white">{duration}</span>}
       {done && (
         <span className="absolute left-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-action text-on-action" aria-label="Selesai hari ini">
           <Check size={11} weight="bold" />

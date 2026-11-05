@@ -6,9 +6,8 @@ import { videoService } from "@/services/videoService";
 import { getApiErrorMessage } from "@/app/utils/api";
 import type { StaffVideoFolder } from "@/types/api.types";
 import { btn, EmptyState, inputClass, Notice, PageHeader, Panel, tableHead } from "@/components/admin/shared/AdminUI";
-import AddVideoForm, { youtubeIdOf } from "@/components/admin/video/AddVideoForm";
+import AddVideoForm from "@/components/admin/video/AddVideoForm";
 import { VideoThumb } from "@/components/video/VideoUI";
-import { formatDuration } from "@/components/video/VideoPlayer";
 
 type FolderForm = { mode: "new" } | { mode: "edit"; id: string };
 
@@ -23,8 +22,6 @@ export default function AdminVideoPage() {
   const [error, setError] = useState("");
   const [info, setInfo] = useState("");
   // Video unggahan lama yang sedang diganti dengan link YouTube
-  const [replacingId, setReplacingId] = useState<string | null>(null);
-  const [replacementUrl, setReplacementUrl] = useState("");
 
   const load = () =>
     videoService
@@ -81,25 +78,16 @@ export default function AdminVideoPage() {
       setInfo(res.data.deactivated ? `"${title}" pernah dikirim ke pasien, jadi hanya dinonaktifkan.` : `"${title}" dihapus.`);
     });
 
-  const replaceWithYoutube = async (id: string) => {
-    if (!youtubeIdOf(replacementUrl)) {
-      setError("Link YouTube tidak valid.");
-      return;
-    }
-    await run(id, () => videoService.updateVideo(id, { youtube_url: replacementUrl }), "Video diganti dengan link YouTube.");
-    setReplacingId(null);
-    setReplacementUrl("");
-  };
 
   return (
     <div className="flex flex-col gap-5">
       <PageHeader
         title="Video terapi"
-        description="Folder video latihan yang bisa dijelajah pasien. Kirim video ke pasien dari Detail Sesi atau Detail Pasien."
+        description="Video latihan dari link YouTube, dikelompokkan per kategori (mis. ACL, nyeri punggung). Kirim video ke pasien dari Detail Sesi atau Detail Pasien."
         actions={
           <>
             <button type="button" onClick={() => openFolderForm({ mode: "new" })} className={btn.secondary}>
-              Folder baru
+              Kategori baru
             </button>
             <button type="button" onClick={() => setAdding(true)} disabled={!selected} className={btn.primary}>
               <Plus size={12} />
@@ -113,7 +101,7 @@ export default function AdminVideoPage() {
       {info && <Notice tone="info">{info}</Notice>}
 
       <div className="grid items-start gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <Panel title="Folder" bodyClassName="p-1.5">
+        <Panel title="Kategori" bodyClassName="p-1.5">
           {folders === null ? (
             <div className="space-y-1.5 p-1.5">
               {[0, 1, 2, 3].map((i) => (
@@ -168,7 +156,7 @@ export default function AdminVideoPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => run(selected.id, () => videoService.deleteFolder(selected.id), `Folder "${selected.name}" dihapus.`)}
+                  onClick={() => run(selected.id, () => videoService.deleteFolder(selected.id), `Kategori "${selected.name}" dihapus.`)}
                   disabled={busyId === selected.id}
                   className="rounded px-2 py-1 text-[12px] text-red-700 hover:bg-red-50 disabled:opacity-50"
                 >
@@ -194,15 +182,14 @@ export default function AdminVideoPage() {
           {!selected ? (
             <EmptyState title="Belum ada folder" description="Buat folder dulu, mis. ACL atau Nyeri punggung bawah." />
           ) : selected.videos.length === 0 ? (
-            !adding && <EmptyState title="Folder ini masih kosong" description="Tambah video dengan link YouTube." />
+            !adding && <EmptyState title="Kategori ini masih kosong" description="Tambah video dengan link YouTube." />
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[720px] text-left text-[13px]">
                 <thead>
                   <tr className={tableHead}>
                     <th className="px-4 py-2 font-medium">Video</th>
-                    <th className="px-4 py-2 font-medium">Sumber</th>
-                    <th className="px-4 py-2 font-medium">Durasi</th>
+                    <th className="px-4 py-2 font-medium">Ditambahkan oleh</th>
                     <th className="px-4 py-2 font-medium">Pasien aktif</th>
                     <th className="px-4 py-2 font-medium">Status</th>
                     <th className="px-4 py-2 text-right font-medium">Aksi</th>
@@ -220,16 +207,10 @@ export default function AdminVideoPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-2.5 text-zinc-600">
-                        {v.source === "youtube" ? "YouTube" : "File lama"}
-                        {v.addedByName && <span className="block text-[11px] text-zinc-400">Oleh {v.addedByName}</span>}
-                      </td>
-                      <td className="px-4 py-2.5 tabular-nums text-zinc-600">{formatDuration(v.durationSeconds) ?? "—"}</td>
+                      <td className="px-4 py-2.5 text-zinc-600">{v.addedByName ?? "—"}</td>
                       <td className="px-4 py-2.5 tabular-nums text-zinc-600">{v.activePatients}</td>
                       <td className="px-4 py-2.5">
-                        {!v.ready ? (
-                          <span className="text-[12px] text-amber-700">Perlu link YouTube</span>
-                        ) : v.isActive ? (
+                        {v.isActive ? (
                           <span className="inline-flex items-center gap-1.5 text-[12px] text-zinc-900">
                             <span className="h-1.5 w-1.5 rounded-full bg-zinc-900" /> Tampil
                           </span>
@@ -241,39 +222,6 @@ export default function AdminVideoPage() {
                       </td>
                       <td className="px-4 py-2.5">
                         <div className="flex justify-end gap-1">
-                          {!v.ready && replacingId === v.id && (
-                            <>
-                              <input
-                                value={replacementUrl}
-                                onChange={(e) => setReplacementUrl(e.target.value)}
-                                placeholder="https://youtu.be/…"
-                                aria-label={`Link YouTube untuk ${v.title}`}
-                                className={`${inputClass} w-[180px]`}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => replaceWithYoutube(v.id)}
-                                disabled={busyId === v.id}
-                                className="rounded px-2 py-1 text-[12px] text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
-                              >
-                                Simpan
-                              </button>
-                            </>
-                          )}
-                          {!v.ready && replacingId !== v.id && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setReplacingId(v.id);
-                                setReplacementUrl("");
-                              }}
-                              disabled={busyId === v.id}
-                              className="rounded px-2 py-1 text-[12px] text-zinc-700 hover:bg-zinc-100 disabled:opacity-50"
-                            >
-                              Isi link
-                            </button>
-                          )}
-                          {v.ready && (
                             <button
                               type="button"
                               onClick={() => run(v.id, () => videoService.updateVideo(v.id, { is_active: !v.isActive }))}
@@ -282,7 +230,6 @@ export default function AdminVideoPage() {
                             >
                               {v.isActive ? "Sembunyikan" : "Tampilkan"}
                             </button>
-                          )}
                           <button
                             type="button"
                             onClick={() => removeVideo(v.id, v.title)}

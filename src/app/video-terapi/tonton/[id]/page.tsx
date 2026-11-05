@@ -77,7 +77,7 @@ export default function TontonVideoPage() {
         ) : (
           <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div>
-              <VideoPlayer playback={data.playback} title={data.video.title} durationHint={data.video.durationSeconds} onProgress={setProgress} onComplete={handleComplete} />
+              <VideoPlayer playback={data.playback} title={data.video.title} onProgress={setProgress} onComplete={handleComplete} />
               {data.video.description && <p className="mt-4 whitespace-pre-line text-[13px] leading-relaxed text-zinc-700">{data.video.description}</p>}
             </div>
 
@@ -89,7 +89,7 @@ export default function TontonVideoPage() {
 
                   {checkin === "done" ? (
                     <div className="mt-4 flex items-start gap-2.5 rounded-lg bg-zinc-900 px-3 py-2.5 text-white">
-                      <span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-brand-950">
+                      <span className="mt-px flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-500 text-on-action">
                         <Check size={11} weight="bold" />
                       </span>
                       <div>
@@ -102,7 +102,7 @@ export default function TontonVideoPage() {
                       <div className="flex items-baseline justify-between text-[12px]">
                         <span className="text-zinc-600">{checkin === "saving" ? "Menyimpan check-in…" : "Progres tontonan"}</span>
                         <span className="tabular-nums text-zinc-500">
-                          {progress ? `${formatDuration(progress.watched) ?? "0:00"} / ${formatDuration(progress.duration)}` : formatDuration(data.video.durationSeconds) ?? ""}
+                          {progress ? `${formatDuration(progress.watched) ?? "0:00"} / ${formatDuration(progress.duration)}` : ""}
                         </span>
                       </div>
                       <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-zinc-100">

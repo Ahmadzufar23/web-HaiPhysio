@@ -113,7 +113,7 @@ export default function MedicalRecordEditor({ record, patientPoints, editing, sa
           <h3 className="text-[13px] font-semibold text-brand-900">Titik berobat</h3>
           <div className="flex items-center gap-4 text-[12px] text-brand-900/60">
             <span className="inline-flex items-center gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-sm bg-[#fcdf09]" aria-hidden /> Dipilih pasien
+              <span className="h-2.5 w-2.5 rounded-sm bg-[var(--bodymap-fill)]" aria-hidden /> Dipilih pasien
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="h-2.5 w-2.5 rounded-sm bg-zinc-600" aria-hidden /> Ditambah terapis

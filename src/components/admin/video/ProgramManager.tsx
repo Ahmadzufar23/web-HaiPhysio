@@ -39,14 +39,14 @@ export default function ProgramManager({ patientId }: { patientId: string }) {
       .getLibrary()
       .then((res) => {
         setLibrary(res.data.folders);
-        const first = res.data.folders.find((f) => f.videos.some((v) => v.ready && v.isActive));
+        const first = res.data.folders.find((f) => f.videos.some((v) => v.isActive));
         if (first) setFolderId(first.id);
       })
       .catch((err) => setError(getApiErrorMessage(err)));
   };
 
   const assigned = new Set(program?.items.map((i) => i.video.id));
-  const choices = library?.find((f) => f.id === folderId)?.videos.filter((v) => v.ready && v.isActive && !assigned.has(v.id)) ?? [];
+  const choices = library?.find((f) => f.id === folderId)?.videos.filter((v) => v.isActive && !assigned.has(v.id)) ?? [];
 
   const send = async (e: React.FormEvent) => {
     e.preventDefault();
