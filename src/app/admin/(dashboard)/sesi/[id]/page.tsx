@@ -193,6 +193,7 @@ export default function SessionDetailPage({ params }: { params: Promise<{ id: st
             sessionId={id}
             status={data.session.status}
             assessment={data.assessment}
+            profileBody={{ heightCm: data.patient.heightCm, weightKg: data.patient.weightKg }}
             onSaved={() => void load()}
           />
 

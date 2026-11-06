@@ -17,7 +17,27 @@ interface Props {
   sessionId: string;
   status: BookingStatus;
   assessment: SessionAssessment | null;
+  /** TB/BB di profil pasien saat ini, sebagai acuan pengukuran ulang */
+  profileBody: { heightCm: number | null; weightKg: number | null };
   onSaved: () => void;
+}
+
+const HEIGHT_RANGE = { min: 50, max: 250 };
+const WEIGHT_RANGE = { min: 2, max: 300 };
+
+/** "" = belum diisi */
+const parseHeight = (v: string) => (v.trim() === "" ? null : Number(v));
+// Koma desimal ("65,5") lazim di keyboard Indonesia
+const parseWeight = (v: string) => (v.trim() === "" ? null : Number(v.replace(",", ".")));
+
+function bodyError(height: number | null, weight: number | null): string | null {
+  if (height !== null && (!Number.isInteger(height) || height < HEIGHT_RANGE.min || height > HEIGHT_RANGE.max)) {
+    return `Tinggi badan ${HEIGHT_RANGE.min}–${HEIGHT_RANGE.max} cm, tanpa koma.`;
+  }
+  if (weight !== null && (Number.isNaN(weight) || weight < WEIGHT_RANGE.min || weight > WEIGHT_RANGE.max)) {
+    return `Berat badan ${WEIGHT_RANGE.min}–${WEIGHT_RANGE.max} kg.`;
+  }
+  return null;
 }
 
 /** Skala VAS 0–10 sebagai deretan tombol */
@@ -50,10 +70,12 @@ function VasScale({ label, value, onChange, disabled }: { label: string; value: 
  * Asesmen klinis terstruktur sesi ini: nyeri VAS sebelum/sesudah terapi dan ROM.
  * Diisi setelah Start, masih bisa dikoreksi setelah Selesai. Datanya membentuk grafik progres pasien.
  */
-export default function AssessmentEditor({ sessionId, status, assessment, onSaved }: Props) {
+export default function AssessmentEditor({ sessionId, status, assessment, profileBody, onSaved }: Props) {
   const editable = status === "Berlangsung" || status === "Selesai";
   const [painBefore, setPainBefore] = useState<number | null>(assessment?.painBefore ?? null);
   const [painAfter, setPainAfter] = useState<number | null>(assessment?.painAfter ?? null);
+  const [height, setHeight] = useState(assessment?.heightCm?.toString() ?? "");
+  const [weight, setWeight] = useState(assessment?.weightKg?.toString() ?? "");
   const [rom, setRom] = useState<RomRow[]>((assessment?.rom ?? []).map((r) => ({ ...r, degrees: String(r.degrees) })));
   const [notes, setNotes] = useState(assessment?.functionalNotes ?? "");
   const [saving, setSaving] = useState(false);
@@ -67,12 +89,21 @@ export default function AssessmentEditor({ sessionId, status, assessment, onSave
       setMessage({ tone: "error", text: "Lengkapi sendi, gerakan, dan derajat (bilangan bulat) di setiap baris ROM." });
       return;
     }
+    const heightCm = parseHeight(height);
+    const weightKg = parseWeight(weight);
+    const invalidBody = bodyError(heightCm, weightKg);
+    if (invalidBody) {
+      setMessage({ tone: "error", text: invalidBody });
+      return;
+    }
     setSaving(true);
     setMessage(null);
     try {
       await clinicService.saveAssessment(sessionId, {
         painBefore,
         painAfter,
+        heightCm,
+        weightKg,
         rom: parsed.map((r) => ({ joint: r.joint.trim(), movement: r.movement.trim(), side: r.side, degrees: Number(r.degrees) })),
         functionalNotes: notes,
       });
@@ -101,6 +132,38 @@ export default function AssessmentEditor({ sessionId, status, assessment, onSave
         <div className="grid gap-4 md:grid-cols-2">
           <VasScale label="Nyeri sebelum terapi" value={painBefore} onChange={setPainBefore} disabled={!editable} />
           <VasScale label="Nyeri sesudah terapi" value={painAfter} onChange={setPainAfter} disabled={!editable} />
+        </div>
+
+        <div>
+          <p className="text-[12px] font-medium text-brand-900/55">Tinggi & berat badan (wajib tiap sesi)</p>
+          <div className="mt-1.5 grid max-w-sm grid-cols-2 gap-2">
+            <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+              Tinggi (cm)
+              <input
+                inputMode="numeric"
+                value={height}
+                onChange={(e) => setHeight(e.target.value.replace(/\D/g, ""))}
+                disabled={!editable}
+                className={`${inputClass} tabular-nums`}
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-[12px] text-zinc-500">
+              Berat (kg)
+              <input
+                inputMode="decimal"
+                value={weight}
+                onChange={(e) => setWeight(e.target.value.replace(/[^\d.,]/g, ""))}
+                disabled={!editable}
+                className={`${inputClass} tabular-nums`}
+              />
+            </label>
+          </div>
+          <p className="mt-1 text-[11px] text-zinc-500">
+            {profileBody.heightCm != null || profileBody.weightKg != null
+              ? `Profil pasien saat ini: ${profileBody.heightCm ?? "–"} cm, ${profileBody.weightKg ?? "–"} kg. `
+              : ""}
+            Disimpan bersama asesmen dan langsung memperbarui profil pasien.
+          </p>
         </div>
 
         <div>

@@ -32,9 +32,13 @@ export default function BookingFinishDialog({ booking, onClose, onChanged }: Pro
       .getSession(booking.id)
       .then((res) => {
         if (isCancelled) return;
-        const { noteReady, painAfterReady, amountDue, package: sessionPackage } = res.data.session;
+        const { noteReady, painAfterReady, bodyReady, amountDue, package: sessionPackage } = res.data.session;
         setSessionPrice({ amount: amountDue, packageName: sessionPackage?.name ?? null });
-        setMissingItems([...(noteReady ? [] : ["catatan terapi"]), ...(painAfterReady ? [] : ["nyeri sesudah terapi"])]);
+        setMissingItems([
+          ...(noteReady ? [] : ["catatan terapi"]),
+          ...(painAfterReady ? [] : ["nyeri sesudah terapi"]),
+          ...(bodyReady ? [] : ["tinggi & berat badan"]),
+        ]);
       })
       .catch((err) => {
         if (!isCancelled) setError(getApiErrorMessage(err, "Sesi tidak dapat dimuat."));

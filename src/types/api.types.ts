@@ -189,6 +189,9 @@ export interface RomMeasurement {
 export interface SessionAssessment {
   painBefore: number | null;
   painAfter: number | null;
+  /** TB/BB diukur tiap sesi; yang terbaru tersalin ke profil pasien */
+  heightCm: number | null;
+  weightKg: number | null;
   rom: RomMeasurement[];
   functionalNotes: string | null;
   updatedAt?: string;
@@ -274,6 +277,8 @@ export interface SessionDetail {
     amountDue: number | null;
     /** Nyeri sesudah terapi sudah diisi — syarat tombol Selesai */
     painAfterReady: boolean;
+    /** Tinggi & berat badan sesi ini sudah diisi — syarat tombol Selesai */
+    bodyReady: boolean;
     /** Hari jadwal sudah tiba — syarat tombol Start */
     canStart: boolean;
     /** Jam jadwal sudah lewat — syarat tombol Tidak Hadir */

@@ -116,11 +116,20 @@ export const clinicService = {
   // PUT /api/admin/sessions/:id/assessment — nyeri VAS & ROM sesi ini
   saveAssessment: async (
     sessionId: string,
-    data: { painBefore: number | null; painAfter: number | null; rom: RomMeasurement[]; functionalNotes: string }
+    data: {
+      painBefore: number | null;
+      painAfter: number | null;
+      heightCm: number | null;
+      weightKg: number | null;
+      rom: RomMeasurement[];
+      functionalNotes: string;
+    }
   ): Promise<ApiSuccess<{ assessment: SessionAssessment }>> => {
     const response = await bookingApi.put(`/admin/sessions/${sessionId}/assessment`, {
       pain_before: data.painBefore,
       pain_after: data.painAfter,
+      height_cm: data.heightCm,
+      weight_kg: data.weightKg,
       rom: data.rom,
       functional_notes: data.functionalNotes.trim() || null,
     });

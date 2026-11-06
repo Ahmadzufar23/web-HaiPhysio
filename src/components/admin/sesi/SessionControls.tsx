@@ -62,6 +62,8 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
       ? "Perbarui dan simpan catatan terapi untuk sesi ini dulu"
       : !session.painAfterReady
         ? "Isi dan simpan nyeri sesudah terapi di asesmen dulu"
+        : !session.bodyReady
+          ? "Isi dan simpan tinggi & berat badan pasien di asesmen dulu"
         : editing
           ? "Simpan rekam medis dulu"
           : undefined;
@@ -89,7 +91,7 @@ export default function SessionControls({ data, noteReady, editing, busy, onStar
             <Play size={14} weight="fill" />
             Start
           </button>
-          <button className={btn.primary} disabled={!running || !session.canCollectPayment || !noteReady || !session.painAfterReady || editing || busy} onClick={() => setChoosePayment(true)} title={finishHint}>
+          <button className={btn.primary} disabled={!running || !session.canCollectPayment || !noteReady || !session.painAfterReady || !session.bodyReady || editing || busy} onClick={() => setChoosePayment(true)} title={finishHint}>
             <Stop size={14} weight="fill" />
             Selesai
           </button>
