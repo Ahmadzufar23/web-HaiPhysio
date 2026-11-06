@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { SquaresFour, ClipboardText, CalendarBlank, Users, Stethoscope, Package, ChartLineUp, FilmStrip, Receipt, Buildings, SignOut, X, type Icon } from "@phosphor-icons/react";
+import { SquaresFour, ClipboardText, CalendarBlank, Users, Stethoscope, Package, ChartLineUp, FilmStrip, Receipt, Wallet, Buildings, SignOut, X, type Icon } from "@phosphor-icons/react";
 import { profileService } from "@/services/profileService";
 import ModalLogout from "@/components/profile/ModalLogout";
 import { useStaffUser } from "./AdminGuard";
@@ -34,6 +34,7 @@ export const NAV: { group: string; items: NavItem[] }[] = [
       { title: "Terapis", path: "/admin/terapis", icon: Stethoscope, roles: ["owner"] },
       { title: "Paket Terapi", path: "/admin/paket", icon: Package, roles: ["owner"] },
       { title: "Keuangan & Absensi", path: "/admin/laporan", icon: ChartLineUp, roles: ["owner"] },
+      { title: "Pembukuan", path: "/admin/pembukuan", icon: Wallet, roles: ["owner"] },
       { title: "Tagihan", path: "/admin/tagihan", icon: Receipt, roles: ["owner"] },
       { title: "Profil Klinik", path: "/admin/klinik", icon: Buildings, roles: ["owner"] },
     ],
