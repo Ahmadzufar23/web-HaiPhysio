@@ -1,7 +1,6 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { Heartbeat, ClipboardText, ShieldCheck } from "@phosphor-icons/react";
 
 type AuthShellProps = {
   headline: string;
@@ -11,21 +10,12 @@ type AuthShellProps = {
   hideHero?: boolean;
 };
 
-const illustrationIcon = {
-  patient: Heartbeat,
-  admin: ShieldCheck,
-  mail: ClipboardText,
-};
-
 export default function AuthShell({
   headline,
   description,
   children,
-  illustration = "patient",
   hideHero = false,
 }: AuthShellProps) {
-  const Icon = illustrationIcon[illustration];
-
   return (
     <section className="min-h-[calc(100vh-120px)] flex items-center justify-center bg-zinc-50 px-5 py-10 md:px-10 md:py-14">
       <div

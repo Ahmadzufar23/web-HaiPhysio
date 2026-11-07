@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import AuthButton from "./AuthButton";
 import AuthInput from "./AuthInput";
@@ -25,8 +24,6 @@ type RegisterErrors = {
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^[0-9+\-\s()]{8,}$/;
-const registeredEmails = ["pasien@haiphysio.com", "terdaftar@email.com"];
-const registeredPhones = ["081234567890", "0812 3456 7890"];
 const duplicateMessage =
   "Email/No Telepon ini sudah terdaftar. Silakan gunakan yang lain atau langsung masuk ke akun Anda.";
 

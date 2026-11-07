@@ -313,7 +313,7 @@ export default function ScheduleGrid({ slots, isLoading, onRefresh, onOpenGenera
                 <div className="flex justify-between items-center">
                   {/* Switch Toggle Aktif/Off */}
                   <div
-                    onClick={(e) => { e.stopPropagation(); !isBooked && !isToggling && handleToggle(slot.id, isActive); }}
+                    onClick={(e) => { e.stopPropagation(); if (!isBooked && !isToggling) handleToggle(slot.id, isActive); }}
                     className={`flex items-center gap-2 ${isBooked ? "cursor-not-allowed opacity-50" : "cursor-pointer group"}`}
                   >
                     <div className={`w-10 h-6 rounded-full p-1 transition-colors flex items-center ${isActive ? 'bg-[#3f3f46]' : 'bg-gray-300'}`}>

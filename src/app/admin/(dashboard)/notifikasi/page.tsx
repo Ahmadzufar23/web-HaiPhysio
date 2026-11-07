@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BellRinging, CheckCircle, CalendarX, Checks, BellSlash, ArrowRight } from "@phosphor-icons/react";
+import { BellRinging, CheckCircle, CalendarX, Checks, BellSlash } from "@phosphor-icons/react";
 import { adminService } from "@/services/adminService";
 import type { AdminBooking } from "@/types/api.types";
 

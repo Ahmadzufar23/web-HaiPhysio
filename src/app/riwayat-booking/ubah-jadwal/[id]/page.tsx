@@ -8,6 +8,13 @@ import GridKalender, { type CalendarSlot } from "@/components/shared/GridKalende
 import { UserCircle, CaretLeft, CaretRight, Stethoscope } from "@phosphor-icons/react";
 import type { ApiSuccess, BookingDetail, PublicTherapist, ScheduleGridCell } from "@/types/api.types";
 
+const formatLocalDate = (d: Date) => {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
 export default function UbahJadwalPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -34,13 +41,6 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
 
   const [activeMonthDate, setActiveMonthDate] = useState(new Date()); // Buat Mini Kalender
   const [activeWeekStart, setActiveWeekStart] = useState(getMonday(new Date())); // Buat Grid Besar
-
-  const formatLocalDate = (d: Date) => {
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
 
   const currentMonthLabel = activeMonthDate.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
 
@@ -108,7 +108,7 @@ export default function UbahJadwalPage({ params }: { params: Promise<{ id: strin
           setSelectedTerapis(therapistIds);
 
           // Grid per terapis; sel dari API tidak membawa therapistId, jadi ditambahkan di sini
-          const mondayDateString = currentWeekDays[0].fullDate;
+          const mondayDateString = formatLocalDate(activeWeekStart);
           const grids = await Promise.all(
             therapistIds.map(async (therapistId) => {
               const res: ApiSuccess<{ slots: ScheduleGridCell[] }> = await bookingService.getScheduleGrid(therapistId, mondayDateString);
